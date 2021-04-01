@@ -3,21 +3,15 @@ import { makeStyles, Paper } from '@material-ui/core';
 import LoginHeader from '../../components/auth/LoginHeader';
 import SocialNetworks from '../../components/auth/SocialNetworks';
 import LoginForm from '../../components/auth/LoginForm';
-import HorizontalDivider from '../../components/HorizontalDivider';
+import HorizontalDivider from '../../components/divider/HorizontalDivider';
 
 const useStyles = makeStyles(theme => ({
   paper: {
     width: 350,
-    paddingTop: '32px',
-    paddingBottom: '34px',
-    paddingLeft: '34px',
-    paddingRight: '34px',
+    padding: '24px 27px 27px',
     borderRadius: '4px',
     [theme.breakpoints.down('xs')]: {
-      paddingTop: '32px',
-      paddingBottom: '34px',
-      paddingLeft: '17px',
-      paddingRight: '17px',
+      padding: '24px 17px 24px',
     },
   },
 

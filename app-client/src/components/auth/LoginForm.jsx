@@ -112,7 +112,9 @@ const LoginForm = ({ submitUrl, username, error, rememberPassword }) => {
             control={
               <Checkbox
                 checked={state.managePlace}
-                onChange={() => setState({ ...state, managePlace: !state.managePlace })}
+                onChange={() =>
+                  setState({ ...state, managePlace: !state.managePlace })
+                }
                 value="managePlace"
                 color="secondary"
               />
@@ -123,7 +125,9 @@ const LoginForm = ({ submitUrl, username, error, rememberPassword }) => {
         </Grid>
 
         <Grid item xs={12}>
-          <div>To submit your contribution, please create an account or login below</div>
+          <div>
+            To submit your contribution, please create an account or login below
+          </div>
         </Grid>
 
         <Grid item xs={12} className={classes.inputWrapper}>
