@@ -1,9 +1,9 @@
 import React from 'react';
 import { makeStyles, Paper } from '@material-ui/core';
-import LoginHeader from '../../components/auth/LoginHeader';
-import SocialNetworks from '../../components/auth/SocialNetworks';
-import LoginForm from '../../components/auth/LoginForm';
-import HorizontalDivider from '../../components/divider/HorizontalDivider';
+import LoginHeader from './LoginHeader';
+import SocialNetworks from './SocialNetworks';
+import LoginForm from './LoginForm';
+import HorizontalDivider from '../divider/HorizontalDivider';
 
 const useStyles = makeStyles(theme => ({
   paper: {

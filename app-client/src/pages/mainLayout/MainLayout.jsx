@@ -1,8 +1,8 @@
-import React from 'react';
-import { useHistory } from 'react-router';
+import React, { useState } from 'react';
 import { Button } from 'reactstrap';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Sidebar from '../../components/sidebar/Sidebar';
+import LoginModal from '../../components/auth/Login';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -15,12 +15,13 @@ const useStyles = makeStyles(() =>
 );
 const MainLayout = () => {
   const classes = useStyles();
-  const { push } = useHistory();
+  const [loginModal, showLoginModal] = useState(false);
 
   return (
     <div className={classes.root}>
       <Sidebar />
-      <Button onClick={() => push('/login')} />
+      <Button onClick={() => showLoginModal(true)} />
+      {loginModal && <LoginModal open onClose={() => showLoginModal(false)} />}
     </div>
   );
 };

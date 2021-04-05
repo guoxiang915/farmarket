@@ -1,8 +1,17 @@
 import React from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
+import { Typography, makeStyles, IconButton } from '@material-ui/core';
+import { KeyboardBackspaceOutlined } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
-  container: {},
+  container: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    marginLeft: -16,
+  },
+  backButton: {
+    marginTop: -12,
+    marginRight: 4,
+  },
   titleWrapper: {
     display: 'flex',
     flexDirection: 'column',
@@ -35,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const LoginHeader = ({ title, subtitle, welcomeMessage, ...props }) => {
+const LoginHeader = ({ title, subtitle, welcomeMessage, onBack, ...props }) => {
   const classes = useStyles();
 
   let headerIcon = null;
@@ -56,6 +65,11 @@ const LoginHeader = ({ title, subtitle, welcomeMessage, ...props }) => {
 
   return (
     <div className={classes.container}>
+      {onBack && (
+        <IconButton onClick={onBack} className={classes.backButton}>
+          <KeyboardBackspaceOutlined />
+        </IconButton>
+      )}
       <div className={classes.titleWrapper}>
         {props && welcomeMessage ? (
           <Typography

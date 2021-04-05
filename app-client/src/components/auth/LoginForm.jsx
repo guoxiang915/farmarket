@@ -80,7 +80,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const LoginForm = ({ submitUrl, username, error, rememberPassword }) => {
+const LoginForm = ({
+  submitUrl,
+  username,
+  error,
+  rememberPassword,
+  description,
+}) => {
   const classes = useStyles();
   const [state, setState] = useState({
     username: username || '',
@@ -125,9 +131,7 @@ const LoginForm = ({ submitUrl, username, error, rememberPassword }) => {
         </Grid>
 
         <Grid item xs={12}>
-          <div>
-            To submit your contribution, please create an account or login below
-          </div>
+          <div>{description}</div>
         </Grid>
 
         <Grid item xs={12} className={classes.inputWrapper}>
