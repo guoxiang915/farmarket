@@ -3,6 +3,7 @@ import { Button } from 'reactstrap';
 import ReactMapboxGl from 'react-mapbox-gl';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Sidebar from '../../components/sidebar/Sidebar';
+import Navigation from '../../components/navigation/Navigation';
 import LoginModal from '../../components/auth/Login';
 
 const Map = ReactMapboxGl({
@@ -36,6 +37,7 @@ const MainLayout = () => {
         }}
       />
       <Sidebar />
+      <Navigation />
       <Button onClick={() => showLoginModal(true)} />
       {loginModal && <LoginModal open onClose={() => showLoginModal(false)} />}
     </div>

@@ -7,6 +7,8 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import DirectionsIcon from '@material-ui/icons/Directions';
+import { useDispatch } from 'react-redux';
+import { toggleNavigation } from '../../store/actions/appActions';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -31,10 +33,19 @@ const useStyles = makeStyles(theme =>
 
 const SearchBox = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const handleToggleNavigation = () => {
+    dispatch(toggleNavigation(true));
+  };
 
   return (
     <Paper component="form" className={classes.root}>
-      <IconButton className={classes.iconButton} aria-label="menu">
+      <IconButton
+        className={classes.iconButton}
+        aria-label="menu"
+        onClick={() => handleToggleNavigation()}
+      >
         <MenuIcon />
       </IconButton>
       <InputBase

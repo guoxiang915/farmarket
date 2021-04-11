@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Avatar,
   Button,
@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core';
 import { Home as HomeIcon, Work as WorkIcon } from '@material-ui/icons';
 import SearchBox from '../searchBox/SearchBox';
+import AddPlaceDialog from '../place/AddPlaceDialog';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -101,6 +102,7 @@ const useStyles = makeStyles(theme => ({
 
 const Sidebar = () => {
   const classes = useStyles();
+  const [addPlaceDialog, setAddPlaceDialog] = useState(false);
 
   const groceries = [
     {
@@ -241,9 +243,13 @@ const Sidebar = () => {
             variant="outlined"
             color="primary"
             className={classes.actionButton}
+            onClick={() => setAddPlaceDialog(true)}
           >
             Add a place
           </Button>
+          {addPlaceDialog && (
+            <AddPlaceDialog open onClose={() => setAddPlaceDialog(false)} />
+          )}
         </Grid>
         <Grid item xs={12}>
           <Button
