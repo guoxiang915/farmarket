@@ -3,8 +3,8 @@ import { createMuiTheme } from '@material-ui/core/styles';
 const colors = {
   // primary pallete
   primary: {
-    mainBlue: '#3F51B5',
-    secondaryBlue: '#2196F3',
+    main: '#27AE60',
+    secondary: '#6FCF97',
     darkBlue: '#23263C',
     paleBlue: '#E9F4FD',
     actionGreen: '#27AE60',
@@ -66,11 +66,12 @@ const theme = {
   colors: colors,
   palette: {
     primary: {
-      main: colors.primary.mainBlue,
+      main: colors.primary.main,
+      contrastText: colors.primary.white,
     },
-    secondary: {
-      main: colors.primary.secondaryBlue,
-    },
+    // secondary: {
+    //   main: colors.primary.secondary,
+    // },
   },
   layoutSizes: {
     drawerWidth: 267,
@@ -133,7 +134,7 @@ const theme = {
     third: {
       fontWeight: 'normal',
       fontSize: '16px',
-      color: colors.primary.secondaryBlue,
+      color: colors.primary.secondary,
     },
     primarySmallBody: {
       fontWeight: 'normal',
@@ -148,7 +149,7 @@ const theme = {
     thirdSmall: {
       fontWeight: 'normal',
       fontSize: '14px',
-      color: colors.primary.secondaryBlue,
+      color: colors.primary.secondary,
     },
     caption: {
       fontWeight: 'normal',
@@ -285,7 +286,7 @@ const theme = {
     },
     primaryTextLink: {
       textTransform: 'uppercase',
-      color: colors.primary.secondaryBlue,
+      color: colors.primary.secondary,
       fontSize: '14px',
       height: '38px',
     },
@@ -296,7 +297,7 @@ const theme = {
       height: '38px',
     },
     thirdTextLink: {
-      color: colors.primary.secondaryBlue,
+      color: colors.primary.secondary,
       fontSize: '14px',
       textDecoration: 'none',
       textTransform: 'none',
@@ -364,7 +365,7 @@ const theme = {
     },
     MuiAvatar: {
       colorDefault: {
-        backgroundColor: colors.primary.secondaryBlue,
+        backgroundColor: colors.primary.secondary,
       },
     },
     MuiExpansionPanelSummary: {

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Button } from 'reactstrap';
 import ReactMapboxGl from 'react-mapbox-gl';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Sidebar from '../../components/sidebar/Sidebar';
@@ -7,8 +6,7 @@ import Navigation from '../../components/navigation/Navigation';
 import LoginModal from '../../components/auth/Login';
 
 const Map = ReactMapboxGl({
-  accessToken:
-    'pk.eyJ1IjoiZWZmZXJ2ZXNjZW5jZS0xOSIsImEiOiJjanpmZGRiZXAwYmFuM29zOWRybzB3cHRyIn0.yRS9YBIfjwPhrvzw50TZWw',
+  accessToken: process.env.REACT_APP_MAPBOX_TOKEN,
 });
 
 const useStyles = makeStyles(() =>
@@ -38,7 +36,6 @@ const MainLayout = () => {
       />
       <Sidebar />
       <Navigation />
-      <Button onClick={() => showLoginModal(true)} />
       {loginModal && <LoginModal open onClose={() => showLoginModal(false)} />}
     </div>
   );
