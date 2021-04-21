@@ -6,7 +6,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.1",
     "@material-ui/icons": "^4.11.1",
-    "@material-ui/lab": "^4.11.1",
+    "@material-ui/lab": "5.0.0-alpha.11",
     "apollo-cache-inmemory": "^1.1.4",
     "apollo-client": "^2.0.2",
     "apollo-client-preset": "^1.0.2",
