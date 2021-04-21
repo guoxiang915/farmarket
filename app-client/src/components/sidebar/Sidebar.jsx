@@ -25,9 +25,11 @@ const useStyles = makeStyles(theme => ({
     height: '100vh',
     overflowY: 'auto',
     background: '#F2F2F2',
+    boxShadow: '3px 0px 16px 8px #00000020',
 
     [theme.breakpoints.down('xs')]: {
       width: '100%',
+      boxShadow: 'none',
     },
   },
 
@@ -87,22 +89,21 @@ const useStyles = makeStyles(theme => ({
   actions: {
     marginTop: 16,
     marginBottom: 16,
-    width: '70%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
   },
 
   actionButton: {
-    width: '100%',
+    width: '70%',
     borderRadius: 999,
     color: '#27AE60',
     borderColor: '#27AE60',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
 }));
 
 const Sidebar = () => {
   const classes = useStyles();
-  const [addPlaceDialog, setAddPlaceDialog] = useState(false);
+  const [addPlaceDialog, setAddPlaceDialog] = useState(null);
 
   const groceries = [
     {
@@ -237,30 +238,35 @@ const Sidebar = () => {
           </Grid>
         </div>
       </div>
-      <Grid container spacing={2} className={classes.actions}>
+      <Grid container spacing={2} classes={{ root: classes.actions }}>
         <Grid item xs={12}>
           <Button
             variant="outlined"
             color="primary"
-            className={classes.actionButton}
-            onClick={() => setAddPlaceDialog(true)}
+            classes={{ root: classes.actionButton }}
+            onClick={() => setAddPlaceDialog('Groceries')}
           >
             Add a place
           </Button>
-          {addPlaceDialog && (
-            <AddPlaceDialog open onClose={() => setAddPlaceDialog(false)} />
-          )}
         </Grid>
         <Grid item xs={12}>
           <Button
             variant="outlined"
             color="primary"
             className={classes.actionButton}
+            onClick={() => setAddPlaceDialog('Farm')}
           >
             Add a farm
           </Button>
         </Grid>
       </Grid>
+      {addPlaceDialog !== null && (
+        <AddPlaceDialog
+          open
+          onClose={() => setAddPlaceDialog(null)}
+          category={addPlaceDialog}
+        />
+      )}
     </div>
   );
 };

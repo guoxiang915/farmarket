@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Grid,
   TextField,
@@ -11,8 +11,11 @@ import {
 import { AccountCircle } from '@material-ui/icons';
 import Geocoder from '../mapbox/Geocoder';
 import ReadonlyText from '../forms/ReadonlyText';
+import AddHourDialog from './AddHourDialog';
 
 export default function OverviewInfo({ data, onUpdate, categories, classes }) {
+  const [hourDialog, setShowHourDialog] = useState(false);
+
   return (
     <Grid container spacing={4}>
       <Grid item xs={12}>
@@ -105,8 +108,29 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
             <ReadonlyText
               fullWidth
               placeholder="Your Business Hours here"
-              onOpen={() => {}}
+              onOpen={() => setShowHourDialog(true)}
+              value={Object.entries(data.hours)
+                .filter(([, weekday]) => weekday.start && weekday.end)
+                .map(
+                  ([label, weekday]) =>
+                    `${label[0].toUpperCase() + label.substring(1)}: ${
+                      weekday.start
+                    }-${weekday.end}`
+                )
+                .join(',')}
             />
+            {hourDialog && (
+              <AddHourDialog
+                open
+                business="Your Business Name"
+                onClose={() => setShowHourDialog(false)}
+                hours={data.hours}
+                onSubmit={hours => {
+                  onUpdate({ ...data, hours });
+                  setShowHourDialog(false);
+                }}
+              />
+            )}
           </Grid>
         </Grid>
       </Grid>
@@ -117,7 +141,12 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Add events from a Facebook page</div>
-            <TextField fullWidth placeholder="Connect Facebook" />
+            <TextField
+              fullWidth
+              placeholder="Connect Facebook"
+              value={data.facebookUrl}
+              onChange={e => onUpdate({ ...data, facebookUrl: e.target.value })}
+            />
           </Grid>
         </Grid>
       </Grid>
@@ -128,7 +157,12 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Place an order</div>
-            <TextField fullWidth placeholder="Enter a URL" />
+            <TextField
+              fullWidth
+              placeholder="Enter a URL"
+              value={data.orderUrl}
+              onChange={e => onUpdate({ ...data, orderUrl: e.target.value })}
+            />
           </Grid>
         </Grid>
       </Grid>
@@ -139,7 +173,13 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Claim ownership?</div>
-            <Switch color="primary" />
+            <Switch
+              color="primary"
+              value={data.ownership}
+              onChange={(e, checked) =>
+                onUpdate({ ...data, ownership: checked })
+              }
+            />
           </Grid>
         </Grid>
       </Grid>

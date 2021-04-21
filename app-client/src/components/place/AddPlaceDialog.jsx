@@ -95,20 +95,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const AddPlaceDialog = ({ open, onClose }) => {
+const AddPlaceDialog = ({ open, onClose, category = 'Groceries' }) => {
   const classes = useStyles();
 
   const [expanded, setExpanded] = useState('overview');
   const [generalInfo, setGeneralInfo] = useState({
     name: '',
     bio: '',
-    category: 'Groceries',
+    category,
     location: '',
     containing: '',
-    hours: '',
     facebookUrl: '',
     orderUrl: '',
     ownership: false,
+    hours: {},
   });
   const [groceryData, setGroceryData] = useState({ farm: '' });
   const [farmSharesData, setFarmSharesData] = useState({ farmShare: '' });
