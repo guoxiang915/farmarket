@@ -5,10 +5,8 @@
     "airbnb",
     "plugin:jest/recommended"
   ],
-  "plugins": [
-    "prettier",
-    "jest"
-  ],
+  "plugins": ["prettier", "jest"],
+  "parser": "babel-eslint",
   "env": {
     "jest": true,
     "browser": true
@@ -32,6 +30,6 @@
     "object-curly-newline": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "arrow-body-style": "off",
-    "import/no-extraneous-dependencies": ["error", {"ignore": ["aws-sdk"]}]
+    "react/prop-types": [0]
   }
 }

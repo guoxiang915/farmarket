@@ -1,36 +1,68 @@
 {
-	"name": "app-client",
-	"homepage": "https://s3-bucketname-serverless-graphql.s3-website-us-east-1.amazonaws.com",
-	"version": "0.1.0",
-	"private": true,
-	"dependencies": {
-		"apollo-cache-inmemory": "^1.1.4",
-		"apollo-client": "^2.0.2",
-		"apollo-client-preset": "^1.0.2",
-		"apollo-link-http": "^1.3.2",
-		"graphql": "^0.11.7",
-		"graphql-tag": "^2.5.0",
-		"prop-types": "^15.6.0",
-		"react": "^16.1.1",
-		"react-apollo": "^2.0.1",
-		"react-dom": "^16.1.1",
-		"react-scripts": "^1.0.17",
-		"reset-css": "^2.2.1",
-		"styled-components": "^2.2.3"
-	},
-	"scripts": {
-		"start": "env-cmd ../config/security.env.local react-scripts start",
-		"build": "env-cmd ../config/security.env.prod react-scripts build",
-		"test": "react-scripts test --env=jsdom",
-		"eject": "react-scripts eject",
-		"deploy-s3": "yarn build && serverless client deploy",
-		"deploy-netlify": "yarn build && netlify deploy build"
-	},
-	"devDependencies": {
-		"env-cmd": "^7.0.0",
-		"enzyme": "^3.1.1",
-		"enzyme-adapter-react-16": "^1.0.4",
-		"react-test-renderer": "^16.1.1",
-		"serverless-finch": "^2.4.0"
-	}
+  "name": "app-client",
+  "homepage": "https://s3-bucketname-serverless-graphql.s3-website-us-east-1.amazonaws.com",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.11.1",
+    "@material-ui/icons": "^4.11.1",
+    "@material-ui/lab": "^4.11.1",
+    "apollo-cache-inmemory": "^1.1.4",
+    "apollo-client": "^2.0.2",
+    "apollo-client-preset": "^1.0.2",
+    "apollo-link-http": "^1.3.2",
+    "bootstrap": "^4.6.0",
+    "classnames": "^2.3.1",
+    "connected-react-router": "^6.9.1",
+    "graphql": "^0.11.7",
+    "graphql-tag": "^2.5.0",
+    "history": "^5.0.0",
+    "mapbox-gl": "^2.2.0",
+    "material-ui-chip-input": "^2.0.0-beta.2",
+    "node-sass": "^5.0.0",
+    "prop-types": "^15.6.0",
+    "react": "^17.0.2",
+    "react-apollo": "^2.0.1",
+    "react-dom": "^17.0.2",
+    "react-helmet": "^6.1.0",
+    "react-map-gl": "^6.1.12",
+    "react-mapbox-gl": "^5.1.1",
+    "react-mapbox-gl-geocoder": "^1.1.0",
+    "react-redux": "^7.2.3",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.3",
+    "reactstrap": "^8.9.0",
+    "redux": "^4.0.5",
+    "reset-css": "^2.2.1",
+    "styled-components": "^2.2.3"
+  },
+  "scripts": {
+    "start": "env-cmd ../config/security.env.local react-scripts start",
+    "build": "env-cmd ../config/security.env.prod react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "deploy-s3": "yarn build && serverless client deploy",
+    "deploy-netlify": "yarn build && netlify deploy build",
+    "lint": "eslint src/**/*.jsx"
+  },
+  "devDependencies": {
+    "env-cmd": "^7.0.0",
+    "enzyme": "^3.1.1",
+    "enzyme-adapter-react-16": "^1.0.4",
+    "react-test-renderer": "^16.1.1",
+    "serverless-finch": "^2.4.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
