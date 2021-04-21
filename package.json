@@ -7,9 +7,7 @@
     "lint": "eslint app-backend/appsync/**/*.js app-backend/dynamodb/*.js app-backend/rest-api/*.js app-backend/rds/*.js app-client/**/src/**/*.js",
     "prettier": "prettier --write \"{app-backend,app-client/**/src}/**/*.{js,css,json}\"",
     "prettier-check": "prettier --list-different \"{app-backend,app-client/**/src}/**/*.{js,css,json}\"",
-    "test": "yarn run lint && yarn run prettier-check",
-    "postinstall": "cd app-backend/dynamodb && yarn install && cd ../rest-api && yarn install && cd ../rds && yarn install && cd ../../app-client/apollo-client && yarn install && cd ../../ && yarn install-appsync",
-    "install-appsync": "cd app-client/appsync-client && yarn install && cd ../../app-backend/appsync/dynamo && yarn install && cd ../dynamo-elasticsearch-lambda && yarn install && cd ../lambda && yarn install"
+    "test": "yarn run lint && yarn run prettier-check"
   },
   "lint-staged": {
     "*.{js,json,css}": [
