@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import classnames from 'classnames';
+import React, { useState } from 'react';
 import {
   makeStyles,
   Dialog,
@@ -9,18 +8,24 @@ import {
   IconButton,
   Typography,
   TextField,
+  Grid,
+  Select,
+  MenuItem,
+  InputAdornment,
 } from '@material-ui/core';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import ToggleButton from '@material-ui/lab/ToggleButton';
 import {
+  AccountCircle,
   CloseOutlined,
   Edit,
-  KeyboardArrowRightOutlined,
   KeyboardBackspaceOutlined,
   Save,
 } from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    width: 500,
+    width: 650,
     [theme.breakpoints.down('xs')]: {
       width: '100%',
     },
@@ -72,19 +77,25 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '28px',
   },
 
-  markButton: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    color: theme.colors.primary.mediumGrey,
-    marginBottom: 20,
-    textTransform: 'none',
-    width: '100%',
-    padding: '12px 20px',
+  content: {
+    padding: 0,
+  },
 
-    '&.selected': {
-      color: theme.colors.primary.white,
+  sectionHeader: {
+    background: '#F2F2F2',
+    textTransform: 'uppercase',
+    color: '#00000080',
+    padding: '16px 24px',
+    '&.MuiAccordionSummary-root.Mui-expanded': {
+      minHeight: 'unset',
     },
+    '&>.MuiAccordionSummary-content': {
+      margin: 0,
+    },
+  },
+
+  sectionContent: {
+    padding: '24px 24px 48px',
   },
 
   weekday: {
@@ -99,14 +110,14 @@ const useStyles = makeStyles(theme => ({
   },
 
   weekdayTitle: {
-    width: 80,
+    width: 120,
     textTransform: 'capitalize',
+    fontSize: '16px',
   },
 
   weekdayContent: {
     flex: 1,
     textAlign: 'right',
-    textTransform: 'uppercase',
     display: 'flex',
     alignItems: 'center',
   },
@@ -123,69 +134,87 @@ const useStyles = makeStyles(theme => ({
   actions: {
     padding: '16px 24px',
   },
+
+  label: {
+    color: '#00000080',
+    fontSize: '13px',
+    lineHeight: '15px',
+    marginTop: 4,
+    marginBottom: 4,
+  },
+
+  payMethodGroup: {
+    width: '100%',
+    marginTop: 8,
+    '& .MuiToggleButton-label': {
+      color: '#000000',
+      fontSize: '16px',
+      textTransform: 'none',
+    },
+  },
 }));
 
-const AddFarmShareDialog = ({ open, onSubmit, onClose, business, hours }) => {
+const payPeriods = ['Pay all at once', 'Pay monthly', 'Free'];
+
+const ContentItem = ({
+  title,
+  isEdit,
+  start,
+  end,
+  unit,
+  onUpdate,
+  classes,
+}) => {
+  return (
+    <div className={classes.weekday}>
+      <div className={classes.weekdayTitle}>{title}</div>
+      <div className={classes.weekdayContent}>
+        {isEdit ? (
+          <>
+            <TextField
+              label="From"
+              type="number"
+              value={start || 0}
+              onChange={e => onUpdate({ start: e.target.value })}
+              fullWidth
+            />
+            <div className={classes.divider} />
+            <TextField
+              label="To"
+              type="number"
+              value={end || 0}
+              onChange={e => onUpdate({ end: e.target.value })}
+              fullWidth
+            />
+          </>
+        ) : (
+          `${start || 0} - ${end || 0} ${unit}`
+        )}
+      </div>
+      <IconButton
+        className={classes.weekdayAction}
+        onClick={() =>
+          onUpdate({
+            isEdit: !isEdit,
+          })
+        }
+        size="small"
+      >
+        {// eslint-disable-next-line
+        isEdit ? <Save color="primary" /> : <Edit />}
+      </IconButton>
+    </div>
+  );
+};
+
+const AddFarmShareDialog = ({ open, onSubmit, onClose, business }) => {
   const classes = useStyles();
-  const [markClosed, setMarkClosed] = useState(false);
-  const [weekdays, setWeekdays] = useState({
-    sunday: {
-      isClosed: true,
-      start: null,
-      end: null,
-      isEdit: false,
-    },
-    monday: {
-      isClosed: true,
-      start: null,
-      end: null,
-      isEdit: false,
-    },
-    tuesday: {
-      isClosed: true,
-      start: null,
-      end: null,
-      isEdit: false,
-    },
-    wednesday: {
-      isClosed: true,
-      start: null,
-      end: null,
-      isEdit: false,
-    },
-    thursday: {
-      isClosed: true,
-      start: null,
-      end: null,
-      isEdit: false,
-    },
-    friday: {
-      isClosed: true,
-      start: null,
-      end: null,
-      isEdit: false,
-    },
-    saturday: {
-      isClosed: true,
-      start: null,
-      end: null,
-      isEdit: false,
-    },
+  const [data, setData] = useState({
+    vegetables: { isEdit: false, title: 'Vegetables' },
+    leafyGreens: { isEdit: false, title: 'Leafy Greens' },
+    seasonalItems: { isEdit: false, title: 'Seasonal Items' },
+    dairy: { isEdit: false, title: 'Dairy' },
   });
-
-  useEffect(() => {
-    Object.keys(hours || {}).forEach(label => {
-      weekdays[label].start = hours[label].start;
-      weekdays[label].end = hours[label].end;
-      weekdays[label].isClosed = false;
-    });
-    setWeekdays({ ...weekdays });
-  }, [hours]);
-
-  const handleUpdateWeekday = (name, weekday) => {
-    weekdays[name] = { ...weekdays[name], ...weekday };
-    setWeekdays({ ...weekdays });
-  };
 
   return (
     <Dialog open={open} onClose={onClose} classes={{ paper: classes.paper }}>
@@ -200,7 +229,7 @@ const AddFarmShareDialog = ({ open, onSubmit, onClose, business, hours }) => {
               component="h1"
               classes={{ root: classes.title }}
             >
-              Hours
+              Add a farm share
             </Typography>
             <Typography
               type="subtitle"
@@ -217,69 +246,134 @@ const AddFarmShareDialog = ({ open, onSubmit, onClose, business, hours }) => {
       </div>
 
       <DialogContent className={classes.content}>
-        <Button
-          className={classnames(classes.markButton, markClosed && 'selected')}
-          onClick={() => setMarkClosed(!markClosed)}
-          variant={markClosed ? 'contained' : 'outlined'}
-          color={markClosed ? 'primary' : undefined}
-        >
-          <div>Mark as temporarily or permantently closed</div>
-          <KeyboardArrowRightOutlined />
-        </Button>
-        {Object.entries(weekdays).map(([name, weekday]) => (
-          <div className={classes.weekday} key={name}>
-            <div className={classes.weekdayTitle}>{name}</div>
-            <div className={classes.weekdayContent}>
-              {weekday.isEdit && (
-                <>
-                  <TextField
-                    label="From"
-                    type="time"
-                    value={weekday.start}
-                    inputProps={{
-                      step: 300, // 5 min
-                    }}
-                    onChange={e =>
-                      handleUpdateWeekday(name, { start: e.target.value })
-                    }
+        <div className={classes.sectionHeader}>Contents</div>
+        <div className={classes.sectionContent}>
+          <ContentItem
+            {...data.vegetables}
+            unit="pounds"
+            onUpdate={updated =>
+              setData({
+                ...data,
+                vegetables: { ...data.vegetables, ...updated },
+              })
+            }
+            classes={classes}
+          />
+          <ContentItem
+            {...data.leafyGreens}
+            unit="oz"
+            onUpdate={updated =>
+              setData({
+                ...data,
+                leafyGreens: { ...data.leafyGreens, ...updated },
+              })
+            }
+            classes={classes}
+          />
+          <ContentItem
+            {...data.seasonalItems}
+            unit="pounds"
+            onUpdate={updated =>
+              setData({
+                ...data,
+                seasonalItems: { ...data.seasonalItems, ...updated },
+              })
+            }
+            classes={classes}
+          />
+          <ContentItem
+            {...data.dairy}
+            unit="qts"
+            onUpdate={updated =>
+              setData({
+                ...data,
+                dairy: { ...data.dairy, ...updated },
+              })
+            }
+            classes={classes}
+          />
+        </div>
+
+        <div className={classes.sectionHeader}>Pricing</div>
+        <div className={classes.sectionContent}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12} md={6}>
+              <Grid container spacing={1} alignItems="flex-start">
+                <Grid item xs={2}>
+                  <AccountCircle />
+                </Grid>
+                <Grid item xs={10}>
+                  <div className={classes.label}>Payment period</div>
+                  <Select
                     fullWidth
-                  />
-                  <div className={classes.divider} />
-                  <TextField
-                    label="To"
-                    type="time"
-                    value={weekday.end}
-                    inputProps={{
-                      step: 300, // 5 min
-                    }}
+                    value={data.payPeriod}
                     onChange={e =>
-                      handleUpdateWeekday(name, { end: e.target.value })
+                      setData({
+                        ...data,
+                        payPeriod: e.target.value,
+                      })
                     }
+                  >
+                    {payPeriods.map(item => (
+                      <MenuItem key={item} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6}>
+              <Grid container spacing={1} alignItems="flex-start">
+                <Grid item xs={2}>
+                  <AccountCircle />
+                </Grid>
+                <Grid item xs={10}>
+                  <div className={classes.label}>Payment</div>
+                  <TextField
                     fullWidth
+                    placeholder="Your payment"
+                    type="number"
+                    value={data.payment}
+                    onChange={e =>
+                      setData({ ...data, payment: e.target.value })
+                    }
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
+                    }}
                   />
-                </>
-              )}
-              {!weekday.isEdit && weekday.isClosed && 'CLOSED'}
-              {!weekday.isEdit &&
-                !weekday.isClosed &&
-                `${weekday.start ? weekday.start : ''} - ${
-                  weekday.end ? weekday.end : ''
-                }`}
-            </div>
-            <IconButton
-              className={classes.weekdayAction}
-              onClick={() =>
-                handleUpdateWeekday(name, {
-                  isEdit: !weekday.isEdit,
-                  isClosed: !weekday.start || !weekday.end,
-                })
-              }
-              size="small"
-            >
-              {weekday.isEdit ? <Save color="primary" /> : <Edit />}
-            </IconButton>
-          </div>
-        ))}
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container spacing={1} alignItems="flex-start">
+                <Grid item xs={1} />
+                <Grid item xs={11}>
+                  <div className={classes.label}>
+                    You can accept members directly from every.farm by
+                    connecting your Square, Stripe, or allowing us to collect
+                    payments directly (3% processing fee)
+                  </div>
+                  <ToggleButtonGroup
+                    orientation="horizontal"
+                    value={data.payMethod}
+                    exclusive
+                    onChange={(e, payMethod) => setData({ ...data, payMethod })}
+                    classes={{ root: classes.payMethodGroup }}
+                  >
+                    <ToggleButton value="square">Connect Square</ToggleButton>
+                    <ToggleButton value="stripe">Connect Stripe</ToggleButton>
+                    <ToggleButton value="collect">
+                      Collect payment for me
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </div>
       </DialogContent>
 
       <DialogActions className={classes.actions}>
@@ -287,20 +381,7 @@ const AddFarmShareDialog = ({ open, onSubmit, onClose, business, hours }) => {
           Cancel
         </Button>
         <Button
-          onClick={() =>
-            onSubmit &&
-            onSubmit(
-              Object.fromEntries(
-                Object.entries(weekdays).filter(
-                  ([, weekday]) =>
-                    weekday.start &&
-                    weekday.end &&
-                    !weekday.isClosed &&
-                    !weekday.isEdit
-                )
-              )
-            )
-          }
+          onClick={() => onSubmit && onSubmit(data)}
           color="primary"
           variant="contained"
         >

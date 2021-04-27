@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   makeStyles,
   Dialog,
@@ -10,6 +10,7 @@ import { CloseOutlined, KeyboardBackspaceOutlined } from '@material-ui/icons';
 
 import veggieIcon from '../../assets/veggie.png';
 import familyFriendlyIcon from '../../assets/family-friendly.png';
+import AddFarmShareDialog from './AddFarmShareDialog';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -93,35 +94,36 @@ const useStyles = makeStyles(theme => ({
   label: {},
 }));
 
+const templates = [
+  {
+    icon: veggieIcon,
+    label: 'Veggie',
+  },
+  {
+    icon: familyFriendlyIcon,
+    label: 'Family Friendly',
+  },
+  {
+    icon: veggieIcon,
+    label: 'Veggie',
+  },
+  {
+    icon: familyFriendlyIcon,
+    label: 'Family Friendly',
+  },
+  {
+    icon: veggieIcon,
+    label: 'Veggie',
+  },
+  {
+    icon: familyFriendlyIcon,
+    label: 'Family Friendly',
+  },
+];
+
 const FarmSharesDialog = ({ open, onSubmit, onClose, business }) => {
   const classes = useStyles();
-
-  const templates = [
-    {
-      icon: veggieIcon,
-      label: 'Veggie',
-    },
-    {
-      icon: familyFriendlyIcon,
-      label: 'Family Friendly',
-    },
-    {
-      icon: veggieIcon,
-      label: 'Veggie',
-    },
-    {
-      icon: familyFriendlyIcon,
-      label: 'Family Friendly',
-    },
-    {
-      icon: veggieIcon,
-      label: 'Veggie',
-    },
-    {
-      icon: familyFriendlyIcon,
-      label: 'Family Friendly',
-    },
-  ];
+  const [template, setTemplate] = useState(null);
 
   return (
     <Dialog open={open} onClose={onClose} classes={{ paper: classes.paper }}>
@@ -165,13 +167,22 @@ const FarmSharesDialog = ({ open, onSubmit, onClose, business }) => {
             xs={12}
             sm={6}
             className={classes.item}
-            onClick={() => onSubmit(item.label)}
+            onClick={() => setTemplate(item.label)}
           >
             <img src={item.icon} className={classes.img} alt={item.label} />
             <div className={classes.label}>{item.label}</div>
           </Grid>
         ))}
       </Grid>
+
+      {template && (
+        <AddFarmShareDialog
+          open
+          onClose={() => setTemplate(null)}
+          business={business}
+          onSubmit={data => onSubmit(data)}
+        />
+      )}
     </Dialog>
   );
 };

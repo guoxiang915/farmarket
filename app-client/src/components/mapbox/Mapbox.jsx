@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
 import ReactMapGL from 'react-map-gl';
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
+
+// eslint-disable-next-line
+import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker';
+
+mapboxgl.workerClass = MapboxWorker;
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const Mapbox = () => {
   const [viewport, setViewport] = useState({

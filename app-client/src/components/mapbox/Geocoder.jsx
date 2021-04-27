@@ -3,6 +3,13 @@ import { makeStyles, createStyles } from '@material-ui/core/styles';
 import MapboxGeocoder from 'react-mapbox-gl-geocoder';
 import ReactMapboxGl from 'react-mapbox-gl';
 import { ListItem, TextField } from '@material-ui/core';
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
+
+// eslint-disable-next-line
+import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker';
+
+mapboxgl.workerClass = MapboxWorker;
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const Map = ReactMapboxGl({
   accessToken: process.env.REACT_APP_MAPBOX_TOKEN,
