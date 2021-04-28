@@ -119,8 +119,8 @@ export const mockDataDetail = {
     'Our food is naturally processed and the strictest precautions are taken place to make sure you get the freshest foods',
   start: null,
   end: '17:00',
-  enrollmentOpen: true,
-  organic: true,
+  pickUp: true,
+  appointments: true,
   delivery: false,
   img:
     'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',

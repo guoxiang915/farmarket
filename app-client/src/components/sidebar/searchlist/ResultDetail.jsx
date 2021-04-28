@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import {
   CircularProgress,
   IconButton,
   makeStyles,
   Grid,
   Button,
+  Paper,
 } from '@material-ui/core';
 import {
   Check,
@@ -32,7 +34,6 @@ const useStyles = makeStyles(theme => ({
     padding: '16px 20px',
     borderBottom: `1px solid ${theme.colors.primary.lightGrey}`,
     background: theme.colors.primary.white,
-    textAlign: 'start',
   },
 
   img: {
@@ -46,11 +47,13 @@ const useStyles = makeStyles(theme => ({
     fontSize: '16px',
     fontWeight: 700,
     marginBottom: 4,
+    textAlign: 'start',
   },
 
   subtitle: {
     color: theme.colors.primary.mediumGrey,
     fontSize: '12px',
+    textAlign: 'start',
   },
 
   buttonLabel: {
@@ -61,11 +64,11 @@ const useStyles = makeStyles(theme => ({
   },
 
   bio: {
-    fontSize: '14px',
+    textAlign: 'start',
   },
 
   actionButton: {
-    width: '70%',
+    width: '100%',
     borderRadius: 999,
     color: '#27AE60',
     borderColor: '#27AE60',
@@ -78,11 +81,12 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     color: theme.colors.primary.mediumGrey,
+    fontSize: '14px',
   },
 
   carouselWrapper: {
     width: '100%',
-    marginTop: 8,
+    marginTop: 16,
   },
 
   carouselItem: {
@@ -111,7 +115,26 @@ const useStyles = makeStyles(theme => ({
   addressLabel: {
     marginLeft: 16,
   },
+
+  suggestButton: {
+    width: '70%',
+    textTransform: 'none',
+  },
 }));
+
+const CarouselItem = ({ data, item, classes }) => {
+  return (
+    <Paper
+      className={classes.carouselItem}
+      style={{
+        backgroundImage: `url(${data.img})`,
+        backgroundSize: 'cover',
+      }}
+    >
+      <div className={classes.carouselName}>{item}</div>
+    </Paper>
+  );
+};
 
 const ResultDetail = ({ id }) => {
   const classes = useStyles();
@@ -228,16 +251,12 @@ const ResultDetail = ({ id }) => {
                     animation="slide"
                   >
                     {data.groceries.map((item, index) => (
-                      <div
-                        className={classes.carouselItem}
+                      <CarouselItem
                         key={index}
-                        style={{
-                          backgroundImage: `url(${data.img})`,
-                          backgroundSize: 'cover',
-                        }}
-                      >
-                        <div className={classes.carouselName}>{item}</div>
-                      </div>
+                        item={item}
+                        data={data}
+                        classes={classes}
+                      />
                     ))}
                   </Carousel>
                 </div>
@@ -245,28 +264,44 @@ const ResultDetail = ({ id }) => {
             </Grid>
           </div>
           <div className={classes.blockContainer} style={{ width: '100%' }}>
-            <div className={classes.addressItem}>
-              <Room />
-              <div className={classes.addressLabel}>{data.address}</div>
-            </div>
-            <div className={classes.addressItem}>
-              <Room />
-              <div className={classes.addressLabel}>
-                Open now: {data.start} - {data.end}
-              </div>
-            </div>
-            <div className={classes.addressItem}>
-              <Room />
-              <div className={classes.addressLabel}>Place an order</div>
-            </div>
-            <div className={classes.addressItem}>
-              <Room />
-              <div className={classes.addressLabel}>Menu</div>
-            </div>
-            <div className={classes.addressItem}>
-              <Room />
-              <div className={classes.addressLabel}>{data.phone}</div>
-            </div>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <div className={classes.addressItem}>
+                  <Room />
+                  <div className={classes.addressLabel}>{data.address}</div>
+                </div>
+                <div className={classes.addressItem}>
+                  <Room />
+                  <div className={classes.addressLabel}>
+                    Open now: {data.start} - {data.end}
+                  </div>
+                </div>
+                <div className={classes.addressItem}>
+                  <Room />
+                  <div className={classes.addressLabel}>Place an order</div>
+                </div>
+                <div className={classes.addressItem}>
+                  <Room />
+                  <div className={classes.addressLabel}>Menu</div>
+                </div>
+                <div className={classes.addressItem}>
+                  <Room />
+                  <div className={classes.addressLabel}>{data.phone}</div>
+                </div>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  className={classNames(
+                    classes.actionButton,
+                    classes.suggestButton
+                  )}
+                >
+                  Suggest an edit
+                </Button>
+              </Grid>
+            </Grid>
           </div>
         </>
       )}
