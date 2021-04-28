@@ -14,6 +14,11 @@ const useStyles = makeStyles(theme => ({
     background: theme.colors.primary.white,
     textAlign: 'start',
     fontSize: '14px',
+    cursor: 'pointer',
+
+    '&:hover': {
+      background: 'none',
+    },
   },
   title: {
     color: 'black',
@@ -36,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ResultList = ({ items }) => {
+const ResultList = ({ items, onSelect }) => {
   const classes = useStyles();
   const checks = [
     'pickUp',
@@ -49,7 +54,12 @@ const ResultList = ({ items }) => {
   return (
     <div className={classes.container}>
       {items.map(item => (
-        <div className={classes.itemContainer} key={item.id}>
+        // eslint-disable-next-line
+        <div
+          className={classes.itemContainer}
+          key={item.id}
+          onClick={() => onSelect(item.id)}
+        >
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <div>

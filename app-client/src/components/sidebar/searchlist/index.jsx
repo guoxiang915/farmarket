@@ -4,6 +4,7 @@ import { advancedSearchData } from '../../../api/search';
 
 import SearchFilter from './SearchFilter';
 import ResultList from './ResultList';
+import ResultDetail from './ResultDetail';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -22,6 +23,7 @@ const SearchList = ({ query }) => {
   });
 
   const [items, setItems] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     const getData = async () => {
@@ -44,7 +46,11 @@ const SearchList = ({ query }) => {
           setFilters({ ...filters, ...newFilters })
         }
       />
-      <ResultList items={items} />
+      {selectedId ? (
+        <ResultDetail id={selectedId} />
+      ) : (
+        <ResultList items={items} onSelect={setSelectedId} />
+      )}
     </div>
   );
 };
