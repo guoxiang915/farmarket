@@ -1,49 +1,45 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
-import { graphqlLambda, graphiqlLambda } from 'apollo-server-lambda';
-import lambdaPlayground from 'graphql-playground-middleware-lambda';
-import { makeExecutableSchema } from 'graphql-tools';
-import { schema } from './schema';
+import {
+  // graphiqlLambda,
+  ApolloServer,
+} from 'apollo-server-lambda';
+// import lambdaPlayground from 'graphql-playground-middleware-lambda';
+// import { makeExecutableSchema } from '@graphql-tools/schema';
+import { loadTypedefsSync } from '@graphql-tools/load';
+import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader';
 import { resolvers } from './resolvers';
+import { createContext } from './context';
 
-const myGraphQLSchema = makeExecutableSchema({
-  typeDefs: schema,
-  resolvers,
-  logger: console,
+const sources = loadTypedefsSync('./graphql/schema.gql', {
+  loaders: [new GraphQLFileLoader()],
 });
 
-exports.graphqlHandler = function graphqlHandler(event, context, callback) {
-  context.callbackWaitsForEmptyEventLoop = false;
-
-  function callbackFilter(error, output) {
-    if (!output.headers) {
-      output.headers = {};
-    }
-    // eslint-disable-next-line no-param-reassign
-    output.headers['Access-Control-Allow-Origin'] = '*';
-    callback(error, output);
-  }
-
-  const handler = graphqlLambda({ schema: myGraphQLSchema, tracing: true });
-  return handler(event, context, callbackFilter);
-};
+const server = new ApolloServer({
+  typeDefs: sources.map(source => source.document),
+  resolvers,
+  logger: console,
+  tracing: true,
+  context: createContext,
+});
+exports.graphqlHandler = server.createHandler();
 
 // for local endpointURL is /graphql and for prod it is /stage/graphql
-exports.playgroundHandler = (event, context, callback) => {
-  context.callbackWaitsForEmptyEventLoop = false;
-  return lambdaPlayground({
-    endpoint: process.env.REACT_APP_GRAPHQL_ENDPOINT
-      ? process.env.REACT_APP_GRAPHQL_ENDPOINT
-      : '/production/graphql',
-  })(event, context, callback);
-};
+// exports.playgroundHandler = (event, context, callback) => {
+//   context.callbackWaitsForEmptyEventLoop = false;
+//   return lambdaPlayground({
+//     endpoint: process.env.REACT_APP_GRAPHQL_ENDPOINT
+//       ? process.env.REACT_APP_GRAPHQL_ENDPOINT
+//       : '/production/graphql',
+//   })(event, context, callback);
+// };
 
-exports.graphiqlHandler = (event, context, callback) => {
-  context.callbackWaitsForEmptyEventLoop = false;
-  return graphiqlLambda({
-    endpointURL: process.env.REACT_APP_GRAPHQL_ENDPOINT
-      ? process.env.REACT_APP_GRAPHQL_ENDPOINT
-      : '/production/graphql',
-  })(event, context, callback);
-};
+// exports.graphiqlHandler = (event, context, callback) => {
+//   context.callbackWaitsForEmptyEventLoop = false;
+//   return graphiqlLambda({
+//     endpointURL: process.env.REACT_APP_GRAPHQL_ENDPOINT
+//       ? process.env.REACT_APP_GRAPHQL_ENDPOINT
+//       : '/production/graphql',
+//   })(event, context, callback);
+// };

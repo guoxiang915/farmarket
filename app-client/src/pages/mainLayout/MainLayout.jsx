@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactMapboxGl from 'react-mapbox-gl';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Navigation from '../../components/navigation/Navigation';
-import LoginModal from '../../components/auth/Login';
 
 // eslint-disable-next-line
 import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker';
@@ -28,7 +27,6 @@ const useStyles = makeStyles(() =>
 
 const MainLayout = () => {
   const classes = useStyles();
-  const [loginModal, showLoginModal] = useState(false);
 
   return (
     <div className={classes.root}>
@@ -43,7 +41,6 @@ const MainLayout = () => {
       />
       <Sidebar />
       <Navigation />
-      {loginModal && <LoginModal open onClose={() => showLoginModal(false)} />}
     </div>
   );
 };

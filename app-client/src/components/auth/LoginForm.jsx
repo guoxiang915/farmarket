@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Checkbox,
   TextField,
@@ -6,7 +6,9 @@ import {
   Grid,
   Button,
   makeStyles,
+  CircularProgress,
 } from '@material-ui/core';
+import { gql, useMutation } from '@apollo/client';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -78,7 +80,17 @@ const useStyles = makeStyles(theme => ({
   helperError: {
     ...theme.typography.errorMessage,
   },
+
+  progress: {
+    color: 'white',
+  },
 }));
+
+const loginMutation = gql`
+  mutation loginMutation($email: String!, $password: String!) {
+    login(email: $email, password: $password)
+  }
+`;
 
 const LoginForm = ({
   submitUrl,
@@ -86,6 +98,7 @@ const LoginForm = ({
   error,
   rememberPassword,
   description,
+  onSuccess,
 }) => {
   const classes = useStyles();
   const [state, setState] = useState({
@@ -95,11 +108,29 @@ const LoginForm = ({
     rememberPassword: rememberPassword,
     managePlace: false,
   });
+  const [submitLogin, { loading, data: loginData }] = useMutation(
+    loginMutation,
+    { errorPolicy: 'all' }
+  );
 
   const toggleRememberPassword = () =>
     setState({ ...state, rememberPassword: !state.rememberPassword });
 
-  const submitHandler = () => {};
+  const submitHandler = () => {
+    submitLogin({
+      variables: {
+        email: state.username,
+        password: state.password,
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (loginData && loginData.login) {
+      localStorage.setItem('token', loginData.login);
+      onSuccess();
+    }
+  }, [loginData]);
 
   const loginInputChange = event =>
     setState({
@@ -191,7 +222,11 @@ const LoginForm = ({
             onClick={submitHandler}
             disabled={!state.username || !state.password}
           >
-            Login
+            {loading ? (
+              <CircularProgress size={16} className={classes.progress} />
+            ) : (
+              'Login'
+            )}
           </Button>
         </Grid>
       </form>

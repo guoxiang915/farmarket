@@ -7,6 +7,13 @@ const INITIAL_STATE = {
 
 const authReducer = (currentState = INITIAL_STATE, action) => {
   switch (action.type) {
+    case 'SET_USER':
+      return {
+        ...currentState,
+        user: action.payload.user,
+        isLoggedIn: action.payload.isLoggedIn,
+      };
+
     case 'REQUEST_LOGIN':
       return {
         ...currentState,

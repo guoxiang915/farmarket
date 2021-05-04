@@ -10,6 +10,7 @@ module.exports = {
     connection: {
       filename: './dev.db',
     },
+    useNullAsDefault: true,
   },
   production: {
     client: 'pg',

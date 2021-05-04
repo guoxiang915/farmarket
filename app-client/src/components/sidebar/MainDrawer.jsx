@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core';
 import { Home as HomeIcon, Work as WorkIcon } from '@material-ui/icons';
 import AddPlaceDialog from '../place/AddPlaceDialog';
+import useLogin from '../../utils/hooks/useLogin';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -160,8 +161,15 @@ const categories = [
 ];
 
 const MainDrawer = ({ location, onSearch }) => {
+  const { checkLogin } = useLogin();
   const classes = useStyles();
   const [addPlaceDialog, setAddPlaceDialog] = useState(null);
+
+  const handleAddPlaceDialog = category => {
+    if (checkLogin()) {
+      setAddPlaceDialog(category);
+    }
+  };
 
   return (
     <>
@@ -252,7 +260,7 @@ const MainDrawer = ({ location, onSearch }) => {
             variant="outlined"
             color="primary"
             classes={{ root: classes.actionButton }}
-            onClick={() => setAddPlaceDialog('Groceries')}
+            onClick={() => handleAddPlaceDialog('Groceries')}
           >
             Add a place
           </Button>
@@ -262,7 +270,7 @@ const MainDrawer = ({ location, onSearch }) => {
             variant="outlined"
             color="primary"
             className={classes.actionButton}
-            onClick={() => setAddPlaceDialog('Farm')}
+            onClick={() => handleAddPlaceDialog('Farm')}
           >
             Add a farm
           </Button>

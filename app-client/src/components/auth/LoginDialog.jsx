@@ -38,7 +38,10 @@ const LoginDialog = ({ open, onClose }) => {
           onBack={onClose}
         />
 
-        <LoginForm description="To submit your contribution, please create an account or login below" />
+        <LoginForm
+          description="To submit your contribution, please create an account or login below"
+          onSuccess={() => onClose()}
+        />
 
         <HorizontalDivider className={classes.divider} text="or" />
 

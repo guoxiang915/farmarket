@@ -1,0 +1,80 @@
+type Mutation {
+    # Create user info is available in dynamo integration
+    registerUser(
+        first_name: String,
+        last_name: String,
+        email: String!,
+        password: String!
+    ): User!
+    
+    # Create user info is available in dynamo integration
+    registerUserByGoogle(
+        first_name: String,
+        last_name: String,
+        google: String!
+        email: String!,
+    ): User!
+    
+    # Create user info is available in dynamo integration
+    registerUserByFacebook(
+        first_name: String,
+        last_name: String,
+        facebook: String!
+        email: String!,
+    ): User!
+    
+    # Create user info is available in dynamo integration
+    registerUserByLinkedin(
+        first_name: String,
+        last_name: String,
+        linkedin: String!
+        email: String!,
+    ): User!
+    
+    # Create user info is available in dynamo integration
+    login(
+        email: String!,
+        password: String!
+    ): String!
+    
+    # Create user info is available in dynamo integration
+    loginByGoogle(
+        google: String!
+        email: String!,
+    ): String!
+    
+    # Create user info is available in dynamo integration
+    loginByFacebook(
+        facebook: String!
+        email: String!,
+    ): String!
+    
+    # Create user info is available in dynamo integration
+    loginByLinkedin(
+        linkedin: String!
+        email: String!,
+    ): String!
+}
+
+type Query {
+    meInfo: User
+}
+
+type Subscription {
+    addTweet: String
+}
+
+type User {
+    first_name: String
+    last_name: String
+    email: String!
+    google: String
+    facebook: String
+    linkedin: String
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
