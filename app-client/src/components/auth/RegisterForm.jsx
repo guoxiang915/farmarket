@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Checkbox,
+  // Checkbox,
   TextField,
-  FormControlLabel,
+  // FormControlLabel,
   Grid,
   Button,
   makeStyles,
@@ -87,13 +87,25 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const loginMutation = gql`
-  mutation loginMutation($email: String!, $password: String!) {
-    login(email: $email, password: $password)
+const registerMutation = gql`
+  mutation registerMutation(
+    $first_name: String
+    $last_name: String
+    $email: String!
+    $password: String!
+  ) {
+    registerUser(
+      first_name: $first_name
+      last_name: $last_name
+      email: $email
+      password: $password
+    ) {
+      email
+    }
   }
 `;
 
-const LoginForm = ({
+const RegisterForm = ({
   submitUrl,
   username,
   error,
@@ -103,23 +115,24 @@ const LoginForm = ({
 }) => {
   const classes = useStyles();
   const [state, setState] = useState({
+    firstname: '',
+    lastname: '',
     username: username || '',
     password: '',
     error: error,
     rememberPassword: rememberPassword,
     managePlace: false,
   });
-  const [submitLogin, { loading, data: loginData }] = useMutation(
-    loginMutation,
-    { errorPolicy: 'all' }
-  );
-
-  const toggleRememberPassword = () =>
-    setState({ ...state, rememberPassword: !state.rememberPassword });
+  const [
+    submitRegister,
+    { loading, data: registerData },
+  ] = useMutation(registerMutation, { errorPolicy: 'all' });
 
   const submitHandler = () => {
-    submitLogin({
+    submitRegister({
       variables: {
+        first_name: state.firstname,
+        last_name: state.lastname,
         email: state.username,
         password: state.password,
       },
@@ -127,25 +140,22 @@ const LoginForm = ({
   };
 
   useEffect(() => {
-    if (loginData && loginData.login) {
-      localStorage.setItem('token', loginData.login);
+    if (registerData && registerData.registerUser) {
       onSuccess();
     }
-  }, [loginData]);
+  }, [registerData]);
 
-  const loginInputChange = event =>
+  const handleInputChange = event =>
     setState({
       ...state,
       [event.target.name]: event.target.value,
       error: null,
     });
 
-  const redirectOnForgetPasswordPage = () => {};
-
   return (
     <Grid container spacing={0}>
       <form action={submitUrl} method="POST" className={classes.form}>
-        <Grid item xs={12} className={classes.managePlace}>
+        {/* <Grid item xs={12} className={classes.managePlace}>
           <FormControlLabel
             control={
               <Checkbox
@@ -160,7 +170,7 @@ const LoginForm = ({
             name="manage"
             label="I own/manage this place"
           />
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12}>
           <div>{description}</div>
@@ -168,7 +178,29 @@ const LoginForm = ({
 
         <Grid item xs={12} className={classes.inputWrapper}>
           <TextField
-            onChange={loginInputChange}
+            onChange={handleInputChange}
+            name="firstname"
+            label="First Name"
+            value={state.firstname}
+            autoComplete="firstname"
+            fullWidth
+          />
+        </Grid>
+
+        <Grid item xs={12} className={classes.inputWrapper}>
+          <TextField
+            onChange={handleInputChange}
+            name="lastname"
+            label="Last Name"
+            value={state.lastname}
+            autoComplete="lastname"
+            fullWidth
+          />
+        </Grid>
+
+        <Grid item xs={12} className={classes.inputWrapper}>
+          <TextField
+            onChange={handleInputChange}
             name="username"
             label="Email"
             value={state.username}
@@ -182,7 +214,7 @@ const LoginForm = ({
 
         <Grid item xs={12} className={classes.inputWrapper}>
           <TextField
-            onChange={loginInputChange}
+            onChange={handleInputChange}
             name="password"
             type="password"
             label="Password"
@@ -193,52 +225,24 @@ const LoginForm = ({
           />
         </Grid>
 
-        <Grid item xs={12} className={classes.rememberPassword}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={state.rememberPassword}
-                onChange={toggleRememberPassword}
-                value="rememberPassword"
-                color="secondary"
-              />
-            }
-            name="remember"
-            label="Remember password"
-          />
-        </Grid>
-
         <Grid item xs={12} className={classes.formFooter}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <a
-                href={redirectOnForgetPasswordPage()}
-                className={classes.summaryLink}
-              >
-                Forgot your password?
-              </a>
-            </Grid>
-
-            <Grid item xs={6}>
-              <Button
-                className={classes.nextButton}
-                variant="contained"
-                color="primary"
-                onClick={submitHandler}
-                disabled={!state.username || !state.password}
-              >
-                {loading ? (
-                  <CircularProgress size={16} className={classes.progress} />
-                ) : (
-                  'Login'
-                )}
-              </Button>
-            </Grid>
-          </Grid>
+          <Button
+            className={classes.nextButton}
+            variant="contained"
+            color="primary"
+            onClick={submitHandler}
+            disabled={!state.username || !state.password}
+          >
+            {loading ? (
+              <CircularProgress size={16} className={classes.progress} />
+            ) : (
+              'Register'
+            )}
+          </Button>
         </Grid>
       </form>
     </Grid>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

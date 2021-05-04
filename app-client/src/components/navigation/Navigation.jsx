@@ -11,7 +11,8 @@ import {
 } from '@material-ui/core';
 import { Close as CloseIcon, Map as MapIcon } from '@material-ui/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleNavigation } from '../../store/actions/appActions';
+import { useHistory } from 'react-router';
+import { openModal, toggleNavigation } from '../../store/actions/appActions';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -52,10 +53,11 @@ const useStyles = makeStyles(theme => ({
 
 const Navigation = () => {
   const classes = useStyles();
+  const history = useHistory();
 
   const { isShowNavigation } = useSelector(state => state.appState);
+  const { isLoggedIn } = useSelector(state => state.authState);
   const dispatch = useDispatch();
-  console.log(isShowNavigation);
 
   const handleToggleNavigation = state => {
     dispatch(toggleNavigation(state));
@@ -112,6 +114,17 @@ const Navigation = () => {
       text: 'Get help',
       to: '#',
     },
+    {
+      text: isLoggedIn ? 'Logout' : 'Login',
+      onClick: () => {
+        if (isLoggedIn) {
+          localStorage.setItem('token', '');
+          history.go(0);
+        } else {
+          dispatch(openModal('login-modal'));
+        }
+      },
+    },
   ];
 
   return (
@@ -157,10 +170,12 @@ const Navigation = () => {
       </List>
       <Divider />
       <List className={classes.menuList}>
-        {subMenu.map(({ text }) => (
+        {subMenu.map(({ text, to, onClick }) => (
           <ListItem button key={text}>
             <ListItemText
               primary={text}
+              to={to}
+              onClick={onClick}
               classes={{ primary: classes.subMenuItem }}
             />
           </ListItem>

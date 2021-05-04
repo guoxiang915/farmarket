@@ -47,7 +47,7 @@ export const resolvers = [
             .digest('base64'),
         });
 
-        return user;
+        return { email };
       },
       login: async (parent, { email, password }) => {
         const user = await knex('Users')

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { makeStyles, Dialog, Paper, Typography } from '@material-ui/core';
 import LoginHeader from './LoginHeader';
 import SocialNetworks from './SocialNetworks';
-import LoginForm from './LoginForm';
+import RegisterForm from './RegisterForm';
 import HorizontalDivider from '../divider/HorizontalDivider';
 import { openModal } from '../../store/actions/appActions';
 
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const LoginDialog = ({ open, onClose }) => {
+const RegisterDialog = ({ open, onClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -37,26 +37,25 @@ const LoginDialog = ({ open, onClose }) => {
         <LoginHeader
           classes={{ container: classes.titleWrapper }}
           title="Saving Your Farm"
-          subtitle=""
+          subtitle="Create Your Account"
           onBack={onClose}
         />
 
-        <LoginForm
+        <RegisterForm
           description={
             <>
-              To submit your contribution, please{' '}
+              To submit your contribution, please create an account or{' '}
               <Typography
                 color="primary"
                 style={{ cursor: 'pointer' }}
                 onClick={() => {
                   onClose();
-                  dispatch(openModal('register-modal'));
+                  dispatch(openModal('login-modal'));
                 }}
                 component="span"
               >
-                create an account
-              </Typography>{' '}
-              or login below
+                login
+              </Typography>
             </>
           }
           onSuccess={() => onClose()}
@@ -70,4 +69,4 @@ const LoginDialog = ({ open, onClose }) => {
   );
 };
 
-export default LoginDialog;
+export default RegisterDialog;
