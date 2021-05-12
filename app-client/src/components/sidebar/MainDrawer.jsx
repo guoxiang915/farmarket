@@ -260,7 +260,7 @@ const MainDrawer = ({ location, onSearch }) => {
             variant="outlined"
             color="primary"
             classes={{ root: classes.actionButton }}
-            onClick={() => handleAddPlaceDialog('Groceries')}
+            onClick={() => handleAddPlaceDialog('groceries')}
           >
             Add a place
           </Button>
@@ -270,7 +270,7 @@ const MainDrawer = ({ location, onSearch }) => {
             variant="outlined"
             color="primary"
             className={classes.actionButton}
-            onClick={() => handleAddPlaceDialog('Farm')}
+            onClick={() => handleAddPlaceDialog('farm')}
           >
             Add a farm
           </Button>

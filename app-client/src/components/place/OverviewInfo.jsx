@@ -13,7 +13,15 @@ import Geocoder from '../mapbox/Geocoder';
 import ReadonlyText from '../forms/ReadonlyText';
 import AddHourDialog from './AddHourDialog';
 
-export default function OverviewInfo({ data, onUpdate, categories, classes }) {
+export default function OverviewInfo({
+  data,
+  onChange,
+  onBlur,
+  categories,
+  classes,
+  errors = {},
+  touched = {},
+}) {
   const [hourDialog, setShowHourDialog] = useState(false);
 
   return (
@@ -24,12 +32,16 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
             <AccountCircle />
           </Grid>
           <Grid item xs={11}>
-            <div className={classes.label}>Name</div>
+            <div className={classes.label}>Name *</div>
             <TextField
               fullWidth
               placeholder="Your Business Name here"
               value={data.name}
-              onChange={e => onUpdate({ ...data, name: e.target.value })}
+              name="name"
+              onChange={onChange}
+              onBlur={onBlur}
+              error={errors.name && touched.name}
+              helperText={errors.name && touched.name ? errors.name : null}
             />
           </Grid>
         </Grid>
@@ -46,7 +58,11 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
               placeholder="A little about this place"
               multiline
               value={data.bio}
-              onChange={e => onUpdate({ ...data, bio: e.target.value })}
+              name="bio"
+              onChange={onChange}
+              onBlur={onBlur}
+              error={errors.bio && touched.bio}
+              helperText={errors.bio && touched.bio ? errors.bio : null}
             />
           </Grid>
         </Grid>
@@ -57,20 +73,21 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
             <AccountCircle />
           </Grid>
           <Grid item xs={11}>
-            <div className={classes.label}>Category</div>
+            <div className={classes.label}>Category *</div>
             <Select
               fullWidth
               value={data.category}
-              onChange={e =>
-                onUpdate({
-                  ...data,
-                  category: e.target.value,
-                })
+              name="category"
+              onChange={onChange}
+              onBlur={onBlur}
+              error={errors.category && touched.category}
+              helperText={
+                errors.category && touched.category ? errors.category : null
               }
             >
               {categories.map(category => (
-                <MenuItem key={category} value={category}>
-                  {category}
+                <MenuItem key={category.value} value={category.value}>
+                  {category.label}
                 </MenuItem>
               ))}
             </Select>
@@ -83,9 +100,16 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
             <AccountCircle />
           </Grid>
           <Grid item xs={11}>
-            <div className={classes.label}>Location</div>
-            {/* <TextField fullWidth placeholder="Your Location here" /> */}
-            <Geocoder />
+            <div className={classes.label}>Location *</div>
+            <Geocoder
+              name="location"
+              onChange={onChange}
+              onBlur={onBlur}
+              errors={errors.location && touched.location}
+              helperText={
+                errors.location && touched.location ? errors.location : null
+              }
+            />
             <FormControlLabel
               control={<Checkbox color="primary" />}
               label={
@@ -118,6 +142,8 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
                     }-${weekday.end}`
                 )
                 .join(',')}
+              name="hours"
+              onBlur={onBlur}
             />
             {hourDialog && (
               <AddHourDialog
@@ -126,7 +152,7 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
                 onClose={() => setShowHourDialog(false)}
                 hours={data.hours}
                 onSubmit={hours => {
-                  onUpdate({ ...data, hours });
+                  onChange({ target: { name: 'hours', value: hours } });
                   setShowHourDialog(false);
                 }}
               />
@@ -145,7 +171,15 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
               fullWidth
               placeholder="Connect Facebook"
               value={data.facebookUrl}
-              onChange={e => onUpdate({ ...data, facebookUrl: e.target.value })}
+              name="facebookUrl"
+              onChange={onChange}
+              onBlur={onBlur}
+              error={errors.facebookUrl && touched.facebookUrl}
+              helperText={
+                errors.facebookUrl && touched.facebookUrl
+                  ? errors.facebookUrl
+                  : null
+              }
             />
           </Grid>
         </Grid>
@@ -161,7 +195,13 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
               fullWidth
               placeholder="Enter a URL"
               value={data.orderUrl}
-              onChange={e => onUpdate({ ...data, orderUrl: e.target.value })}
+              name="orderUrl"
+              onChange={onChange}
+              onBlur={onBlur}
+              error={errors.orderUrl && touched.orderUrl}
+              helperText={
+                errors.orderUrl && touched.orderUrl ? errors.orderUrl : null
+              }
             />
           </Grid>
         </Grid>
@@ -176,9 +216,9 @@ export default function OverviewInfo({ data, onUpdate, categories, classes }) {
             <Switch
               color="primary"
               value={data.ownership}
-              onChange={(e, checked) =>
-                onUpdate({ ...data, ownership: checked })
-              }
+              name="ownership"
+              onChange={onChange}
+              onBlur={onBlur}
             />
           </Grid>
         </Grid>

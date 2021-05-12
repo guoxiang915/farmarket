@@ -6,7 +6,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: dev
-  region: us-east-1
+  region: us-east-2
   environment:
     NODE_ENV: ${env:NODE_ENV}
     DATABASE_URL: ${env:DATABASE_URL}
@@ -28,17 +28,17 @@ functions:
         path: graphql
         method: post
         cors: true
-  playground:
-    handler: handler.playgroundHandler
-    events:
-    - http:
-        path: playground
-        method: get
-        cors: true
-  graphiql:
-    handler: handler.graphiqlHandler
-    events:
-    - http:
-        path: graphiql
-        method: get
-        cors: true
+  # playground:
+  #   handler: handler.playgroundHandler
+  #   events:
+  #   - http:
+  #       path: playground
+  #       method: get
+  #       cors: true
+  # graphiql:
+  #   handler: handler.graphiqlHandler
+  #   events:
+  #   - http:
+  #       path: graphiql
+  #       method: get
+  #       cors: true

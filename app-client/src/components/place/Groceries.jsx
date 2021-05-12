@@ -2,7 +2,14 @@ import React from 'react';
 import { Grid, TextField } from '@material-ui/core';
 import { AccountCircle } from '@material-ui/icons';
 
-export default function Groceries({ data, onUpdate, farms, classes }) {
+export default function Groceries({
+  data,
+  onChange,
+  farms,
+  classes,
+  errors,
+  touched,
+}) {
   console.log(farms);
   return (
     <Grid container spacing={4}>
@@ -17,7 +24,10 @@ export default function Groceries({ data, onUpdate, farms, classes }) {
               fullWidth
               placeholder="Search for a farm"
               value={data.farm}
-              onChange={e => onUpdate({ ...data, farm: e.target.value })}
+              name="farm"
+              onChange={onChange}
+              errors={errors.farm && touched.farm}
+              helperText={errors.farm && touched.farm ? errors.farm : null}
             />
           </Grid>
         </Grid>

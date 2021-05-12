@@ -37,14 +37,21 @@ const useStyles = makeStyles(theme =>
   })
 );
 
-export default function Geocoder({ showMap = true }) {
+export default function Geocoder({
+  showMap = true,
+  name,
+  onChange,
+  onBlur,
+  errors,
+  helperText,
+}) {
   const classes = useStyles();
 
   const [viewport, setViewport] = useState({});
 
-  const handleSelected = (selectedViewport, item) => {
+  const handleSelected = selectedViewport => {
     setViewport(selectedViewport);
-    console.log(selectedViewport, item);
+    onChange({ target: { name, value: selectedViewport } });
   };
 
   return (
@@ -57,7 +64,15 @@ export default function Geocoder({ showMap = true }) {
         hideOnSelect
         updateInputOnSelect
         inputComponent={inputProps => (
-          <TextField className={classes.input} fullWidth {...inputProps} />
+          <TextField
+            className={classes.input}
+            fullWidth
+            name={name}
+            onBlur={onBlur}
+            errors={errors}
+            helperText={helperText}
+            {...inputProps}
+          />
         )}
         itemComponent={itemProps => <ListItem button {...itemProps} />}
       />

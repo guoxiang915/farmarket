@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, MenuItem, Select, TextField } from '@material-ui/core';
 import { AccountCircle } from '@material-ui/icons';
 
-export default function FoodCoOp({ data, onUpdate, classes }) {
+export default function FoodCoOp({ data, onChange, classes, errors, touched }) {
   const sizes = ['100-200', '200-500', '500-1000', '1000+'];
 
   return (
@@ -18,7 +18,12 @@ export default function FoodCoOp({ data, onUpdate, classes }) {
               fullWidth
               placeholder="Enter structure"
               value={data.structure}
-              onChange={e => onUpdate({ ...data, structure: e.target.value })}
+              name="foodCoOp.structure"
+              onChange={onChange}
+              errors={errors.structure && touched.structure}
+              helperText={
+                errors.structure && touched.structure ? errors.structure : null
+              }
             />
           </Grid>
         </Grid>
@@ -33,8 +38,11 @@ export default function FoodCoOp({ data, onUpdate, classes }) {
             <TextField
               fullWidth
               placeholder="Search for a farm"
+              name="foodCoOp.farm"
               value={data.farm}
-              onChange={e => onUpdate({ ...data, farm: e.target.value })}
+              onChange={onChange}
+              errors={errors.farm && touched.farm}
+              helperText={errors.farm && touched.farm ? errors.farm : null}
             />
           </Grid>
         </Grid>
@@ -49,8 +57,11 @@ export default function FoodCoOp({ data, onUpdate, classes }) {
             <TextField
               fullWidth
               placeholder="Enter cost"
+              name="foodCoOp.cost"
               value={data.cost}
-              onChange={e => onUpdate({ ...data, cost: e.target.value })}
+              onChange={onChange}
+              errors={errors.farm && touched.farm}
+              helperText={errors.farm && touched.farm ? errors.farm : null}
             />
           </Grid>
         </Grid>
@@ -65,12 +76,10 @@ export default function FoodCoOp({ data, onUpdate, classes }) {
             <Select
               fullWidth
               value={data.size}
-              onChange={e =>
-                onUpdate({
-                  ...data,
-                  size: e.target.value,
-                })
-              }
+              name="foodCoOp.size"
+              onChange={onChange}
+              errors={errors.size && touched.size}
+              helperText={errors.size && touched.size ? errors.size : null}
             >
               {sizes.map(size => (
                 <MenuItem key={size} value={size}>
