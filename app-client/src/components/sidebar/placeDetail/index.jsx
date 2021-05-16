@@ -18,7 +18,8 @@ import {
   Share,
 } from '@material-ui/icons';
 import Carousel from 'react-material-ui-carousel';
-import { getDataDetail } from '../../../api/search';
+import { gql, useLazyQuery } from '@apollo/client';
+import { getAddressFromCoordinates, isOpenNow } from '../../../utils/functions';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -30,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   blockContainer: {
-    width: 'fit-content',
+    width: '100%',
     padding: '16px 20px',
     borderBottom: `1px solid ${theme.colors.primary.lightGrey}`,
     background: theme.colors.primary.white,
@@ -54,6 +55,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.colors.primary.mediumGrey,
     fontSize: '12px',
     textAlign: 'start',
+    textTransform: 'capitalize',
   },
 
   buttonLabel: {
@@ -64,6 +66,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   bio: {
+    width: '100%',
     textAlign: 'start',
   },
 
@@ -136,9 +139,84 @@ const CarouselItem = ({ data, item, classes }) => {
   );
 };
 
-const ResultDetail = ({ id }) => {
+const placeDetailQuery = gql`
+  query placeDetailQuery($id: ID!) {
+    placeDetail(id: $id) {
+      id
+      name
+      bio
+      category
+      location {
+        latitude
+        longitude
+      }
+      containing
+      other_location {
+        latitude
+        longitude
+      }
+      hours {
+        start
+        end
+        weekday
+      }
+      facebook_url
+      order_url
+      ownership
+      farmShares {
+        id
+        type
+        contents {
+          item
+          start
+          end
+        }
+        pay_period
+        payment
+        pay_method
+      }
+      farm {
+        id
+        location {
+          latitude
+          longitude
+        }
+        hours {
+          start
+          end
+          weekday
+        }
+        url
+        specialities
+        tags
+      }
+      foodCoOp {
+        id
+        structure
+        farm
+        cost
+        size
+      }
+      groceries {
+        id
+        farm
+      }
+      farmStand {
+        id
+        farm
+      }
+      farmerMarket {
+        id
+        market_type
+        farm
+        structure
+      }
+    }
+  }
+`;
+
+const PlaceDetail = ({ id }) => {
   const classes = useStyles();
-  const [data, setData] = useState(null);
   const checks = [
     'pickUp',
     'appointments',
@@ -146,20 +224,48 @@ const ResultDetail = ({ id }) => {
     'organic',
     'delivery',
   ];
+  const [address, setAddress] = useState(null);
+
+  const [placeDetail, { loading, data: place }] = useLazyQuery(
+    placeDetailQuery
+  );
 
   useEffect(() => {
     const getData = async () => {
-      const result = await getDataDetail(id);
-      setData(result);
+      placeDetail({
+        variables: {
+          id,
+        },
+      });
     };
     if (id) {
       getData();
     }
   }, [id]);
 
+  const data = place?.placeDetail && { ...place.placeDetail };
+  if (data) {
+    data.img =
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80';
+  }
+
+  const groceryFarms = ['Veggie', 'Meat Lover', 'Other Box'];
+
+  const openedHours = isOpenNow(data?.hours || []);
+
+  useEffect(() => {
+    if (place?.placeDetail?.location) {
+      getAddressFromCoordinates(place?.placeDetail?.location).then(response => {
+        response.json().then(location => setAddress(location));
+      });
+    }
+  }, [place?.placeDetail?.location]);
+
+  console.log(address);
+
   return (
     <div className={classes.container}>
-      {!data ? (
+      {loading || !data ? (
         <div className={classes.loader}>
           <CircularProgress color="primary" />
         </div>
@@ -168,11 +274,11 @@ const ResultDetail = ({ id }) => {
           <div className={classes.blockContainer}>
             <Grid container spacing={2}>
               <Grid item xs={12} alignItems="flex-start">
-                <img src={data.img} className={classes.img} alt={data.title} />
+                <img src={data.img} className={classes.img} alt={data.name} />
               </Grid>
               <Grid item xs={12} alignItems="flex-start">
-                <div className={classes.title}>{data.title}</div>
-                <div className={classes.subtitle}>Co-op</div>
+                <div className={classes.title}>{data.name}</div>
+                <div className={classes.subtitle}>{data.category}</div>
               </Grid>
             </Grid>
           </div>
@@ -216,7 +322,7 @@ const ResultDetail = ({ id }) => {
           <div className={classes.blockContainer}>
             <Grid container spacing={2}>
               <Grid item xs={12} alignItems="flex-start">
-                <div className={classes.bio}>{data.description}</div>
+                <div className={classes.bio}>{data.bio}</div>
               </Grid>
               <Grid item xs={12} alignItems="flex-start">
                 <Grid container wrap spacing={2}>
@@ -240,7 +346,7 @@ const ResultDetail = ({ id }) => {
               </Grid>
             </Grid>
           </div>
-          <div className={classes.blockContainer} style={{ width: '100%' }}>
+          <div className={classes.blockContainer}>
             <Grid container>
               <Grid item xs={12}>
                 <div className={classes.title}>Grocery Boxes</div>
@@ -250,7 +356,7 @@ const ResultDetail = ({ id }) => {
                     indicators={false}
                     animation="slide"
                   >
-                    {data.groceries.map((item, index) => (
+                    {groceryFarms.map((item, index) => (
                       <CarouselItem
                         key={index}
                         item={item}
@@ -263,17 +369,26 @@ const ResultDetail = ({ id }) => {
               </Grid>
             </Grid>
           </div>
-          <div className={classes.blockContainer} style={{ width: '100%' }}>
+          <div className={classes.blockContainer}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <div className={classes.addressItem}>
-                  <Room />
-                  <div className={classes.addressLabel}>{data.address}</div>
-                </div>
+                {address?.features?.length && (
+                  <div className={classes.addressItem}>
+                    <Room />
+                    <div className={classes.addressLabel}>
+                      {address.features[0].place_name}
+                    </div>
+                  </div>
+                )}
                 <div className={classes.addressItem}>
                   <Room />
                   <div className={classes.addressLabel}>
-                    Open now: {data.start} - {data.end}
+                    {data.hours &&
+                      data.hours.length > 0 &&
+                      (openedHours
+                        ? `Open now: ${openedHours.start} - ${openedHours.end}`
+                        : 'Closed')}
+                    {(!data.hours || !data.hours.length) && 'Opened'}
                   </div>
                 </div>
                 <div className={classes.addressItem}>
@@ -284,10 +399,12 @@ const ResultDetail = ({ id }) => {
                   <Room />
                   <div className={classes.addressLabel}>Menu</div>
                 </div>
-                <div className={classes.addressItem}>
-                  <Room />
-                  <div className={classes.addressLabel}>{data.phone}</div>
-                </div>
+                {data.user && data.user.phone && (
+                  <div className={classes.addressItem}>
+                    <Room />
+                    <div className={classes.addressLabel}>{data.phone}</div>
+                  </div>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <Button
@@ -309,4 +426,4 @@ const ResultDetail = ({ id }) => {
   );
 };
 
-export default ResultDetail;
+export default PlaceDetail;

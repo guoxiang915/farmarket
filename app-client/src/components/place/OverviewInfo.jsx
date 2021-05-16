@@ -37,7 +37,7 @@ export default function OverviewInfo({
               fullWidth
               placeholder="Your Business Name here"
               value={data.name}
-              name="name"
+              name="overview.name"
               onChange={onChange}
               onBlur={onBlur}
               error={errors.name && touched.name}
@@ -58,7 +58,7 @@ export default function OverviewInfo({
               placeholder="A little about this place"
               multiline
               value={data.bio}
-              name="bio"
+              name="overview.bio"
               onChange={onChange}
               onBlur={onBlur}
               error={errors.bio && touched.bio}
@@ -77,7 +77,7 @@ export default function OverviewInfo({
             <Select
               fullWidth
               value={data.category}
-              name="category"
+              name="overview.category"
               onChange={onChange}
               onBlur={onBlur}
               error={errors.category && touched.category}
@@ -102,7 +102,7 @@ export default function OverviewInfo({
           <Grid item xs={11}>
             <div className={classes.label}>Location *</div>
             <Geocoder
-              name="location"
+              name="overview.location"
               onChange={onChange}
               onBlur={onBlur}
               errors={errors.location && touched.location}
@@ -133,16 +133,15 @@ export default function OverviewInfo({
               fullWidth
               placeholder="Your Business Hours here"
               onOpen={() => setShowHourDialog(true)}
-              value={Object.entries(data.hours)
-                .filter(([, weekday]) => weekday.start && weekday.end)
+              value={data.hours
+                .filter(item => item.start && item.end)
                 .map(
-                  ([label, weekday]) =>
-                    `${label[0].toUpperCase() + label.substring(1)}: ${
-                      weekday.start
-                    }-${weekday.end}`
+                  item =>
+                    `${item.weekday[0].toUpperCase() +
+                      item.weekday.substring(1)}: ${item.start}-${item.end}`
                 )
                 .join(',')}
-              name="hours"
+              name="overview.hours"
               onBlur={onBlur}
             />
             {hourDialog && (
@@ -152,7 +151,9 @@ export default function OverviewInfo({
                 onClose={() => setShowHourDialog(false)}
                 hours={data.hours}
                 onSubmit={hours => {
-                  onChange({ target: { name: 'hours', value: hours } });
+                  onChange({
+                    target: { name: 'overview.hours', value: hours },
+                  });
                   setShowHourDialog(false);
                 }}
               />
@@ -171,7 +172,7 @@ export default function OverviewInfo({
               fullWidth
               placeholder="Connect Facebook"
               value={data.facebookUrl}
-              name="facebookUrl"
+              name="overview.facebookUrl"
               onChange={onChange}
               onBlur={onBlur}
               error={errors.facebookUrl && touched.facebookUrl}
@@ -195,7 +196,7 @@ export default function OverviewInfo({
               fullWidth
               placeholder="Enter a URL"
               value={data.orderUrl}
-              name="orderUrl"
+              name="overview.orderUrl"
               onChange={onChange}
               onBlur={onBlur}
               error={errors.orderUrl && touched.orderUrl}
@@ -216,7 +217,7 @@ export default function OverviewInfo({
             <Switch
               color="primary"
               value={data.ownership}
-              name="ownership"
+              name="overview.ownership"
               onChange={onChange}
               onBlur={onBlur}
             />

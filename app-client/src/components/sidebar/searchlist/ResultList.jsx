@@ -53,47 +53,55 @@ const ResultList = ({ items, onSelect }) => {
 
   return (
     <div className={classes.container}>
-      {items.map(item => (
-        // eslint-disable-next-line
-        <div
-          className={classes.itemContainer}
-          key={item.id}
-          onClick={() => onSelect(item.id)}
-        >
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <div>
-                <div className={classes.title}>{item.title}</div>
-                <div className={classes.bio}>{item.description}</div>
-                <div className={classes.properties}>Open until {item.end}</div>
-              </div>
-            </Grid>
-            <Grid item xs={6} alignItems="flex-start">
-              <img className={classes.img} src={item.img} alt={item.title} />
-            </Grid>
-            <Grid item xs={12} alignItems="flex-start">
-              <Grid container wrap spacing={2}>
-                {checks.map(check => (
-                  <>
-                    {item[check] === undefined ? null : (
-                      <Grid item key={check}>
-                        <div className={classes.checkItem}>
-                          {item[check] ? (
-                            <Check color="primary" />
-                          ) : (
-                            <Close color="error" />
-                          )}{' '}
-                          <span style={{ marginLeft: 8 }}>{check}</span>
-                        </div>
-                      </Grid>
-                    )}
-                  </>
-                ))}
+      {items.map(item => {
+        const img =
+          'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80';
+        return (
+          // eslint-disable-next-line
+          <div
+            className={classes.itemContainer}
+            key={item.id}
+            onClick={() => onSelect(item.id)}
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <div>
+                  <div className={classes.title}>{item.name}</div>
+                  <div className={classes.bio}>{item.bio}</div>
+                  {item.hours && item.hours.length > 0 && (
+                    <div className={classes.properties}>
+                      Open until {item.hours[0].end}
+                    </div>
+                  )}
+                </div>
+              </Grid>
+              <Grid item xs={6} alignItems="flex-start">
+                <img className={classes.img} src={img} alt={item.name} />
+              </Grid>
+              <Grid item xs={12} alignItems="flex-start">
+                <Grid container wrap spacing={2}>
+                  {checks.map(check => (
+                    <>
+                      {item[check] === undefined ? null : (
+                        <Grid item key={check}>
+                          <div className={classes.checkItem}>
+                            {item[check] ? (
+                              <Check color="primary" />
+                            ) : (
+                              <Close color="error" />
+                            )}{' '}
+                            <span style={{ marginLeft: 8 }}>{check}</span>
+                          </div>
+                        </Grid>
+                      )}
+                    </>
+                  ))}
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        </div>
-      ))}
+          </div>
+        );
+      })}
     </div>
   );
 };

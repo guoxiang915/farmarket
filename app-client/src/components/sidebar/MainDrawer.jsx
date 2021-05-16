@@ -241,7 +241,7 @@ const MainDrawer = ({ location, onSearch }) => {
               <Grid item key={item.title} xs={3}>
                 <Button
                   className={classes.typeItem}
-                  onClick={() => onSearch(item.title)}
+                  onClick={() => onSearch({ cat: item.title })}
                 >
                   <Avatar
                     className={classes.avatar}

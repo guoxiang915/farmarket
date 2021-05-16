@@ -66,7 +66,11 @@ const Navigation = () => {
   const mainMenu = [
     {
       text: 'Map',
-      to: '#',
+      to: '/',
+      onClick: () => {
+        history.push('/');
+        handleToggleNavigation(false);
+      },
     },
     {
       text: 'Find a plan',
@@ -123,6 +127,7 @@ const Navigation = () => {
         } else {
           dispatch(openModal('login-modal'));
         }
+        handleToggleNavigation(false);
       },
     },
   ];
@@ -142,8 +147,8 @@ const Navigation = () => {
       </div>
       <Divider />
       <List className={classes.menuList}>
-        {mainMenu.map(({ text }) => (
-          <ListItem button key={text}>
+        {mainMenu.map(({ text, to, onClick }) => (
+          <ListItem button key={text} to={to} onClick={onClick}>
             <ListItemIcon>
               <MapIcon />
             </ListItemIcon>
@@ -156,8 +161,8 @@ const Navigation = () => {
       </List>
       <Divider />
       <List className={classes.menuList}>
-        {accountMenu.map(({ text }) => (
-          <ListItem button key={text}>
+        {accountMenu.map(({ text, to, onClick }) => (
+          <ListItem button key={text} to={to} onClick={onClick}>
             <ListItemIcon>
               <MapIcon />
             </ListItemIcon>
@@ -171,11 +176,9 @@ const Navigation = () => {
       <Divider />
       <List className={classes.menuList}>
         {subMenu.map(({ text, to, onClick }) => (
-          <ListItem button key={text}>
+          <ListItem button key={text} to={to} onClick={onClick}>
             <ListItemText
               primary={text}
-              to={to}
-              onClick={onClick}
               classes={{ primary: classes.subMenuItem }}
             />
           </ListItem>

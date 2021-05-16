@@ -61,14 +61,14 @@ const SearchBox = ({ query: defaultQuery, onSearch }) => {
         onKeyDown={e => {
           if (e.key === 'Enter') {
             e.stopPropagation();
-            onSearch(query);
+            onSearch({ q: query });
           }
         }}
       />
       <IconButton
         className={classes.iconButton}
         aria-label="search"
-        onClick={() => onSearch(query)}
+        onClick={() => onSearch({ q: query })}
       >
         <SearchIcon />
       </IconButton>
@@ -77,7 +77,7 @@ const SearchBox = ({ query: defaultQuery, onSearch }) => {
         color={!query ? 'primary' : undefined}
         className={classes.iconButton}
         aria-label="directions"
-        onClick={() => onSearch('')}
+        onClick={() => onSearch()}
       >
         {!query ? <DirectionsIcon /> : <CloseIcon />}
       </IconButton>

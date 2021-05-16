@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -15,12 +17,14 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { Close as CloseIcon, ExpandMore } from '@material-ui/icons';
+import { gql, useMutation } from '@apollo/client';
 import OverviewInfo from './OverviewInfo';
 import Groceries from './Groceries';
 import FarmShares from './FarmShares';
 import Farm from './Farm';
 import FoodCoOp from './FoodCoOp';
 import FarmerMarket from './FarmerMarket';
+import { showSnackbar } from '../../store/actions/appActions';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -99,43 +103,64 @@ const useStyles = makeStyles(theme => ({
 
   progress: {
     color: 'white',
+    marginRight: 16,
   },
 }));
 
 const PlaceSchema = Yup.object().shape({
-  name: Yup.string().required('Required'),
-  bio: Yup.string(),
-  category: Yup.string().required('Required'),
-  location: Yup.object()
-    .required('Required')
-    .shape({
-      latitude: Yup.number(),
-      longitude: Yup.number(),
-    }),
-  containing: Yup.boolean(),
-  otherLocation: Yup.object().shape({
-    latitude: Yup.number(),
-    longitude: Yup.number(),
+  overview: Yup.object().shape({
+    name: Yup.string().required('Required'),
+    bio: Yup.string(),
+    category: Yup.string().required('Required'),
+    location: Yup.object()
+      .required('Required')
+      .shape({
+        latitude: Yup.number(),
+        longitude: Yup.number(),
+      })
+      .nullable(),
+    containing: Yup.boolean(),
+    otherLocation: Yup.object()
+      .shape({
+        latitude: Yup.number(),
+        longitude: Yup.number(),
+      })
+      .nullable(),
+    hours: Yup.array().of(
+      Yup.object().shape({
+        start: Yup.string(),
+        end: Yup.string(),
+        weekday: Yup.string(),
+      })
+    ),
+    facebookUrl: Yup.string().url('Should match URL format'),
+    orderUrl: Yup.string().url('Should match URL format'),
+    ownership: Yup.boolean(),
   }),
-  hours: Yup.array().of(
-    Yup.object().shape({
-      start: Yup.string(),
-      end: Yup.string(),
-      weekday: Yup.string(),
-    })
-  ),
-  facebookUrl: Yup.string().url('Should match URL format'),
-  orderUrl: Yup.string().url('Should match URL format'),
-  ownership: Yup.boolean(),
-
   farmShares: Yup.object().shape({
-    farmShare: Yup.string(),
+    farmShare: Yup.array().of(
+      Yup.object().shape({
+        type: Yup.string(),
+        contents: Yup.array().of(
+          Yup.object().shape({
+            item: Yup.string(),
+            start: Yup.number(),
+            end: Yup.number(),
+          })
+        ),
+        payPeriod: Yup.string(),
+        payment: Yup.number(),
+        payMethod: Yup.string(),
+      })
+    ),
   }),
   farm: Yup.object().shape({
-    location: Yup.object().shape({
-      latitude: Yup.number(),
-      longitude: Yup.number(),
-    }),
+    location: Yup.object()
+      .shape({
+        latitude: Yup.number(),
+        longitude: Yup.number(),
+      })
+      .nullable(),
     hours: Yup.array().of(
       Yup.object().shape({
         start: Yup.string(),
@@ -149,7 +174,7 @@ const PlaceSchema = Yup.object().shape({
   }),
   foodCoOp: Yup.object().shape({
     structure: Yup.string(),
-    farm: Yup.string(),
+    farm: Yup.array().of(Yup.string()),
     cost: Yup.number(),
     size: Yup.string(),
   }),
@@ -161,7 +186,7 @@ const PlaceSchema = Yup.object().shape({
   }),
   farmerMarket: Yup.object().shape({
     marketType: Yup.string(),
-    farm: Yup.string(),
+    farm: Yup.array().of(Yup.string()),
     structure: Yup.string(),
   }),
 });
@@ -185,41 +210,53 @@ const CategoryComponent = ({ category, ...props }) => {
   }
 };
 
+const addPlaceMutation = gql`
+  mutation addPlaceMutation($place: AddPlaceInput!) {
+    addPlace(place: $place) {
+      id
+      name
+    }
+  }
+`;
+
 const AddPlaceDialog = ({
   open,
   onClose,
   category: initialCategory = 'groceries',
 }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { push } = useHistory();
 
   const [expanded, setExpanded] = useState('overview');
   const initialValues = {
-    name: '',
-    bio: '',
-    category: initialCategory,
-    location: '',
-    containing: '',
-    facebookUrl: '',
-    orderUrl: '',
-    ownership: false,
-    hours: {},
-
+    overview: {
+      name: '',
+      bio: '',
+      category: initialCategory,
+      location: null,
+      containing: false,
+      facebookUrl: '',
+      orderUrl: '',
+      ownership: false,
+      hours: [],
+    },
     farmShares: {
-      farmShare: '',
+      farmShare: [],
     },
     farm: {
-      location: '',
-      hours: '',
+      location: null,
+      hours: [],
       url: '',
       specialities: ['Eggs', 'Lamb', 'Wool', 'Compost'],
       tags: ['USDA Organic', 'Biodynamic', 'Regenerative'],
     },
-    foodCoOp: { structure: '', farm: '', cost: '', size: '100-200' },
+    foodCoOp: { structure: '', farm: [], cost: 0, size: '100-200' },
     groceries: { farm: [] },
     farmStand: { farm: [] },
     farmerMarket: {
       marketType: 'Open-air',
-      farm: '',
+      farm: [],
       structure: 'For-profit',
     },
   };
@@ -235,7 +272,65 @@ const AddPlaceDialog = ({
 
   const farms = [];
 
-  const onSubmit = () => {};
+  const [
+    submitAddPlace,
+    { loading, error, data: resultPlace },
+  ] = useMutation(addPlaceMutation, { errorPolicy: 'all' });
+
+  const onSubmit = async values => {
+    console.log(values);
+    if (values.overview.location) {
+      values.overview.location = {
+        latitude: values.overview.location.latitude,
+        longitude: values.overview.location.longitude,
+      };
+    }
+    if (values.overview.otherLocation) {
+      values.overview.otherLocation = {
+        latitude: values.overview.otherLocation.latitude,
+        longitude: values.overview.otherLocation.longitude,
+      };
+    }
+    if (values.farm.location) {
+      values.farm.location = {
+        latitude: values.farm.location.latitude,
+        longitude: values.farm.location.longitude,
+      };
+    }
+    await submitAddPlace({
+      variables: {
+        place: values,
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (error?.message) {
+      dispatch(
+        showSnackbar({
+          open: true,
+          severity: 'error',
+          message: error.message,
+        })
+      );
+    }
+  }, [error?.message]);
+
+  useEffect(() => {
+    if (!loading && resultPlace?.addPlace?.id) {
+      onClose();
+      dispatch(
+        showSnackbar({
+          open: true,
+          severity: 'success',
+          message: `${resultPlace.addPlace.name} has been successfully created`,
+        })
+      );
+      push(`/place/${resultPlace?.addPlace?.id}`);
+    }
+  }, [loading, resultPlace?.addPlace]);
+
+  console.log(loading, resultPlace);
 
   return (
     <Dialog open={open} onClose={onClose} classes={{ paper: classes.paper }}>
@@ -251,11 +346,12 @@ const AddPlaceDialog = ({
           handleChange,
           handleBlur,
           handleSubmit,
-          isSubmitting,
         }) => {
+          const selectedCategory = values.overview.category;
           const category = categories.find(
-            item => item.value === values.category
+            item => item.value === selectedCategory
           );
+          console.log(errors);
           return (
             <form onSubmit={handleSubmit}>
               <div className={classes.header}>
@@ -284,9 +380,9 @@ const AddPlaceDialog = ({
                   <AccordionDetails className={classes.sectionContent}>
                     <OverviewInfo
                       categories={categories}
-                      data={values}
-                      errors={errors}
-                      touched={touched}
+                      data={values.overview}
+                      errors={errors.overview || {}}
+                      touched={touched.overview || {}}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       classes={classes}
@@ -296,8 +392,8 @@ const AddPlaceDialog = ({
 
                 {/* Category specific fields */}
                 <Accordion
-                  expanded={expanded === values.category}
-                  onChange={() => setExpanded(values.category)}
+                  expanded={expanded === selectedCategory}
+                  onChange={() => setExpanded(selectedCategory)}
                   className={classes.section}
                 >
                   <AccordionSummary
@@ -310,10 +406,10 @@ const AddPlaceDialog = ({
                   </AccordionSummary>
                   <AccordionDetails className={classes.sectionContent}>
                     <CategoryComponent
-                      category={values.category}
-                      data={values[values.category]}
-                      errors={errors[values.category] || {}}
-                      touched={touched[values.category] || {}}
+                      category={selectedCategory}
+                      data={values[selectedCategory]}
+                      errors={errors[selectedCategory] || {}}
+                      touched={touched[selectedCategory] || {}}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       classes={classes}
@@ -324,20 +420,16 @@ const AddPlaceDialog = ({
               </DialogContent>
 
               <DialogActions className={classes.actions}>
-                <Button
-                  onClick={onClose}
-                  color="primary"
-                  disabled={isSubmitting}
-                >
+                <Button onClick={onClose} color="primary" disabled={loading}>
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   color="primary"
                   variant="contained"
-                  disabled={errors || isSubmitting}
+                  disabled={(errors && Object.keys(errors).length) || loading}
                 >
-                  {isSubmitting && (
+                  {loading && (
                     <CircularProgress size={16} className={classes.progress} />
                   )}{' '}
                   Submit

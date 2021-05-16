@@ -1,19 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core';
-import { advancedSearchData } from '../../../api/search';
+import { useHistory } from 'react-router';
+import { CircularProgress, makeStyles } from '@material-ui/core';
+import { gql, useLazyQuery } from '@apollo/client';
 
 import SearchFilter from './SearchFilter';
 import ResultList from './ResultList';
-import ResultDetail from './ResultDetail';
 
 const useStyles = makeStyles(() => ({
   container: {
     width: '100%',
   },
+
+  loader: {
+    marginTop: '40%',
+  },
 }));
+
+const searchPlacesQuery = gql`
+  query searchPlacesQuery(
+    $q: String
+    $cat: String
+    $location: PlaceLocationInput
+  ) {
+    searchPlaces(q: $q, cat: $cat, location: $location) {
+      id
+      name
+      bio
+      category
+      location {
+        latitude
+        longitude
+      }
+      hours {
+        start
+        end
+        weekday
+      }
+    }
+  }
+`;
 
 const SearchList = ({ query }) => {
   const classes = useStyles();
+  const { push } = useHistory();
   const [filters, setFilters] = useState({
     type: null,
     rating: null,
@@ -22,14 +51,18 @@ const SearchList = ({ query }) => {
     price: null,
   });
 
-  const [items, setItems] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
+  const [searchPlaces, { loading, data: places }] = useLazyQuery(
+    searchPlacesQuery
+  );
 
   useEffect(() => {
     const getData = async () => {
       try {
-        const result = await advancedSearchData(query, filters);
-        setItems(result);
+        searchPlaces({
+          variables: {
+            q: query,
+          },
+        });
       } catch (e) {
         console.log(e);
       }
@@ -46,11 +79,19 @@ const SearchList = ({ query }) => {
           setFilters({ ...filters, ...newFilters })
         }
       />
-      {selectedId ? (
-        <ResultDetail id={selectedId} />
-      ) : (
-        <ResultList items={items} onSelect={setSelectedId} />
+      {loading && (
+        <div className={classes.loader}>
+          <CircularProgress color="primary" />
+        </div>
       )}
+      {!loading && places?.searchPlaces ? (
+        <ResultList
+          items={places?.searchPlaces}
+          onSelect={id => {
+            push(`/place/${id}`);
+          }}
+        />
+      ) : null}
     </div>
   );
 };

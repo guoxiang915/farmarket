@@ -3,6 +3,8 @@ import ReactMapboxGl from 'react-mapbox-gl';
 import { gql, useQuery } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Navigation from '../../components/navigation/Navigation';
@@ -41,7 +43,7 @@ const useStyles = makeStyles(() =>
 
 const MainLayout = () => {
   const classes = useStyles();
-  const { modalId } = useSelector(state => state.appState);
+  const { modalId, snackbar } = useSelector(state => state.appState);
   const dispatch = useDispatch();
   const { error, data } = useQuery(getMeInfo, {
     variables: {
@@ -52,6 +54,8 @@ const MainLayout = () => {
   if (!error && data && data.meInfo) {
     dispatch(setUser({ user: data.meInfo, isLoggedIn: true }));
   }
+
+  const handleCloseSnackbar = () => {};
 
   return (
     <div className={classes.root}>
@@ -67,6 +71,20 @@ const MainLayout = () => {
       <Sidebar />
       <Navigation />
 
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={snackbar.duration || 6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          elevation={6}
+          variant="filled"
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
       {modalId === 'login-modal' && (
         <LoginDialog open onClose={() => dispatch(closeModal('login-modal'))} />
       )}

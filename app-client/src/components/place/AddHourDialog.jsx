@@ -174,9 +174,10 @@ const AddHourDialog = ({ open, onSubmit, onClose, business, hours }) => {
   });
 
   useEffect(() => {
-    Object.keys(hours || {}).forEach(label => {
-      weekdays[label].start = hours[label].start;
-      weekdays[label].end = hours[label].end;
+    hours.forEach(item => {
+      const label = item.weekday;
+      weekdays[label].start = item.start;
+      weekdays[label].end = item.end;
       weekdays[label].isClosed = false;
     });
     setWeekdays({ ...weekdays });
@@ -290,15 +291,19 @@ const AddHourDialog = ({ open, onSubmit, onClose, business, hours }) => {
           onClick={() =>
             onSubmit &&
             onSubmit(
-              Object.fromEntries(
-                Object.entries(weekdays).filter(
+              Object.entries(weekdays)
+                .filter(
                   ([, weekday]) =>
                     weekday.start &&
                     weekday.end &&
                     !weekday.isClosed &&
                     !weekday.isEdit
                 )
-              )
+                .map(([label, weekday]) => ({
+                  start: weekday.start,
+                  end: weekday.end,
+                  weekday: label,
+                }))
             )
           }
           color="primary"

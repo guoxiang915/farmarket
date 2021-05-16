@@ -8,12 +8,18 @@ export const toggleSidebar = payload => ({
   payload,
 });
 
-export const openModal = payload => ({
+export const openModal = (modalId, payload) => ({
   type: 'OPEN_MODAL',
-  modalId: payload,
+  modalId,
+  payload,
 });
 
 export const closeModal = payload => ({
   type: 'CLOSE_MODAL',
   modalId: payload,
+});
+
+export const showSnackbar = payload => ({
+  type: 'SHOW_SNACKBAR',
+  payload,
 });
