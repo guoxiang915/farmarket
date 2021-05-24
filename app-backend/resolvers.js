@@ -225,21 +225,22 @@ export const resolvers = [
           );
         }
 
-        const placeData = await knex('Place').insert({
-          user_id: userData.id,
-          name: overview.name,
-          bio: overview.bio,
-          category: overview.category,
-          location: JSON.stringify(overview.location),
-          containing: overview.containing,
-          other_location: JSON.stringify(overview.otherLocation),
-          hours: JSON.stringify(overview.hours),
-          facebook_url: overview.facebookUrl,
-          order_url: overview.orderUrl,
-          ownership: overview.ownership,
-        });
+        const placeData = await knex('Place')
+          .insert({
+            user_id: userData.id,
+            name: overview.name,
+            bio: overview.bio,
+            category: overview.category,
+            location: JSON.stringify(overview.location),
+            containing: overview.containing,
+            other_location: JSON.stringify(overview.otherLocation),
+            hours: JSON.stringify(overview.hours),
+            facebook_url: overview.facebookUrl,
+            order_url: overview.orderUrl,
+            ownership: overview.ownership,
+          })
+          .returning('id');
         const placeId = placeData[0];
-        console.log(placeData);
 
         switch (overview.category) {
           case 'farmShares':
@@ -338,7 +339,7 @@ export const resolvers = [
         }
 
         return {
-          id: 1,
+          id: placeId,
           name: overview.name,
         };
       },
