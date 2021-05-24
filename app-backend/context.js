@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 
 export const getUser = token => {
-  token.replace(/^Bearer /, '');
   return jwt.verify(token.replace(/^Bearer /, ''), process.env.JWT_SECRET, {
     algorithm: 'HS512',
   });
@@ -9,13 +8,14 @@ export const getUser = token => {
 
 export const createContext = ({ event, context }) => {
   let { headers } = event;
+  console.log(event, headers);
   if (!event.headers) {
     headers = {};
   }
   headers['Access-Control-Allow-Origin'] = '*';
 
   try {
-    const token = headers.authorization || '';
+    const token = headers.authorization || headers.Authorization || '';
     const user = getUser(token);
 
     context.user = user;

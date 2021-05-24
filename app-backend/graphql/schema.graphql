@@ -1,3 +1,11 @@
+query getUsers {
+    user {
+        first_name
+        last_name
+        email
+    }
+}
+
 type User {
     first_name: String
     last_name: String
@@ -190,7 +198,7 @@ type Mutation {
         email: String!,
         password: String!
     ): User!
-    
+
     # Create user info is available in dynamo integration
     registerUserByGoogle(
         first_name: String,
@@ -198,7 +206,7 @@ type Mutation {
         google: String!,
         email: String!
     ): User!
-    
+
     # Create user info is available in dynamo integration
     registerUserByFacebook(
         first_name: String,
@@ -206,7 +214,7 @@ type Mutation {
         facebook: String!,
         email: String!
     ): User!
-    
+
     # Create user info is available in dynamo integration
     registerUserByLinkedin(
         first_name: String,
@@ -214,25 +222,25 @@ type Mutation {
         linkedin: String!,
         email: String!
     ): User!
-    
+
     # Create user info is available in dynamo integration
     login(
         email: String!,
         password: String!
     ): String!
-    
+
     # Create user info is available in dynamo integration
     loginByGoogle(
         google: String!,
         email: String!
     ): String!
-    
+
     # Create user info is available in dynamo integration
     loginByFacebook(
         facebook: String!,
         email: String!
     ): String!
-    
+
     # Create user info is available in dynamo integration
     loginByLinkedin(
         linkedin: String!,
