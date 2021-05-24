@@ -239,6 +239,7 @@ export const resolvers = [
           ownership: overview.ownership,
         });
         const placeId = placeData[0];
+        console.log(placeData);
 
         switch (overview.category) {
           case 'farmShares':
