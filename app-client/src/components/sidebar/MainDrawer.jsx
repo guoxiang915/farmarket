@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import {
   Avatar,
   Button,
@@ -13,8 +14,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Home as HomeIcon, Work as WorkIcon } from '@material-ui/icons';
-import AddPlaceDialog from '../place/AddPlaceDialog';
 import useLogin from '../../utils/hooks/useLogin';
+import { openModal } from '../../store/actions/appActions';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -107,8 +108,8 @@ const useStyles = makeStyles(theme => ({
   actionButton: {
     width: '70%',
     borderRadius: 999,
-    color: '#27AE60',
-    borderColor: '#27AE60',
+    // color: '#27AE60',
+    // borderColor: '#27AE60',
     marginLeft: 'auto',
     marginRight: 'auto',
   },
@@ -161,13 +162,13 @@ const categories = [
 ];
 
 const MainDrawer = ({ location, onSearch }) => {
+  const dispatch = useDispatch();
   const { checkLogin } = useLogin();
   const classes = useStyles();
-  const [addPlaceDialog, setAddPlaceDialog] = useState(null);
 
   const handleAddPlaceDialog = category => {
     if (checkLogin()) {
-      setAddPlaceDialog(category);
+      dispatch(openModal('add-place-modal', { category }));
     }
   };
 
@@ -257,7 +258,7 @@ const MainDrawer = ({ location, onSearch }) => {
       <Grid container spacing={2} classes={{ root: classes.actions }}>
         <Grid item xs={12}>
           <Button
-            variant="outlined"
+            variant="contained"
             color="primary"
             classes={{ root: classes.actionButton }}
             onClick={() => handleAddPlaceDialog('groceries')}
@@ -276,13 +277,6 @@ const MainDrawer = ({ location, onSearch }) => {
           </Button>
         </Grid>
       </Grid>
-      {addPlaceDialog !== null && (
-        <AddPlaceDialog
-          open
-          onClose={() => setAddPlaceDialog(null)}
-          category={addPlaceDialog}
-        />
-      )}
     </>
   );
 };

@@ -1,6 +1,12 @@
 import React from 'react';
 import { Grid, TextField } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import {
+  AccessTimeOutlined,
+  LinkOutlined,
+  LocalOfferOutlined,
+  MoreOutlined,
+  StorefrontOutlined,
+} from '@material-ui/icons';
 import ChipInput from 'material-ui-chip-input';
 import ReadonlyText from '../forms/ReadonlyText';
 
@@ -10,7 +16,7 @@ export default function Farm({ data, onUpdate, classes }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <StorefrontOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Associated pick-up locations</div>
@@ -26,7 +32,7 @@ export default function Farm({ data, onUpdate, classes }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <AccessTimeOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Volunteer Hours</div>
@@ -37,7 +43,7 @@ export default function Farm({ data, onUpdate, classes }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <LinkOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Volunteer URL</div>
@@ -53,7 +59,7 @@ export default function Farm({ data, onUpdate, classes }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <MoreOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Specialities</div>
@@ -67,7 +73,7 @@ export default function Farm({ data, onUpdate, classes }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <LocalOfferOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Tags</div>

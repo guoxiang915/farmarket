@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import {
   CircularProgress,
@@ -18,8 +19,10 @@ import {
   Share,
 } from '@material-ui/icons';
 import Carousel from 'react-material-ui-carousel';
-import { gql, useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { getAddressFromCoordinates, isOpenNow } from '../../../utils/functions';
+import { PLACE_DETAIL_QUERY } from '../../../graphql/query';
+import { selectPlace } from '../../../store/actions/appActions';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -139,83 +142,8 @@ const CarouselItem = ({ data, item, classes }) => {
   );
 };
 
-const placeDetailQuery = gql`
-  query placeDetailQuery($id: ID!) {
-    placeDetail(id: $id) {
-      id
-      name
-      bio
-      category
-      location {
-        latitude
-        longitude
-      }
-      containing
-      other_location {
-        latitude
-        longitude
-      }
-      hours {
-        start
-        end
-        weekday
-      }
-      facebook_url
-      order_url
-      ownership
-      farmShares {
-        id
-        type
-        contents {
-          item
-          start
-          end
-        }
-        pay_period
-        payment
-        pay_method
-      }
-      farm {
-        id
-        location {
-          latitude
-          longitude
-        }
-        hours {
-          start
-          end
-          weekday
-        }
-        url
-        specialities
-        tags
-      }
-      foodCoOp {
-        id
-        structure
-        farm
-        cost
-        size
-      }
-      groceries {
-        id
-        farm
-      }
-      farmStand {
-        id
-        farm
-      }
-      farmerMarket {
-        id
-        market_type
-        farm
-        structure
-      }
-    }
-  }
-`;
-
 const PlaceDetail = ({ id }) => {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const checks = [
     'pickUp',
@@ -227,7 +155,7 @@ const PlaceDetail = ({ id }) => {
   const [address, setAddress] = useState(null);
 
   const [placeDetail, { loading, data: place }] = useLazyQuery(
-    placeDetailQuery
+    PLACE_DETAIL_QUERY
   );
 
   useEffect(() => {
@@ -239,6 +167,7 @@ const PlaceDetail = ({ id }) => {
       });
     };
     if (id) {
+      dispatch(selectPlace(id));
       getData();
     }
   }, [id]);
