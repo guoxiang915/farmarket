@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactMapboxGl, { Cluster, Marker, Popup } from 'react-mapbox-gl';
+import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 import { useQuery } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
@@ -10,7 +10,11 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Navigation from '../../components/navigation/Navigation';
 import LoginDialog from '../../components/auth/LoginDialog';
-import { closeModal, selectPlace } from '../../store/actions/appActions';
+import {
+  closeModal,
+  selectPlace,
+  showSnackbar,
+} from '../../store/actions/appActions';
 import { setUser } from '../../store/actions/authActions';
 
 // eslint-disable-next-line
@@ -48,11 +52,11 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const ClusterMarker = classes => coordinates => (
-  <Marker coordinates={coordinates} className={classes.clusterMarker}>
-    <Room color="primary" fontSize="large" />
-  </Marker>
-);
+// const ClusterMarker = classes => coordinates => (
+//   <Marker coordinates={coordinates} className={classes.clusterMarker}>
+//     <Room color="primary" fontSize="large" />
+//   </Marker>
+// );
 
 const MainLayout = () => {
   const classes = useStyles();
@@ -75,7 +79,9 @@ const MainLayout = () => {
     dispatch(setUser({ user: data.meInfo?.email, isLoggedIn: true }));
   }
 
-  const handleCloseSnackbar = () => {};
+  const handleCloseSnackbar = () => {
+    dispatch(showSnackbar({ open: false }));
+  };
 
   const selectedPlace =
     selectedPlaceId === null
@@ -102,23 +108,23 @@ const MainLayout = () => {
         }
         zoom={[14]}
       >
-        <Cluster ClusterMarkerFactory={ClusterMarker(classes)}>
-          {places?.searchPlaces?.map(place => (
-            <Marker
-              key={place.id}
-              className={classes.marker}
-              coordinates={[
-                place.location.longitude || 0,
-                place.location.latitude || 0,
-              ]}
-              onClick={() => dispatch(selectPlace(place.id))}
-              anchor="bottom"
-            >
-              <Room color="primary" />
-              <Box mt={0.5}>{place.name}</Box>
-            </Marker>
-          ))}
-        </Cluster>
+        {/* <Cluster ClusterMarkerFactory={ClusterMarker(classes)}> */}
+        {places?.searchPlaces?.map(place => (
+          <Marker
+            key={place.id}
+            className={classes.marker}
+            coordinates={[
+              place.location.longitude || 0,
+              place.location.latitude || 0,
+            ]}
+            onClick={() => dispatch(selectPlace(place.id))}
+            anchor="bottom"
+          >
+            <Room color="primary" />
+            <Box mt={0.5}>{place.name}</Box>
+          </Marker>
+        ))}
+        {/* </Cluster> */}
         {selectedPlace && (
           <Popup
             key={selectedPlace.id}

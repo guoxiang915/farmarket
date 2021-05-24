@@ -29,7 +29,10 @@ const SearchList = ({ query }) => {
   });
 
   const [searchPlaces, { loading, data: places }] = useLazyQuery(
-    SEARCH_PLACES_QUERY
+    SEARCH_PLACES_QUERY,
+    {
+      fetchPolicy: 'no-cache',
+    }
   );
 
   useEffect(() => {

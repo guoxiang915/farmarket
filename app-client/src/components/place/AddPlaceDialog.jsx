@@ -26,6 +26,7 @@ import FoodCoOp from './FoodCoOp';
 import FarmerMarket from './FarmerMarket';
 import { showSnackbar } from '../../store/actions/appActions';
 import { ADD_PLACE_MUTATION } from '../../graphql/mutation';
+import { SEARCH_PLACES_QUERY } from '../../graphql/query';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -289,10 +290,17 @@ const AddPlaceDialog = ({
     },
   ];
 
-  const [
-    submitAddPlace,
-    { loading, error, data: resultPlace },
-  ] = useMutation(ADD_PLACE_MUTATION, { errorPolicy: 'all' });
+  const [submitAddPlace, { loading, error, data: resultPlace }] = useMutation(
+    ADD_PLACE_MUTATION,
+    {
+      errorPolicy: 'all',
+      refetchQueries: [
+        {
+          query: SEARCH_PLACES_QUERY,
+        },
+      ],
+    }
+  );
 
   const onSubmit = async values => {
     console.log(values);

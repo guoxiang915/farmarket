@@ -120,6 +120,7 @@ const useStyles = makeStyles(theme => ({
 
   addressLabel: {
     marginLeft: 16,
+    textAlign: 'left',
   },
 
   suggestButton: {
