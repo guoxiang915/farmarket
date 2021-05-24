@@ -131,19 +131,39 @@ export const resolvers = [
         if (place.other_location && typeof place.other_location === 'string') {
           place.other_location = JSON.parse(place.other_location);
         }
-        if (place.farmShares && place.farmShares.contents && typeof place.farmShares.contents === 'string') {
+        if (
+          place.farmShares &&
+          place.farmShares.contents &&
+          typeof place.farmShares.contents === 'string'
+        ) {
           place.farmShares.contents = JSON.parse(place.farmShares.contents);
         }
-        if (place.farm && place.farm.pickup_location && typeof place.farm.pickup_location === 'string') {
+        if (
+          place.farm &&
+          place.farm.pickup_location &&
+          typeof place.farm.pickup_location === 'string'
+        ) {
           place.farm.pickup_location = JSON.parse(place.farm.pickup_location);
         }
-        if (place.farm && place.farm.volunteer_hours && typeof place.farm.volunteer_hours === 'string') {
+        if (
+          place.farm &&
+          place.farm.volunteer_hours &&
+          typeof place.farm.volunteer_hours === 'string'
+        ) {
           place.farm.volunteer_hours = JSON.parse(place.farm.volunteer_hours);
         }
-        if (place.farm && place.farm.specialities && typeof place.farm.specialities === 'string') {
+        if (
+          place.farm &&
+          place.farm.specialities &&
+          typeof place.farm.specialities === 'string'
+        ) {
           place.farm.specialities = JSON.parse(place.farm.specialities);
         }
-        if (place.farm && place.farm.tags && typeof place.farm.tags === 'string') {
+        if (
+          place.farm &&
+          place.farm.tags &&
+          typeof place.farm.tags === 'string'
+        ) {
           place.farm.tags = JSON.parse(place.farm.tags);
         }
 
@@ -271,12 +291,14 @@ export const resolvers = [
             break;
           case 'foodCoOp':
             {
-              const foodCoOpData = await knex('FoodCoOp').insert({
-                place_id: placeId,
-                structure: foodCoOp.structure,
-                cost: foodCoOp.cost,
-                size: foodCoOp.size,
-              }).returning('id');
+              const foodCoOpData = await knex('FoodCoOp')
+                .insert({
+                  place_id: placeId,
+                  structure: foodCoOp.structure,
+                  cost: foodCoOp.cost,
+                  size: foodCoOp.size,
+                })
+                .returning('id');
               if (foodCoOp.farm && foodCoOp.farm.length) {
                 await knex('FarmAssociates').insert(
                   foodCoOp.farm.map(item => ({
@@ -289,9 +311,11 @@ export const resolvers = [
             break;
           case 'groceries':
             {
-              const groceryData = await knex('Grocery').insert({
-                place_id: placeId,
-              }).returning('id');
+              const groceryData = await knex('Grocery')
+                .insert({
+                  place_id: placeId,
+                })
+                .returning('id');
               if (groceries.farm && groceries.farm.length) {
                 await knex('FarmAssociates').insert(
                   groceries.farm.map(item => ({
@@ -304,9 +328,11 @@ export const resolvers = [
             break;
           case 'farmStand':
             {
-              const farmStandData = await knex('FarmStand').insert({
-                place_id: placeId,
-              }).returning('id');
+              const farmStandData = await knex('FarmStand')
+                .insert({
+                  place_id: placeId,
+                })
+                .returning('id');
               if (farmStand.farm && farmStand.farm.length) {
                 await knex('FarmAssociates').insert(
                   farmStand.farm.map(item => ({
@@ -319,11 +345,13 @@ export const resolvers = [
             break;
           case 'farmerMarket':
             {
-              const farmerMarketData = await knex('FarmerMarket').insert({
-                place_id: placeId,
-                market_type: farmerMarket.marketType,
-                structure: farmerMarket.structure,
-              }).returning('id');
+              const farmerMarketData = await knex('FarmerMarket')
+                .insert({
+                  place_id: placeId,
+                  market_type: farmerMarket.marketType,
+                  structure: farmerMarket.structure,
+                })
+                .returning('id');
               if (farmerMarket.farm && farmerMarket.farm.length) {
                 await knex('FarmAssociates').insert(
                   farmerMarket.farm.map(item => ({
