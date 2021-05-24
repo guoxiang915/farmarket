@@ -274,7 +274,7 @@ export const resolvers = [
                 structure: foodCoOp.structure,
                 cost: foodCoOp.cost,
                 size: foodCoOp.size,
-              });
+              }).returning('id');
               if (foodCoOp.farm && foodCoOp.farm.length) {
                 await knex('FarmAssociates').insert(
                   foodCoOp.farm.map(item => ({
@@ -289,7 +289,7 @@ export const resolvers = [
             {
               const groceryData = await knex('Grocery').insert({
                 place_id: placeId,
-              });
+              }).returning('id');
               if (groceries.farm && groceries.farm.length) {
                 await knex('FarmAssociates').insert(
                   groceries.farm.map(item => ({
@@ -304,7 +304,7 @@ export const resolvers = [
             {
               const farmStandData = await knex('FarmStand').insert({
                 place_id: placeId,
-              });
+              }).returning('id');
               if (farmStand.farm && farmStand.farm.length) {
                 await knex('FarmAssociates').insert(
                   farmStand.farm.map(item => ({
@@ -321,7 +321,7 @@ export const resolvers = [
                 place_id: placeId,
                 market_type: farmerMarket.marketType,
                 structure: farmerMarket.structure,
-              });
+              }).returning('id');
               if (farmerMarket.farm && farmerMarket.farm.length) {
                 await knex('FarmAssociates').insert(
                   farmerMarket.farm.map(item => ({
