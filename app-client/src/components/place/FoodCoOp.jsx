@@ -1,16 +1,48 @@
 import React from 'react';
 import { Grid, MenuItem, Select, TextField } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import {
+  LoyaltyOutlined,
+  MonetizationOnOutlined,
+  RoomOutlined,
+  SupervisorAccountOutlined,
+} from '@material-ui/icons';
+import Autocomplete from '../forms/Autocomplete';
 
 export default function FoodCoOp({ data, onChange, classes, errors, touched }) {
   const sizes = ['100-200', '200-500', '500-1000', '1000+'];
+  const farms = [
+    {
+      id: '1',
+      label: 'AAA',
+    },
+    {
+      id: '2',
+      label: 'iiocsxdddw',
+    },
+    {
+      id: '3',
+      label: '23llkkkx',
+    },
+    {
+      id: '4',
+      label: 'copx',
+    },
+    {
+      id: '5',
+      label: 'ssdfwe',
+    },
+    {
+      id: '6',
+      label: 'Audddsd',
+    },
+  ];
 
   return (
     <Grid container spacing={4}>
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <MonetizationOnOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Operating structure</div>
@@ -31,11 +63,11 @@ export default function FoodCoOp({ data, onChange, classes, errors, touched }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <RoomOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Associated farms</div>
-            <TextField
+            {/* <TextField
               fullWidth
               placeholder="Search for a farm"
               name="foodCoOp.farm"
@@ -43,6 +75,18 @@ export default function FoodCoOp({ data, onChange, classes, errors, touched }) {
               onChange={onChange}
               errors={errors.farm && touched.farm}
               helperText={errors.farm && touched.farm ? errors.farm : null}
+            /> */}
+            <Autocomplete
+              InputProps={{
+                fullWidth: true,
+                placeholder: 'Search for a farm',
+                name: 'foodCoOp.farm',
+                onChange: onChange,
+                errors: errors.farm && touched.farm,
+                helperText: errors.farm && touched.farm ? errors.farm : null,
+              }}
+              value={data.farm}
+              options={farms}
             />
           </Grid>
         </Grid>
@@ -50,7 +94,7 @@ export default function FoodCoOp({ data, onChange, classes, errors, touched }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <LoyaltyOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Membership cost</div>
@@ -69,7 +113,7 @@ export default function FoodCoOp({ data, onChange, classes, errors, touched }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <SupervisorAccountOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Membership size</div>
@@ -79,7 +123,8 @@ export default function FoodCoOp({ data, onChange, classes, errors, touched }) {
               name="foodCoOp.size"
               onChange={onChange}
               errors={errors.size && touched.size}
-              helperText={errors.size && touched.size ? errors.size : null}
+              // TODO: add error text
+              // helperText={errors.size && touched.size ? errors.size : null}
             >
               {sizes.map(size => (
                 <MenuItem key={size} value={size}>

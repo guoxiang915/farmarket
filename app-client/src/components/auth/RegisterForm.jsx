@@ -8,7 +8,8 @@ import {
   makeStyles,
   CircularProgress,
 } from '@material-ui/core';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { REGISTER_MUTATION } from '../../graphql/mutation';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -87,24 +88,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const registerMutation = gql`
-  mutation registerMutation(
-    $first_name: String
-    $last_name: String
-    $email: String!
-    $password: String!
-  ) {
-    registerUser(
-      first_name: $first_name
-      last_name: $last_name
-      email: $email
-      password: $password
-    ) {
-      email
-    }
-  }
-`;
-
 const RegisterForm = ({
   submitUrl,
   username,
@@ -126,7 +109,7 @@ const RegisterForm = ({
   const [
     submitRegister,
     { loading, data: registerData },
-  ] = useMutation(registerMutation, { errorPolicy: 'all' });
+  ] = useMutation(REGISTER_MUTATION, { errorPolicy: 'all' });
 
   const submitHandler = () => {
     submitRegister({

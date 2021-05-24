@@ -8,7 +8,16 @@ import {
   FormControlLabel,
   Checkbox,
 } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import {
+  AccessTimeOutlined,
+  AccountCircleOutlined,
+  AnnouncementOutlined,
+  ClassOutlined,
+  DescriptionOutlined,
+  ExploreOutlined,
+  LinkOutlined,
+  ShoppingCartOutlined,
+} from '@material-ui/icons';
 import Geocoder from '../mapbox/Geocoder';
 import ReadonlyText from '../forms/ReadonlyText';
 import AddHourDialog from './AddHourDialog';
@@ -29,7 +38,7 @@ export default function OverviewInfo({
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <AccountCircleOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Name *</div>
@@ -49,7 +58,7 @@ export default function OverviewInfo({
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <DescriptionOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Bio</div>
@@ -70,7 +79,7 @@ export default function OverviewInfo({
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <ClassOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Category *</div>
@@ -81,9 +90,10 @@ export default function OverviewInfo({
               onChange={onChange}
               onBlur={onBlur}
               error={errors.category && touched.category}
-              helperText={
-                errors.category && touched.category ? errors.category : null
-              }
+              // Show error message
+              // helperText={
+              //   errors.category && touched.category ? errors.category : null
+              // }
             >
               {categories.map(category => (
                 <MenuItem key={category.value} value={category.value}>
@@ -97,7 +107,7 @@ export default function OverviewInfo({
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <ExploreOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Location *</div>
@@ -125,7 +135,7 @@ export default function OverviewInfo({
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <AccessTimeOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Hours</div>
@@ -164,7 +174,7 @@ export default function OverviewInfo({
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <LinkOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Add events from a Facebook page</div>
@@ -188,7 +198,7 @@ export default function OverviewInfo({
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <ShoppingCartOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Place an order</div>
@@ -210,7 +220,7 @@ export default function OverviewInfo({
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <AnnouncementOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Claim ownership?</div>

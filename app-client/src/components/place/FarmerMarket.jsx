@@ -1,6 +1,10 @@
 import React from 'react';
 import { Grid, MenuItem, Select, TextField } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import {
+  LocalPizzaOutlined,
+  MonetizationOnOutlined,
+  RoomOutlined,
+} from '@material-ui/icons';
 
 export default function FarmerMarket({ data, onUpdate, classes }) {
   const marketTypes = ['Open-air'];
@@ -11,7 +15,7 @@ export default function FarmerMarket({ data, onUpdate, classes }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <LocalPizzaOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Type of market</div>
@@ -37,7 +41,7 @@ export default function FarmerMarket({ data, onUpdate, classes }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <RoomOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Associated farms</div>
@@ -53,7 +57,7 @@ export default function FarmerMarket({ data, onUpdate, classes }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <MonetizationOnOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Operating structure</div>

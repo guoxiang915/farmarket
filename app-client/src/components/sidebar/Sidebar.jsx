@@ -9,6 +9,7 @@ import PlaceDetail from './placeDetail';
 const useStyles = makeStyles(theme => ({
   container: {
     position: 'fixed',
+    zIndex: 10,
     top: 0,
     left: 0,
     width: 400,

@@ -5,6 +5,7 @@ const INITIAL_STATE = {
   snackbar: {
     open: false,
   },
+  selectedPlace: null,
 };
 
 const appReducer = (currentState = INITIAL_STATE, action) => {
@@ -32,6 +33,12 @@ const appReducer = (currentState = INITIAL_STATE, action) => {
       return {
         ...currentState,
         snackbar: action.payload,
+      };
+
+    case 'SELECT_PLACE':
+      return {
+        ...currentState,
+        selectedPlace: action.payload,
       };
 
     default:

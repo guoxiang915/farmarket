@@ -13,17 +13,32 @@ const knex = require('knex')(
 export const resolvers = [
   {
     Query: {
-      meInfo: (parent, args, context) => {
-        console.log(context);
-        return knex('Users')
-          .where('email', (context.user && context.user.email) || '')
-          .then(users => {
-            const user = users[0];
-            if (!user) {
-              throw new Error('User not found');
-            }
-            return user;
-          });
+      meInfo: async (parent, args, context) => {
+        const users = await knex('Users').where(
+          'email',
+          (context.user && context.user.email) || ''
+        );
+
+        if (!users || !users.length) {
+          throw new Error('User not found');
+        }
+
+        const user = users[0];
+        if (!user.id) {
+          throw new Error('Invalid user data');
+        }
+
+        const places = await knex('Place').where('user_id', user.id);
+        places.map(place => {
+          place.location = JSON.parse(place.location);
+          if (place.hours) {
+            place.hours = JSON.parse(place.hours);
+          }
+          return place;
+        });
+        user.places = places;
+
+        return user;
       },
       searchFarms: (parent, args, context) => {
         console.log(context);

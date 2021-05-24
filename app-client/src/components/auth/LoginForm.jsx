@@ -8,7 +8,8 @@ import {
   makeStyles,
   CircularProgress,
 } from '@material-ui/core';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { LOGIN_MUTATION } from '../../graphql/mutation';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -87,12 +88,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const loginMutation = gql`
-  mutation loginMutation($email: String!, $password: String!) {
-    login(email: $email, password: $password)
-  }
-`;
-
 const LoginForm = ({
   submitUrl,
   username,
@@ -109,10 +104,10 @@ const LoginForm = ({
     rememberPassword: rememberPassword,
     managePlace: false,
   });
-  const [submitLogin, { loading, data: loginData }] = useMutation(
-    loginMutation,
-    { errorPolicy: 'all' }
-  );
+  const [
+    submitLogin,
+    { loading, data: loginData },
+  ] = useMutation(LOGIN_MUTATION, { errorPolicy: 'all' });
 
   const toggleRememberPassword = () =>
     setState({ ...state, rememberPassword: !state.rememberPassword });

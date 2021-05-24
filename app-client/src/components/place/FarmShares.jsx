@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import { StorefrontOutlined } from '@material-ui/icons';
 import ReadonlyText from '../forms/ReadonlyText';
 import FarmSharesDialog from './FarmSharesDialog';
 
@@ -12,7 +12,7 @@ export default function FarmShares({ data, onUpdate, classes }) {
       <Grid item xs={12}>
         <Grid container spacing={1} alignItems="flex-start">
           <Grid item xs={1}>
-            <AccountCircle />
+            <StorefrontOutlined />
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Farm Share</div>

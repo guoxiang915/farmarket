@@ -17,7 +17,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { Close as CloseIcon, ExpandMore } from '@material-ui/icons';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import OverviewInfo from './OverviewInfo';
 import Groceries from './Groceries';
 import FarmShares from './FarmShares';
@@ -25,6 +25,7 @@ import Farm from './Farm';
 import FoodCoOp from './FoodCoOp';
 import FarmerMarket from './FarmerMarket';
 import { showSnackbar } from '../../store/actions/appActions';
+import { ADD_PLACE_MUTATION } from '../../graphql/mutation';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -210,15 +211,6 @@ const CategoryComponent = ({ category, ...props }) => {
   }
 };
 
-const addPlaceMutation = gql`
-  mutation addPlaceMutation($place: AddPlaceInput!) {
-    addPlace(place: $place) {
-      id
-      name
-    }
-  }
-`;
-
 const AddPlaceDialog = ({
   open,
   onClose,
@@ -270,12 +262,37 @@ const AddPlaceDialog = ({
     { value: 'farmerMarket', label: "Farmer's Market" },
   ];
 
-  const farms = [];
+  const farms = [
+    {
+      id: '1',
+      title: 'AAA',
+    },
+    {
+      id: '2',
+      title: 'iiocsxdddw',
+    },
+    {
+      id: '3',
+      title: '23llkkkx',
+    },
+    {
+      id: '4',
+      title: 'copx',
+    },
+    {
+      id: '5',
+      title: 'ssdfwe',
+    },
+    {
+      id: '6',
+      title: 'Audddsd',
+    },
+  ];
 
   const [
     submitAddPlace,
     { loading, error, data: resultPlace },
-  ] = useMutation(addPlaceMutation, { errorPolicy: 'all' });
+  ] = useMutation(ADD_PLACE_MUTATION, { errorPolicy: 'all' });
 
   const onSubmit = async values => {
     console.log(values);
@@ -351,7 +368,7 @@ const AddPlaceDialog = ({
           const category = categories.find(
             item => item.value === selectedCategory
           );
-          console.log(errors);
+          console.log(values);
           return (
             <form onSubmit={handleSubmit}>
               <div className={classes.header}>
@@ -427,7 +444,7 @@ const AddPlaceDialog = ({
                   type="submit"
                   color="primary"
                   variant="contained"
-                  disabled={(errors && Object.keys(errors).length) || loading}
+                  disabled={(errors && !!Object.keys(errors).length) || loading}
                 >
                   {loading && (
                     <CircularProgress size={16} className={classes.progress} />

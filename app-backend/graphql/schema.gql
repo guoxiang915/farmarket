@@ -7,6 +7,12 @@ type User {
     linkedin: String
 }
 
+type GetUserInfo {
+    id: ID!
+    email: String!
+    places: [Place!]
+}
+
 type PlaceLocation {
     latitude: Float
     longitude: Float
@@ -244,7 +250,7 @@ type Mutation {
 }
 
 type Query {
-    meInfo: User
+    meInfo: GetUserInfo
     searchFarms: User
     searchPlaces(q: String, cat: String, location: PlaceLocationInput): [Place]
     placeDetail(id: ID!): PlaceDetail

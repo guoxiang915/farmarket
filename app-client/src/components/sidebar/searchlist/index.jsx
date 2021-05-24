@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { CircularProgress, makeStyles } from '@material-ui/core';
-import { gql, useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 
 import SearchFilter from './SearchFilter';
 import ResultList from './ResultList';
+import { SEARCH_PLACES_QUERY } from '../../../graphql/query';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -15,30 +16,6 @@ const useStyles = makeStyles(() => ({
     marginTop: '40%',
   },
 }));
-
-const searchPlacesQuery = gql`
-  query searchPlacesQuery(
-    $q: String
-    $cat: String
-    $location: PlaceLocationInput
-  ) {
-    searchPlaces(q: $q, cat: $cat, location: $location) {
-      id
-      name
-      bio
-      category
-      location {
-        latitude
-        longitude
-      }
-      hours {
-        start
-        end
-        weekday
-      }
-    }
-  }
-`;
 
 const SearchList = ({ query }) => {
   const classes = useStyles();
@@ -52,7 +29,7 @@ const SearchList = ({ query }) => {
   });
 
   const [searchPlaces, { loading, data: places }] = useLazyQuery(
-    searchPlacesQuery
+    SEARCH_PLACES_QUERY
   );
 
   useEffect(() => {

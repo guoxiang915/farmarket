@@ -23,3 +23,8 @@ export const showSnackbar = payload => ({
   type: 'SHOW_SNACKBAR',
   payload,
 });
+
+export const selectPlace = placeId => ({
+  type: 'SELECT_PLACE',
+  payload: placeId,
+});
