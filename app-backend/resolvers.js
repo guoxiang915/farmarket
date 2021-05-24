@@ -30,18 +30,18 @@ export const resolvers = [
 
         const places = await knex('Place').where('user_id', user.id);
         places.map(place => {
-          place.location = JSON.parse(place.location);
-          if (place.hours) {
+          if (typeof place.location === 'string') {
+            place.location = JSON.parse(place.location);
+          }
+          if (place.hours && typeof place.hours === 'string') {
             place.hours = JSON.parse(place.hours);
           }
           return place;
         });
         user.places = places;
-
         return user;
       },
       searchFarms: (parent, args, context) => {
-        console.log(context);
         return knex('Users')
           .where('email', (context.user && context.user.email) || '')
           .then(users => {
@@ -65,8 +65,10 @@ export const resolvers = [
         }
         return places.then(result =>
           result.map(place => {
-            place.location = JSON.parse(place.location);
-            if (place.hours) {
+            if (typeof place.location === 'string') {
+              place.location = JSON.parse(place.location);
+            }
+            if (place.hours && typeof place.hours === 'string') {
               place.hours = JSON.parse(place.hours);
             }
             return place;
@@ -120,26 +122,28 @@ export const resolvers = [
             return data[0];
           });
 
-        place.location = JSON.parse(place.location);
-        if (place.hours) {
+        if (typeof place.location === 'string') {
+          place.location = JSON.parse(place.location);
+        }
+        if (place.hours && typeof place.hours === 'string') {
           place.hours = JSON.parse(place.hours);
         }
-        if (place.other_location) {
+        if (place.other_location && typeof place.other_location === 'string') {
           place.other_location = JSON.parse(place.other_location);
         }
-        if (place.farmShares && place.farmShares.contents) {
+        if (place.farmShares && place.farmShares.contents && typeof place.farmShares.contents === 'string') {
           place.farmShares.contents = JSON.parse(place.farmShares.contents);
         }
-        if (place.farm && place.farm.pickup_location) {
+        if (place.farm && place.farm.pickup_location && typeof place.farm.pickup_location === 'string') {
           place.farm.pickup_location = JSON.parse(place.farm.pickup_location);
         }
-        if (place.farm && place.farm.volunteer_hours) {
+        if (place.farm && place.farm.volunteer_hours && typeof place.farm.volunteer_hours === 'string') {
           place.farm.volunteer_hours = JSON.parse(place.farm.volunteer_hours);
         }
-        if (place.farm && place.farm.specialities) {
+        if (place.farm && place.farm.specialities && typeof place.farm.specialities === 'string') {
           place.farm.specialities = JSON.parse(place.farm.specialities);
         }
-        if (place.farm && place.farm.tags) {
+        if (place.farm && place.farm.tags && typeof place.farm.tags === 'string') {
           place.farm.tags = JSON.parse(place.farm.tags);
         }
 
@@ -207,8 +211,6 @@ export const resolvers = [
           farmStand,
           farmerMarket,
         } = place;
-
-        console.log(context);
         const userData = await knex('Users')
           .where('email', (context.user && context.user.email) || '')
           .then(users => {
