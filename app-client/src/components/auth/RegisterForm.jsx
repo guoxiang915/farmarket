@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  // Checkbox,
   TextField,
-  // FormControlLabel,
   Grid,
   Button,
   makeStyles,
@@ -119,11 +117,14 @@ const RegisterForm = ({
         email: state.username,
         password: state.password,
       },
+    }).catch(err => {
+      console.log(err);
     });
   };
 
   useEffect(() => {
     if (registerData && registerData.registerUser) {
+      localStorage.setItem('token', registerData.registerUser.token);
       onSuccess();
     }
   }, [registerData]);
@@ -138,23 +139,6 @@ const RegisterForm = ({
   return (
     <Grid container spacing={0}>
       <form action={submitUrl} method="POST" className={classes.form}>
-        {/* <Grid item xs={12} className={classes.managePlace}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={state.managePlace}
-                onChange={() =>
-                  setState({ ...state, managePlace: !state.managePlace })
-                }
-                value="managePlace"
-                color="secondary"
-              />
-            }
-            name="manage"
-            label="I own/manage this place"
-          />
-        </Grid> */}
-
         <Grid item xs={12}>
           <div>{description}</div>
         </Grid>

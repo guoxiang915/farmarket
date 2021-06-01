@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Checkbox,
   TextField,
@@ -104,29 +104,35 @@ const LoginForm = ({
     rememberPassword: rememberPassword,
     managePlace: false,
   });
-  const [
-    submitLogin,
-    { loading, data: loginData },
-  ] = useMutation(LOGIN_MUTATION, { errorPolicy: 'all' });
+  const [loading, setLoading] = useState(false);
 
   const toggleRememberPassword = () =>
     setState({ ...state, rememberPassword: !state.rememberPassword });
 
+  const [submitLogin] = useMutation(LOGIN_MUTATION, { errorPolicy: 'all' });
   const submitHandler = () => {
+    setLoading(false);
+
     submitLogin({
       variables: {
         email: state.username,
         password: state.password,
       },
-    });
+    })
+      .then(result => {
+        const loginData = result.data;
+        if (loginData && loginData.login) {
+          localStorage.setItem('token', loginData.login);
+          onSuccess();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(true);
+      });
   };
-
-  useEffect(() => {
-    if (loginData && loginData.login) {
-      localStorage.setItem('token', loginData.login);
-      onSuccess();
-    }
-  }, [loginData]);
 
   const loginInputChange = event =>
     setState({

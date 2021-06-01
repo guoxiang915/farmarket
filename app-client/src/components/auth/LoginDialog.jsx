@@ -9,10 +9,11 @@ import { openModal } from '../../store/actions/appActions';
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    width: 380,
+    width: 450,
     padding: '24px 27px 27px',
     borderRadius: '4px',
     [theme.breakpoints.down('xs')]: {
+      width: 'calc(100% - 16px)',
       padding: '24px 17px 24px',
     },
   },
@@ -64,7 +65,7 @@ const LoginDialog = ({ open, onClose }) => {
 
         <HorizontalDivider className={classes.divider} text="or" />
 
-        <SocialNetworks />
+        <SocialNetworks onSuccess={() => onClose()} />
       </Paper>
     </Dialog>
   );

@@ -16,6 +16,11 @@ type User {
     linkedin: String
 }
 
+type RegisterResult {
+    email: String!
+    token: String!
+}
+
 type GetUserInfo {
     id: ID!
     email: String!
@@ -203,55 +208,19 @@ type Mutation {
         first_name: String,
         last_name: String,
         email: String!,
-        password: String!
-    ): User!
-
-    # Create user info is available in dynamo integration
-    registerUserByGoogle(
-        first_name: String,
-        last_name: String,
-        google: String!,
-        email: String!
-    ): User!
-
-    # Create user info is available in dynamo integration
-    registerUserByFacebook(
-        first_name: String,
-        last_name: String,
-        facebook: String!,
-        email: String!
-    ): User!
-
-    # Create user info is available in dynamo integration
-    registerUserByLinkedin(
-        first_name: String,
-        last_name: String,
-        linkedin: String!,
-        email: String!
-    ): User!
+        password: String,
+        google_id: String,
+        token_id: String,
+        facebook_id: String,
+    ): RegisterResult!
 
     # Create user info is available in dynamo integration
     login(
         email: String!,
-        password: String!
-    ): String!
-
-    # Create user info is available in dynamo integration
-    loginByGoogle(
-        google: String!,
-        email: String!
-    ): String!
-
-    # Create user info is available in dynamo integration
-    loginByFacebook(
-        facebook: String!,
-        email: String!
-    ): String!
-
-    # Create user info is available in dynamo integration
-    loginByLinkedin(
-        linkedin: String!,
-        email: String!
+        password: String,
+        google_id: String,
+        token_id: String,
+        facebook_id: String,
     ): String!
 
     # Add place
