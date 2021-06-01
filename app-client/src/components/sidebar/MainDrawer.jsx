@@ -14,7 +14,6 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Home as HomeIcon, Work as WorkIcon } from '@material-ui/icons';
-import useLogin from '../../utils/hooks/useLogin';
 import { openModal } from '../../store/actions/appActions';
 
 const useStyles = makeStyles(theme => ({
@@ -163,13 +162,10 @@ const categories = [
 
 const MainDrawer = ({ location, onSearch }) => {
   const dispatch = useDispatch();
-  const { checkLogin } = useLogin();
   const classes = useStyles();
 
   const handleAddPlaceDialog = category => {
-    if (checkLogin()) {
-      dispatch(openModal('add-place-modal', { category }));
-    }
+    dispatch(openModal('add-place-modal', { category }));
   };
 
   return (

@@ -27,6 +27,7 @@ import FarmerMarket from './FarmerMarket';
 import { showSnackbar } from '../../store/actions/appActions';
 import { ADD_PLACE_MUTATION } from '../../graphql/mutation';
 import { SEARCH_PLACES_QUERY } from '../../graphql/query';
+import useLogin from '../../utils/hooks/useLogin';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -220,6 +221,7 @@ const AddPlaceDialog = ({
   const classes = useStyles();
   const dispatch = useDispatch();
   const { push } = useHistory();
+  const { checkLogin } = useLogin();
 
   const [expanded, setExpanded] = useState('overview');
   const initialValues = {
@@ -303,30 +305,32 @@ const AddPlaceDialog = ({
   );
 
   const onSubmit = async values => {
-    console.log(values);
-    if (values.overview.location) {
-      values.overview.location = {
-        latitude: values.overview.location.latitude,
-        longitude: values.overview.location.longitude,
-      };
+    if (checkLogin()) {
+      console.log(values);
+      if (values.overview.location) {
+        values.overview.location = {
+          latitude: values.overview.location.latitude,
+          longitude: values.overview.location.longitude,
+        };
+      }
+      if (values.overview.otherLocation) {
+        values.overview.otherLocation = {
+          latitude: values.overview.otherLocation.latitude,
+          longitude: values.overview.otherLocation.longitude,
+        };
+      }
+      if (values.farm.location) {
+        values.farm.location = {
+          latitude: values.farm.location.latitude,
+          longitude: values.farm.location.longitude,
+        };
+      }
+      await submitAddPlace({
+        variables: {
+          place: values,
+        },
+      });
     }
-    if (values.overview.otherLocation) {
-      values.overview.otherLocation = {
-        latitude: values.overview.otherLocation.latitude,
-        longitude: values.overview.otherLocation.longitude,
-      };
-    }
-    if (values.farm.location) {
-      values.farm.location = {
-        latitude: values.farm.location.latitude,
-        longitude: values.farm.location.longitude,
-      };
-    }
-    await submitAddPlace({
-      variables: {
-        place: values,
-      },
-    });
   };
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 const INITIAL_STATE = {
   isShowNavigation: false,
-  modalId: null,
-  modalInfo: null,
+  modals: [],
   snackbar: {
     open: false,
   },
@@ -19,15 +18,28 @@ const appReducer = (currentState = INITIAL_STATE, action) => {
     case 'OPEN_MODAL':
       return {
         ...currentState,
-        modalId: action.modalId,
-        modalInfo: action.payload,
+        modals: [
+          ...currentState.modals,
+          {
+            modalId: action.modalId,
+            modalInfo: action.payload,
+          },
+        ],
       };
 
-    case 'CLOSE_MODAL':
+    case 'CLOSE_MODAL': {
+      const { modals } = currentState;
+      const modalIndex = modals.findIndex(
+        modal => modal.modalId === action.modalId
+      );
+      if (modalIndex !== -1) {
+        modals.splice(modalIndex, 1);
+      }
       return {
         ...currentState,
-        modalId: null,
+        modals: [...modals],
       };
+    }
 
     case 'SHOW_SNACKBAR':
       return {

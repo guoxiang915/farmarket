@@ -60,12 +60,9 @@ const useStyles = makeStyles(() =>
 
 const MainLayout = () => {
   const classes = useStyles();
-  const {
-    modalId,
-    modalInfo,
-    snackbar,
-    selectedPlace: selectedPlaceId,
-  } = useSelector(state => state.appState);
+  const { modals, snackbar, selectedPlace: selectedPlaceId } = useSelector(
+    state => state.appState
+  );
 
   const dispatch = useDispatch();
   const { error, data } = useQuery(GET_ME_INFO_QUERY, {
@@ -160,24 +157,31 @@ const MainLayout = () => {
       </Snackbar>
 
       {/* Show modals here */}
-      {modalId === 'login-modal' && (
-        <LoginDialog open onClose={() => dispatch(closeModal('login-modal'))} />
-      )}
-      {modalId === 'register-modal' && (
-        <RegisterDialog
-          open
-          onClose={() => {
-            dispatch(closeModal('login-modal'));
-          }}
-        />
-      )}
-      {modalId === 'add-place-modal' && (
-        <AddPlaceDialog
-          open
-          onClose={() => dispatch(closeModal('add-place-modal'))}
-          category={modalInfo?.category || ''}
-        />
-      )}
+      {modals.map(({ modalId, modalInfo }) => (
+        <>
+          {modalId === 'login-modal' && (
+            <LoginDialog
+              open
+              onClose={() => dispatch(closeModal('login-modal'))}
+            />
+          )}
+          {modalId === 'register-modal' && (
+            <RegisterDialog
+              open
+              onClose={() => {
+                dispatch(closeModal('register-modal'));
+              }}
+            />
+          )}
+          {modalId === 'add-place-modal' && (
+            <AddPlaceDialog
+              open
+              onClose={() => dispatch(closeModal('add-place-modal'))}
+              category={modalInfo?.category || ''}
+            />
+          )}
+        </>
+      ))}
     </div>
   );
 };

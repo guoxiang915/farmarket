@@ -5,7 +5,7 @@ import LoginHeader from './LoginHeader';
 import SocialNetworks from './SocialNetworks';
 import RegisterForm from './RegisterForm';
 import HorizontalDivider from '../divider/HorizontalDivider';
-import { openModal } from '../../store/actions/appActions';
+import { closeModal, openModal } from '../../store/actions/appActions';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -51,6 +51,7 @@ const RegisterDialog = ({ open, onClose }) => {
                 style={{ cursor: 'pointer' }}
                 onClick={() => {
                   onClose();
+                  dispatch(closeModal('register-modal'));
                   dispatch(openModal('login-modal'));
                 }}
                 component="span"
