@@ -6,7 +6,7 @@ export const GET_ME_INFO_QUERY = gql`
       id
       email
       places {
-        id
+        place_id
         name
         bio
         category
@@ -31,7 +31,7 @@ export const SEARCH_PLACES_QUERY = gql`
     $location: PlaceLocationInput
   ) {
     searchPlaces(q: $q, cat: $cat, location: $location) {
-      id
+      place_id
       name
       bio
       category
@@ -51,7 +51,7 @@ export const SEARCH_PLACES_QUERY = gql`
 export const PLACE_DETAIL_QUERY = gql`
   query placeDetailQuery($id: ID!) {
     placeDetail(id: $id) {
-      id
+      place_id
       name
       bio
       category
@@ -72,18 +72,6 @@ export const PLACE_DETAIL_QUERY = gql`
       facebook_url
       order_url
       ownership
-      farmShares {
-        id
-        type
-        contents {
-          item
-          start
-          end
-        }
-        pay_period
-        payment
-        pay_method
-      }
       farm {
         id
         location {
@@ -98,6 +86,18 @@ export const PLACE_DETAIL_QUERY = gql`
         url
         specialities
         tags
+        farmShare {
+          id
+          type
+          contents {
+            item
+            start
+            end
+          }
+          pay_period
+          payment
+          pay_method
+        }
       }
       foodCoOp {
         id

@@ -6,7 +6,7 @@ import {
   RoomOutlined,
 } from '@material-ui/icons';
 
-export default function FarmerMarket({ data, onUpdate, classes }) {
+export default function FarmerMarket({ data, onChange, classes }) {
   const marketTypes = ['Open-air'];
   const structures = ['For-profit', 'Non-profit', 'Regional gov'];
 
@@ -22,12 +22,8 @@ export default function FarmerMarket({ data, onUpdate, classes }) {
             <Select
               fullWidth
               value={data.marketType}
-              onChange={e =>
-                onUpdate({
-                  ...data,
-                  marketType: e.target.value,
-                })
-              }
+              name="farmerMarket.marketType"
+              onChange={onChange}
             >
               {marketTypes.map(type => (
                 <MenuItem key={type} value={type}>
@@ -49,7 +45,8 @@ export default function FarmerMarket({ data, onUpdate, classes }) {
               fullWidth
               placeholder="Search for a farm"
               value={data.farm}
-              onChange={e => onUpdate({ ...data, farm: e.target.value })}
+              name="farmerMarket.farm"
+              onChange={onChange}
             />
           </Grid>
         </Grid>
@@ -64,12 +61,8 @@ export default function FarmerMarket({ data, onUpdate, classes }) {
             <Select
               fullWidth
               value={data.structure}
-              onChange={e =>
-                onUpdate({
-                  ...data,
-                  structure: e.target.value,
-                })
-              }
+              name="farmerMarket.structure"
+              onChange={onChange}
             >
               {structures.map(structure => (
                 <MenuItem key={structure} value={structure}>

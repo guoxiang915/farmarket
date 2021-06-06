@@ -4,7 +4,7 @@ import { StorefrontOutlined } from '@material-ui/icons';
 import ReadonlyText from '../forms/ReadonlyText';
 import FarmSharesDialog from './FarmSharesDialog';
 
-export default function FarmShares({ data, onUpdate, classes }) {
+export default function FarmShares({ data, onChange, classes }) {
   const [showFarmShareDialog, setShowFarmShareDialog] = useState(false);
 
   return (
@@ -18,7 +18,7 @@ export default function FarmShares({ data, onUpdate, classes }) {
             <div className={classes.label}>Farm Share</div>
             <ReadonlyText
               value={data.farmShare}
-              onChange={() => onUpdate()}
+              onChange={() => onChange()}
               onOpen={() => setShowFarmShareDialog(true)}
             />
 

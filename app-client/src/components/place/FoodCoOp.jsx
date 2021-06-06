@@ -8,34 +8,15 @@ import {
 } from '@material-ui/icons';
 import Autocomplete from '../forms/Autocomplete';
 
-export default function FoodCoOp({ data, onChange, classes, errors, touched }) {
+export default function FoodCoOp({
+  data,
+  onChange,
+  classes,
+  errors,
+  touched,
+  farms,
+}) {
   const sizes = ['100-200', '200-500', '500-1000', '1000+'];
-  const farms = [
-    {
-      id: '1',
-      label: 'AAA',
-    },
-    {
-      id: '2',
-      label: 'iiocsxdddw',
-    },
-    {
-      id: '3',
-      label: '23llkkkx',
-    },
-    {
-      id: '4',
-      label: 'copx',
-    },
-    {
-      id: '5',
-      label: 'ssdfwe',
-    },
-    {
-      id: '6',
-      label: 'Audddsd',
-    },
-  ];
 
   return (
     <Grid container spacing={4}>

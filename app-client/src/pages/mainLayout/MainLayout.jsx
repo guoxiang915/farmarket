@@ -1,20 +1,17 @@
-import React from 'react';
-import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
+import React, { useState, useEffect } from 'react';
+import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
 import { useQuery } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { Box, Snackbar, Typography } from '@material-ui/core';
-import { Room } from '@material-ui/icons';
+import { Avatar, Box, Fab, Grid, Snackbar } from '@material-ui/core';
+import { Add, MyLocation, Remove, Room } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
 import Sidebar from '../../components/sidebar/Sidebar';
 import Navigation from '../../components/navigation/Navigation';
 import LoginDialog from '../../components/auth/LoginDialog';
-import {
-  closeModal,
-  selectPlace,
-  showSnackbar,
-} from '../../store/actions/appActions';
+import { closeModal, showSnackbar } from '../../store/actions/appActions';
 import { setUser } from '../../store/actions/authActions';
 
 // eslint-disable-next-line
@@ -49,6 +46,21 @@ const useStyles = makeStyles(() =>
     markerPopup: {
       paddingBottom: 50,
     },
+
+    advanced: {
+      position: 'fixed',
+      top: 30,
+      right: 30,
+      bottom: 30,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-end',
+      justifyContent: 'space-between',
+    },
+
+    controls: {
+      width: 50,
+    },
   })
 );
 
@@ -59,12 +71,37 @@ const useStyles = makeStyles(() =>
 // );
 
 const MainLayout = () => {
+  const { push } = useHistory();
   const classes = useStyles();
+
+  const dispatch = useDispatch();
   const { modals, snackbar, selectedPlace: selectedPlaceId } = useSelector(
     state => state.appState
   );
+  const [center, setCenter] = useState([0, 0]);
+  const [zoom, setZoom] = useState(14);
 
-  const dispatch = useDispatch();
+  const gotoUserLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        setCenter([
+          position.coords.longitude || 0,
+          position.coords.latitude || 0,
+        ]);
+        setZoom(14);
+      },
+      error => {
+        console.error(error);
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (center[0] === 0 && center[1] === 0) {
+      gotoUserLocation();
+    }
+  }, [navigator.geolocation, center]);
+
   const { error, data } = useQuery(GET_ME_INFO_QUERY, {
     variables: {
       token: localStorage.getItem('token') || '',
@@ -83,7 +120,17 @@ const MainLayout = () => {
   const selectedPlace =
     selectedPlaceId === null
       ? null
-      : places?.searchPlaces?.find(item => item.id === selectedPlaceId);
+      : places?.searchPlaces?.find(item => item.place_id === selectedPlaceId);
+
+  useEffect(() => {
+    if (selectedPlace) {
+      setCenter([
+        selectedPlace.location.longitude || 0,
+        selectedPlace.location.latitude || 0,
+      ]);
+      setZoom(14);
+    }
+  }, [selectedPlace]);
 
   return (
     <div className={classes.root}>
@@ -95,50 +142,72 @@ const MainLayout = () => {
           width: 'calc(100vw + 1px)',
           top: -1,
         }}
-        center={
-          selectedPlace
-            ? [
-                selectedPlace.location.longitude || 0,
-                selectedPlace.location.latitude || 0,
-              ]
-            : [24.93375, 60.170282]
-        }
-        zoom={[14]}
+        center={center}
+        zoom={[zoom]}
+        animationOptions={{
+          animate: true,
+          duration: 2000,
+        }}
       >
-        {/* <Cluster ClusterMarkerFactory={ClusterMarker(classes)}> */}
         {places?.searchPlaces?.map(place => (
           <Marker
-            key={place.id}
+            key={place.place_id}
             className={classes.marker}
             coordinates={[
               place.location.longitude || 0,
               place.location.latitude || 0,
             ]}
-            onClick={() => dispatch(selectPlace(place.id))}
+            // eslint-disable-next-line
+            onClick={() => push('/place/' + place.place_id)}
             anchor="bottom"
           >
-            <Room color="primary" />
+            <Room
+              color={place.place_id === selectedPlaceId ? 'primary' : 'error'}
+              fontSize="large"
+            />
             <Box mt={0.5}>{place.name}</Box>
           </Marker>
         ))}
-        {/* </Cluster> */}
-        {selectedPlace && (
-          <Popup
-            key={selectedPlace.id}
-            coordinates={[
-              selectedPlace.location.longitude || 0,
-              selectedPlace.location.latitude || 0,
-            ]}
-            className={classes.markerPopup}
-          >
-            <Typography variant="subtitle1" color="primary">
-              {selectedPlace.name}
-            </Typography>
-            <Typography variant="body2">{selectedPlace.bio}</Typography>
-          </Popup>
-        )}
       </Map>
+
+      <div className={classes.advanced}>
+        {data?.meInfo ? <Avatar>{data?.meInfo?.first_name}</Avatar> : <div />}
+        <Grid container spacing={2} className={classes.controls}>
+          <Grid item xs={12}>
+            <Fab
+              onClick={() => {
+                setZoom(zoom + 1);
+              }}
+              size="small"
+            >
+              <Add fontSize="small" />
+            </Fab>
+          </Grid>
+          <Grid item xs={12}>
+            <Fab
+              onClick={() => {
+                setZoom(zoom - 1);
+              }}
+              size="small"
+            >
+              <Remove fontSize="small" />
+            </Fab>
+          </Grid>
+          <Grid item xs={12}>
+            <Fab
+              onClick={() => {
+                gotoUserLocation();
+              }}
+              size="small"
+            >
+              <MyLocation fontSize="small" />
+            </Fab>
+          </Grid>
+        </Grid>
+      </div>
+
       <Sidebar />
+
       <Navigation />
 
       <Snackbar

@@ -50,7 +50,7 @@ input BusinessHoursInput {
 }
 
 type Place {
-    id: ID!
+    place_id: ID!
     name: String!
     bio: String
     category: String!
@@ -91,11 +91,7 @@ input FarmShareType {
     payMethod: String
 }
 
-input PlaceFarmSharesInput {
-    farmShare: [FarmShareType!]
-}
-
-type PlaceFarmShares {
+type PlaceFarmShare {
     id: ID!
     type: String
     contents: [FarmShareContent!]
@@ -110,6 +106,7 @@ input PlaceFarmInput {
     url: String
     specialities: [String!]
     tags: [String!]
+    farmShare: [FarmShareType!]
 }
 
 type PlaceFarm {
@@ -119,6 +116,7 @@ type PlaceFarm {
     url: String
     specialities: [String!]
     tags: [String!]
+    farmShare: [PlaceFarmShare!]
 }
 
 input PlaceFoodCoOpInput {
@@ -169,7 +167,6 @@ type PlaceFarmerMarket {
 
 input AddPlaceInput {
     overview: PlaceOverviewInput!
-    farmShares: PlaceFarmSharesInput
     farm: PlaceFarmInput
     foodCoOp: PlaceFoodCoOpInput
     groceries: PlaceGroceriesInput
@@ -178,12 +175,12 @@ input AddPlaceInput {
 }
 
 type AddPlaceResult {
-    id: ID!
+    place_id: ID!
     name: String
 }
 
 type PlaceDetail {
-    id: ID!
+    place_id: ID!
     name: String!
     bio: String
     category: String!
@@ -194,7 +191,6 @@ type PlaceDetail {
     facebook_url: String
     order_url: String
     ownership: Boolean
-    farmShares: PlaceFarmShares
     farm: PlaceFarm
     foodCoOp: PlaceFoodCoOp
     groceries: PlaceGroceries

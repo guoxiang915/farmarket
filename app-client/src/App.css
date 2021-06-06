@@ -31,11 +31,12 @@
   width: 6px;
   height: 6px;
   background-color: transparent;
+  background: #ddd;
 }
 *::-webkit-scrollbar-thumb {
-  background: #c9c9d140;
+  background: #888;
   border-radius: 24px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: #c9c9d1c0;
+  background: #aaa;
 }

@@ -20,7 +20,6 @@ import { Close as CloseIcon, ExpandMore } from '@material-ui/icons';
 import { useMutation } from '@apollo/client';
 import OverviewInfo from './OverviewInfo';
 import Groceries from './Groceries';
-import FarmShares from './FarmShares';
 import Farm from './Farm';
 import FoodCoOp from './FoodCoOp';
 import FarmerMarket from './FarmerMarket';
@@ -140,23 +139,6 @@ const PlaceSchema = Yup.object().shape({
     orderUrl: Yup.string().url('Should match URL format'),
     ownership: Yup.boolean(),
   }),
-  farmShares: Yup.object().shape({
-    farmShare: Yup.array().of(
-      Yup.object().shape({
-        type: Yup.string(),
-        contents: Yup.array().of(
-          Yup.object().shape({
-            item: Yup.string(),
-            start: Yup.number(),
-            end: Yup.number(),
-          })
-        ),
-        payPeriod: Yup.string(),
-        payment: Yup.number(),
-        payMethod: Yup.string(),
-      })
-    ),
-  }),
   farm: Yup.object().shape({
     location: Yup.object()
       .shape({
@@ -174,6 +156,21 @@ const PlaceSchema = Yup.object().shape({
     url: Yup.string().url('Should match URL format'),
     specialities: Yup.array().of(Yup.string()),
     tags: Yup.array().of(Yup.string()),
+    farmShare: Yup.array().of(
+      Yup.object().shape({
+        type: Yup.string(),
+        contents: Yup.array().of(
+          Yup.object().shape({
+            item: Yup.string(),
+            start: Yup.number(),
+            end: Yup.number(),
+          })
+        ),
+        payPeriod: Yup.string(),
+        payment: Yup.number(),
+        payMethod: Yup.string(),
+      })
+    ),
   }),
   foodCoOp: Yup.object().shape({
     structure: Yup.string(),
@@ -196,8 +193,6 @@ const PlaceSchema = Yup.object().shape({
 
 const CategoryComponent = ({ category, ...props }) => {
   switch (category) {
-    case 'farmShares':
-      return <FarmShares {...props} />;
     case 'farm':
       return <Farm {...props} />;
     case 'foodCoOp':
@@ -236,15 +231,13 @@ const AddPlaceDialog = ({
       ownership: false,
       hours: [],
     },
-    farmShares: {
-      farmShare: [],
-    },
     farm: {
       location: null,
       hours: [],
       url: '',
       specialities: ['Eggs', 'Lamb', 'Wool', 'Compost'],
       tags: ['USDA Organic', 'Biodynamic', 'Regenerative'],
+      farmShare: [],
     },
     foodCoOp: { structure: '', farm: [], cost: 0, size: '100-200' },
     groceries: { farm: [] },
@@ -257,7 +250,6 @@ const AddPlaceDialog = ({
   };
 
   const categories = [
-    { value: 'farmShares', label: 'Farm Shares' },
     { value: 'farm', label: 'Farm' },
     { value: 'foodCoOp', label: 'Food Co-op' },
     { value: 'groceries', label: 'Groceries' },
@@ -346,7 +338,7 @@ const AddPlaceDialog = ({
   }, [error?.message]);
 
   useEffect(() => {
-    if (!loading && resultPlace?.addPlace?.id) {
+    if (!loading && resultPlace?.addPlace?.place_id) {
       onClose();
       dispatch(
         showSnackbar({
@@ -355,7 +347,7 @@ const AddPlaceDialog = ({
           message: `${resultPlace.addPlace.name} has been successfully created`,
         })
       );
-      push(`/place/${resultPlace?.addPlace?.id}`);
+      push(`/place/${resultPlace?.addPlace?.place_id}`);
     }
   }, [loading, resultPlace?.addPlace]);
 

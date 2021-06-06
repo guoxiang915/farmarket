@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme =>
   })
 );
 
-const SearchBox = ({ query: defaultQuery, onSearch }) => {
+const SearchBox = ({ query: defaultQuery, onSearch, id }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [query, setQuery] = useState('');
@@ -74,12 +74,12 @@ const SearchBox = ({ query: defaultQuery, onSearch }) => {
       </IconButton>
       <Divider className={classes.divider} orientation="vertical" />
       <IconButton
-        color={!query ? 'primary' : undefined}
+        color={!defaultQuery && !id ? 'primary' : undefined}
         className={classes.iconButton}
         aria-label="directions"
-        onClick={() => onSearch()}
+        onClick={() => onSearch(id ? { id } : undefined)}
       >
-        {!query ? <DirectionsIcon /> : <CloseIcon />}
+        {!defaultQuery && !id ? <DirectionsIcon /> : <CloseIcon />}
       </IconButton>
     </Paper>
   );

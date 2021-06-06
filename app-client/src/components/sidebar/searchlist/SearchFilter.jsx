@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Button, makeStyles, Menu, MenuItem } from '@material-ui/core';
 import { ArrowDropDown } from '@material-ui/icons';
+import {
+  categoryOptions,
+  hourOptions,
+  priceOptions,
+  ratingOptions,
+  typeOptions,
+} from '../../../utils/options';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -64,35 +71,6 @@ const SelectButton = ({ title, value, options, onSelect, classes }) => {
 
 const SearchFilter = ({ filters, onUpdateFilters }) => {
   const classes = useStyles();
-  const typeOptions = [
-    { value: 'in-person', label: 'In-person' },
-    { value: 'online', label: 'Online' },
-  ];
-  const priceOptions = [
-    { value: 'min', label: '$' },
-    { value: 'low', label: '$$' },
-    { value: 'high', label: '$$$' },
-    { value: 'max', label: '$$$$' },
-  ];
-  const hourOptions = [
-    { value: 'any', label: 'Any time' },
-    { value: 'now', label: 'Open now' },
-    { value: 'full', label: 'Open 24 hours' },
-  ];
-  const categoryOptions = [
-    { value: 'groceries', label: 'Groceries' },
-    { value: 'farms', label: 'Farms' },
-    { value: 'markets', label: 'Markets' },
-    { value: 'restaurants', label: 'Restaurants' },
-  ];
-  const ratingOptions = [
-    { value: 2, label: 2 },
-    { value: 2.5, label: 2.5 },
-    { value: 3, label: 3 },
-    { value: 3.5, label: 3.5 },
-    { value: 4, label: 4 },
-    { value: 4.5, label: 4.5 },
-  ];
 
   return (
     <div className={classes.container}>

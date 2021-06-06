@@ -35,7 +35,8 @@
     "objection": "^2.2.15",
     "pg": "^8.6.0",
     "regenerator-runtime": "^0.13.7",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "aws-sdk": "^2.905.0",

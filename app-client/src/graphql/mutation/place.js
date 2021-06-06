@@ -3,7 +3,7 @@ import { gql } from '@apollo/client';
 export const ADD_PLACE_MUTATION = gql`
   mutation addPlaceMutation($place: AddPlaceInput!) {
     addPlace(place: $place) {
-      id
+      place_id
       name
     }
   }
@@ -12,7 +12,7 @@ export const ADD_PLACE_MUTATION = gql`
 export const UPDATE_PLACE_MUTATION = gql`
   mutation updatePlaceMutation($place: AddPlaceInput!) {
     updatePlace(place: $place) {
-      id
+      place_id
       name
     }
   }

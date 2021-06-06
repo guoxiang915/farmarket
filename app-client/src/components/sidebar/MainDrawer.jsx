@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 import { Home as HomeIcon, Work as WorkIcon } from '@material-ui/icons';
 import { openModal } from '../../store/actions/appActions';
+import { categoryOptions } from '../../utils/options';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -141,25 +142,6 @@ const groceries = [
   },
 ];
 
-const categories = [
-  {
-    color: '#6FCF97',
-    title: 'Groceries',
-  },
-  {
-    color: '#2F80ED',
-    title: 'Farms',
-  },
-  {
-    color: '#56CCF2',
-    title: 'Markets',
-  },
-  {
-    color: '#F2994A',
-    title: 'Restaraunts',
-  },
-];
-
 const MainDrawer = ({ location, onSearch }) => {
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -234,17 +216,17 @@ const MainDrawer = ({ location, onSearch }) => {
         </Typography>
         <div className={classes.blockContent}>
           <Grid container>
-            {categories.map(item => (
-              <Grid item key={item.title} xs={3}>
+            {categoryOptions.map(item => (
+              <Grid item key={item.label} xs={3}>
                 <Button
                   className={classes.typeItem}
-                  onClick={() => onSearch({ cat: item.title })}
+                  onClick={() => onSearch({ cat: item.value })}
                 >
                   <Avatar
                     className={classes.avatar}
                     style={{ background: item.color }}
                   />
-                  <div className={classes.description}>{item.title}</div>
+                  <div className={classes.description}>{item.label}</div>
                 </Button>
               </Grid>
             ))}

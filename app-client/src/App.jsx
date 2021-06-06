@@ -9,6 +9,9 @@ import {
 import { setContext } from '@apollo/client/link/context';
 import { MuiThemeProvider } from '@material-ui/core';
 import { Provider } from 'react-redux';
+
+import '@brainhubeu/react-carousel/lib/style.css';
+
 import theme from './common/theme';
 import configureStore from './store';
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, TextField } from '@material-ui/core';
 import {
   AccessTimeOutlined,
@@ -9,8 +9,13 @@ import {
 } from '@material-ui/icons';
 import ChipInput from 'material-ui-chip-input';
 import ReadonlyText from '../forms/ReadonlyText';
+import FarmSharesDialog from './FarmSharesDialog';
+import AddHourDialog from './AddHourDialog';
 
-export default function Farm({ data, onUpdate, classes }) {
+export default function Farm({ data, onChange, classes }) {
+  const [hourDialog, setShowHourDialog] = useState(false);
+  const [showFarmShareDialog, setShowFarmShareDialog] = useState(false);
+
   return (
     <Grid container spacing={4}>
       <Grid item xs={12}>
@@ -24,7 +29,8 @@ export default function Farm({ data, onUpdate, classes }) {
               fullWidth
               placeholder="Add a location"
               value={data.location}
-              onChange={e => onUpdate({ ...data, location: e.target.value })}
+              name="farm.location"
+              onChange={onChange}
             />
           </Grid>
         </Grid>
@@ -36,6 +42,34 @@ export default function Farm({ data, onUpdate, classes }) {
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Volunteer Hours</div>
+            <ReadonlyText
+              fullWidth
+              placeholder="Volunteer Hours here"
+              onOpen={() => setShowHourDialog(true)}
+              value={data.hours
+                .filter(item => item.start && item.end)
+                .map(
+                  item =>
+                    `${item.weekday[0].toUpperCase() +
+                      item.weekday.substring(1)}: ${item.start}-${item.end}`
+                )
+                .join(',')}
+              name="farm.hours"
+            />
+            {hourDialog && (
+              <AddHourDialog
+                open
+                business="Your Business Name"
+                onClose={() => setShowHourDialog(false)}
+                hours={data.hours}
+                onSubmit={hours => {
+                  onChange({
+                    target: { name: 'farm.hours', value: hours },
+                  });
+                  setShowHourDialog(false);
+                }}
+              />
+            )}
             <ReadonlyText placeholder="Enter hour" />
           </Grid>
         </Grid>
@@ -51,7 +85,8 @@ export default function Farm({ data, onUpdate, classes }) {
               fullWidth
               placeholder="Enter URL"
               value={data.url}
-              onChange={e => onUpdate({ ...data, url: e.target.value })}
+              name="farm.url"
+              onChange={onChange}
             />
           </Grid>
         </Grid>
@@ -65,7 +100,8 @@ export default function Farm({ data, onUpdate, classes }) {
             <div className={classes.label}>Specialities</div>
             <ChipInput
               value={data.specialities}
-              onChange={chips => onUpdate({ ...data, specialities: chips })}
+              name="farm.specialities"
+              onChange={onChange}
             />
           </Grid>
         </Grid>
@@ -77,10 +113,36 @@ export default function Farm({ data, onUpdate, classes }) {
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Tags</div>
-            <ChipInput
-              value={data.tags}
-              onChange={chips => onUpdate({ ...data, tags: chips })}
+            <ChipInput value={data.tags} name="farm.tags" onChange={onChange} />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container spacing={1} alignItems="flex-start">
+          <Grid item xs={1}>
+            <StorefrontOutlined />
+          </Grid>
+          <Grid item xs={11}>
+            <div className={classes.label}>Farm Share</div>
+            <ReadonlyText
+              value={data.farmShare.map(item => item.type).join(',')}
+              onOpen={() => setShowFarmShareDialog(true)}
+              name="farm.farmShare"
             />
+
+            {showFarmShareDialog && (
+              <FarmSharesDialog
+                open
+                business="Your Business Name"
+                onClose={() => setShowFarmShareDialog(false)}
+                onSubmit={farmShare => {
+                  onChange({
+                    target: { name: 'farm.farmShare', value: farmShare },
+                  });
+                  setShowFarmShareDialog(false);
+                }}
+              />
+            )}
           </Grid>
         </Grid>
       </Grid>

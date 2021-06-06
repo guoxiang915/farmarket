@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const SearchList = ({ query }) => {
+const SearchList = ({ query, cat }) => {
   const classes = useStyles();
   const { push } = useHistory();
   const [filters, setFilters] = useState({
@@ -41,6 +41,7 @@ const SearchList = ({ query }) => {
         searchPlaces({
           variables: {
             q: query,
+            cat,
           },
         });
       } catch (e) {

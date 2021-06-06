@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import jwt from 'jsonwebtoken';
+import { v4 as uuid } from 'uuid';
 
 const connection = require('./knexfile');
 
@@ -77,7 +78,7 @@ export const resolvers = [
       },
       placeDetail: async (parent, args) => {
         const place = await knex('Place')
-          .where('id', args.id)
+          .where('place_id', args.id)
           .then(places => {
             const user = places[0];
             if (!user) {
@@ -88,9 +89,6 @@ export const resolvers = [
 
         let detailTable = '';
         switch (place.category) {
-          case 'farmShares':
-            detailTable = 'FarmShare';
-            break;
           case 'farm':
             detailTable = 'Farm';
             break;
@@ -117,7 +115,7 @@ export const resolvers = [
           .where('place_id', args.id)
           .then(data => {
             if (!data || !data[0]) {
-              throw new Error('Farm Shares not found');
+              throw new Error('Detail Information not found');
             }
             return data[0];
           });
@@ -131,12 +129,21 @@ export const resolvers = [
         if (place.other_location && typeof place.other_location === 'string') {
           place.other_location = JSON.parse(place.other_location);
         }
-        if (
-          place.farmShares &&
-          place.farmShares.contents &&
-          typeof place.farmShares.contents === 'string'
-        ) {
-          place.farmShares.contents = JSON.parse(place.farmShares.contents);
+
+        if (place.farm && place.farm.farm_share) {
+          if (typeof place.farm.farm_share === 'string') {
+            place.farm.farm_share = JSON.parse(place.farm.farm_share);
+          }
+          place.farm.farmShare = await knex('FarmShare').whereIn(
+            'id',
+            place.farm.farm_share
+          );
+
+          place.farm.farmShare.forEach(item => {
+            if (item && item.contents && typeof item.contents === 'string') {
+              item.contents = JSON.parse(item.contents);
+            }
+          });
         }
         if (
           place.farm &&
@@ -265,7 +272,6 @@ export const resolvers = [
       addPlace: async (parent, { place }, context) => {
         const {
           overview,
-          farmShares,
           farm,
           foodCoOp,
           groceries,
@@ -284,12 +290,14 @@ export const resolvers = [
 
         if (!overview.category) {
           return new Error(
-            'Category should be one of farmShares, farm, foodCoOp, groceries, farmStand, farmerMarket'
+            'Category should be one of farm, foodCoOp, groceries, farmStand, farmerMarket'
           );
         }
 
-        const placeData = await knex('Place')
+        const placeId = uuid();
+        await knex('Place')
           .insert({
+            place_id: placeId,
             user_id: userData.id,
             name: overview.name,
             bio: overview.bio,
@@ -302,33 +310,34 @@ export const resolvers = [
             order_url: overview.orderUrl,
             ownership: overview.ownership,
           })
-          .returning('id');
-        const placeId = placeData[0];
+          .returning('place_id');
 
         switch (overview.category) {
-          case 'farmShares':
-            if (farmShares.farmShare && farmShares.farmShare.length) {
-              await knex('FarmShare').insert(
-                farmShares.map(item => ({
-                  place_id: placeId,
-                  type: item.type,
-                  contents: JSON.stringify(item.contents),
-                  pay_period: item.payPeriod,
-                  payment: item.payment,
-                  pay_method: item.payMethod,
-                }))
-              );
-            }
-            break;
           case 'farm':
-            await knex('Farm').insert({
-              place_id: placeId,
-              pickup_location: JSON.stringify(farm.location),
-              volunteer_hours: JSON.stringify(farm.hours),
-              url: farm.url,
-              specialities: JSON.stringify(farm.specialities),
-              tags: JSON.stringify(farm.tags),
-            });
+            {
+              let farmShare = [];
+              if (farm.farmShare && farm.farmShare.length) {
+                farmShare = await knex('FarmShare').insert(
+                  farm.farmShare.map(item => ({
+                    place_id: placeId,
+                    type: item.type,
+                    contents: JSON.stringify(item.contents),
+                    pay_period: item.payPeriod,
+                    payment: item.payment,
+                    pay_method: item.payMethod,
+                  }))
+                );
+              }
+              await knex('Farm').insert({
+                place_id: placeId,
+                pickup_location: JSON.stringify(farm.location),
+                volunteer_hours: JSON.stringify(farm.hours),
+                url: farm.url,
+                specialities: JSON.stringify(farm.specialities),
+                tags: JSON.stringify(farm.tags),
+                farmShare: JSON.stringify(farmShare),
+              });
+            }
             break;
           case 'foodCoOp':
             {
@@ -405,12 +414,12 @@ export const resolvers = [
             break;
           default:
             return new Error(
-              'Category should be one of farmShares, farm, foodCoOp, groceries, farmStand, farmerMarket'
+              'Category should be one of farm, foodCoOp, groceries, farmStand, farmerMarket'
             );
         }
 
         return {
-          id: placeId,
+          place_id: placeId,
           name: overview.name,
         };
       },

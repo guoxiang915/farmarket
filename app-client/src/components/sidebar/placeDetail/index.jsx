@@ -18,7 +18,7 @@ import {
   Send,
   Share,
 } from '@material-ui/icons';
-import Carousel from 'react-material-ui-carousel';
+import Carousel from '@brainhubeu/react-carousel';
 import { useLazyQuery } from '@apollo/client';
 import { getAddressFromCoordinates, isOpenNow } from '../../../utils/functions';
 import { PLACE_DETAIL_QUERY } from '../../../graphql/query';
@@ -93,6 +93,7 @@ const useStyles = makeStyles(theme => ({
   carouselWrapper: {
     width: '100%',
     marginTop: 16,
+    marginLeft: -8,
   },
 
   carouselItem: {
@@ -107,7 +108,9 @@ const useStyles = makeStyles(theme => ({
     bottom: 20,
     left: 16,
     fontSize: '16px',
-    fontWeight: 700,
+    fontWeight: 100,
+    color: 'white',
+    mixBlendMode: 'difference',
   },
 
   addressItem: {
@@ -190,8 +193,6 @@ const PlaceDetail = ({ id }) => {
       });
     }
   }, [place?.placeDetail?.location]);
-
-  console.log(address);
 
   return (
     <div className={classes.container}>
@@ -282,9 +283,9 @@ const PlaceDetail = ({ id }) => {
                 <div className={classes.title}>Grocery Boxes</div>
                 <div className={classes.carouselWrapper}>
                   <Carousel
-                    autoPlay={false}
-                    indicators={false}
-                    animation="slide"
+                    itemWidth={130}
+                    offset={16}
+                    keepDirectionWhenDragging
                   >
                     {groceryFarms.map((item, index) => (
                       <CarouselItem

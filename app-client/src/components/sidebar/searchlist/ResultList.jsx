@@ -60,8 +60,8 @@ const ResultList = ({ items, onSelect }) => {
           // eslint-disable-next-line
           <div
             className={classes.itemContainer}
-            key={item.id}
-            onClick={() => onSelect(item.id)}
+            key={item.place_id}
+            onClick={() => onSelect(item.place_id)}
           >
             <Grid container spacing={2}>
               <Grid item xs={6}>
