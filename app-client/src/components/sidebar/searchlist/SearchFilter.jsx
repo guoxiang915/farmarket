@@ -3,11 +3,11 @@ import classNames from 'classnames';
 import { Button, makeStyles, Menu, MenuItem } from '@material-ui/core';
 import { ArrowDropDown } from '@material-ui/icons';
 import {
+  // typeOptions,
+  // priceOptions,
   categoryOptions,
   hourOptions,
-  priceOptions,
   ratingOptions,
-  typeOptions,
 } from '../../../utils/options';
 
 const useStyles = makeStyles(theme => ({
@@ -74,7 +74,7 @@ const SearchFilter = ({ filters, onUpdateFilters }) => {
 
   return (
     <div className={classes.container}>
-      <div className={classes.filterItem}>
+      {/* <div className={classes.filterItem}>
         <SelectButton
           title="In-person"
           value={filters.type}
@@ -82,8 +82,8 @@ const SearchFilter = ({ filters, onUpdateFilters }) => {
           options={typeOptions}
           classes={classes}
         />
-      </div>
-      <div className={classes.filterItem}>
+      </div> */}
+      {/* <div className={classes.filterItem}>
         <SelectButton
           title="Price"
           value={filters.price}
@@ -91,7 +91,7 @@ const SearchFilter = ({ filters, onUpdateFilters }) => {
           options={priceOptions}
           classes={classes}
         />
-      </div>
+      </div> */}
       <div className={classes.filterItem}>
         <SelectButton
           title="Rating"

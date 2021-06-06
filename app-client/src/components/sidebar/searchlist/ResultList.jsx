@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
 
     '&:hover': {
-      background: 'none',
+      background: '#1976d210',
     },
   },
   title: {
