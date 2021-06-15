@@ -220,7 +220,7 @@ const MainDrawer = ({ location, onSearch }) => {
               <Grid item key={item.label} xs={3}>
                 <Button
                   className={classes.typeItem}
-                  onClick={() => onSearch({ cat: item.value })}
+                  onClick={() => onSearch({ category: item.value })}
                 >
                   <Avatar
                     className={classes.avatar}

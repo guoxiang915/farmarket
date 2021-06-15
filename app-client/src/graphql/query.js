@@ -5,6 +5,8 @@ export const GET_ME_INFO_QUERY = gql`
     meInfo {
       id
       email
+      first_name
+      last_name
       places {
         place_id
         name
@@ -15,9 +17,12 @@ export const GET_ME_INFO_QUERY = gql`
           longitude
         }
         hours {
-          start
-          end
-          weekday
+          status
+          hours {
+            start
+            end
+            weekday
+          }
         }
       }
     }
@@ -28,9 +33,17 @@ export const SEARCH_PLACES_QUERY = gql`
   query searchPlacesQuery(
     $q: String
     $cat: String
+    $rating: String
+    $hour: String
     $location: PlaceLocationInput
   ) {
-    searchPlaces(q: $q, cat: $cat, location: $location) {
+    searchPlaces(
+      q: $q
+      cat: $cat
+      rating: $rating
+      hour: $hour
+      location: $location
+    ) {
       place_id
       name
       bio
@@ -40,9 +53,12 @@ export const SEARCH_PLACES_QUERY = gql`
         longitude
       }
       hours {
-        start
-        end
-        weekday
+        status
+        hours {
+          start
+          end
+          weekday
+        }
       }
     }
   }
@@ -65,9 +81,12 @@ export const PLACE_DETAIL_QUERY = gql`
         longitude
       }
       hours {
-        start
-        end
-        weekday
+        status
+        hours {
+          start
+          end
+          weekday
+        }
       }
       facebook_url
       order_url
@@ -79,9 +98,12 @@ export const PLACE_DETAIL_QUERY = gql`
           longitude
         }
         hours {
-          start
-          end
-          weekday
+          status
+          hours {
+            start
+            end
+            weekday
+          }
         }
         url
         specialities

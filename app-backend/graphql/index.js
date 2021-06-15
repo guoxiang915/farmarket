@@ -24,6 +24,8 @@ type RegisterResult {
 type GetUserInfo {
     id: ID!
     email: String!
+    first_name: String
+    last_name: String
     places: [Place!]
 }
 
@@ -37,16 +39,26 @@ input PlaceLocationInput {
     longitude: Float
 }
 
+type BusinessHour {
+    start: String
+    end: String
+    weekday: String
+}
+
 type BusinessHours {
+    status: String
+    hours: [BusinessHour!]
+}
+
+input BusinessHourInput {
     start: String
     end: String
     weekday: String
 }
 
 input BusinessHoursInput {
-    start: String
-    end: String
-    weekday: String
+    status: String
+    hours: [BusinessHourInput!]
 }
 
 type Place {
@@ -55,7 +67,7 @@ type Place {
     bio: String
     category: String!
     location: PlaceLocation!
-    hours: [BusinessHours!]
+    hours: BusinessHours
 }
 
 input PlaceOverviewInput {
@@ -65,7 +77,7 @@ input PlaceOverviewInput {
     location: PlaceLocationInput!
     containing: Boolean
     otherLocation: PlaceLocationInput
-    hours: [BusinessHoursInput!]
+    hours: BusinessHoursInput
     facebookUrl: String
     orderUrl: String
     ownership: Boolean
@@ -102,7 +114,7 @@ type PlaceFarmShare {
 
 input PlaceFarmInput {
     location: PlaceLocationInput
-    hours: [BusinessHoursInput!]
+    hours: BusinessHoursInput
     url: String
     specialities: [String!]
     tags: [String!]
@@ -112,7 +124,7 @@ input PlaceFarmInput {
 type PlaceFarm {
     id: ID!
     location: PlaceLocation
-    hours: [BusinessHours!]
+    hours: BusinessHours
     url: String
     specialities: [String!]
     tags: [String!]
@@ -187,7 +199,7 @@ type PlaceDetail {
     location: PlaceLocation!
     containing: Boolean
     other_location: PlaceLocation
-    hours: [BusinessHours!]
+    hours: BusinessHours
     facebook_url: String
     order_url: String
     ownership: Boolean
@@ -226,7 +238,7 @@ type Mutation {
 type Query {
     meInfo: GetUserInfo
     searchFarms: User
-    searchPlaces(q: String, cat: String, location: PlaceLocationInput): [Place]
+    searchPlaces(q: String, cat: String, rating: String, hour: String, location: PlaceLocationInput): [Place]
     placeDetail(id: ID!): PlaceDetail
 }
 

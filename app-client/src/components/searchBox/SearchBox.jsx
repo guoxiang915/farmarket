@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
@@ -17,6 +18,14 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       alignItems: 'center',
       width: '100%',
+      borderRadius: 8,
+      border: '1px solid #DADCE0',
+      boxShadow: 'none',
+
+      '&.focus': {
+        boxShadow: '0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0px rgb(0 0 0 / 2%)',
+        borderColor: 'transparent',
+      },
     },
     input: {
       marginLeft: theme.spacing(1),
@@ -36,6 +45,7 @@ const SearchBox = ({ query: defaultQuery, onSearch, id }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [query, setQuery] = useState('');
+  const [focused, setFocused] = useState(false);
 
   const handleToggleNavigation = () => {
     dispatch(toggleNavigation(true));
@@ -46,7 +56,10 @@ const SearchBox = ({ query: defaultQuery, onSearch, id }) => {
   }, [defaultQuery]);
 
   return (
-    <Paper component="div" className={classes.root}>
+    <Paper
+      component="div"
+      className={classNames(classes.root, focused && 'focus')}
+    >
       <IconButton
         className={classes.iconButton}
         onClick={() => handleToggleNavigation()}
@@ -64,6 +77,8 @@ const SearchBox = ({ query: defaultQuery, onSearch, id }) => {
             onSearch({ q: query });
           }
         }}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
       />
       <IconButton
         className={classes.iconButton}

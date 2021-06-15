@@ -128,13 +128,16 @@ const PlaceSchema = Yup.object().shape({
         longitude: Yup.number(),
       })
       .nullable(),
-    hours: Yup.array().of(
-      Yup.object().shape({
-        start: Yup.string(),
-        end: Yup.string(),
-        weekday: Yup.string(),
-      })
-    ),
+    hours: Yup.object().shape({
+      status: Yup.string(),
+      hours: Yup.array().of(
+        Yup.object().shape({
+          start: Yup.string(),
+          end: Yup.string(),
+          weekday: Yup.string(),
+        })
+      ),
+    }),
     facebookUrl: Yup.string().url('Should match URL format'),
     orderUrl: Yup.string().url('Should match URL format'),
     ownership: Yup.boolean(),
@@ -146,13 +149,16 @@ const PlaceSchema = Yup.object().shape({
         longitude: Yup.number(),
       })
       .nullable(),
-    hours: Yup.array().of(
-      Yup.object().shape({
-        start: Yup.string(),
-        end: Yup.string(),
-        weekday: Yup.string(),
-      })
-    ),
+    hours: Yup.object().shape({
+      status: Yup.string(),
+      hours: Yup.array().of(
+        Yup.object().shape({
+          start: Yup.string(),
+          end: Yup.string(),
+          weekday: Yup.string(),
+        })
+      ),
+    }),
     url: Yup.string().url('Should match URL format'),
     specialities: Yup.array().of(Yup.string()),
     tags: Yup.array().of(Yup.string()),
@@ -229,11 +235,11 @@ const AddPlaceDialog = ({
       facebookUrl: '',
       orderUrl: '',
       ownership: false,
-      hours: [],
+      hours: {},
     },
     farm: {
       location: null,
-      hours: [],
+      hours: {},
       url: '',
       specialities: ['Eggs', 'Lamb', 'Wool', 'Compost'],
       tags: ['USDA Organic', 'Biodynamic', 'Regenerative'],
@@ -287,7 +293,7 @@ const AddPlaceDialog = ({
   const [submitAddPlace, { loading, error, data: resultPlace }] = useMutation(
     ADD_PLACE_MUTATION,
     {
-      errorPolicy: 'all',
+      errorPolicy: 'none',
       refetchQueries: [
         {
           query: SEARCH_PLACES_QUERY,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles, Grid } from '@material-ui/core';
 import { Check, Close } from '@material-ui/icons';
+import { getOpenedState } from '../../../utils/functions';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -68,11 +69,9 @@ const ResultList = ({ items, onSelect }) => {
                 <div>
                   <div className={classes.title}>{item.name}</div>
                   <div className={classes.bio}>{item.bio}</div>
-                  {item.hours && item.hours.length > 0 && (
-                    <div className={classes.properties}>
-                      Open until {item.hours[0].end}
-                    </div>
-                  )}
+                  <div className={classes.properties}>
+                    {getOpenedState(item.hours)}
+                  </div>
                 </div>
               </Grid>
               <Grid item xs={6} alignItems="flex-start">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { CircularProgress, makeStyles } from '@material-ui/core';
 import { useLazyQuery } from '@apollo/client';
@@ -17,16 +17,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const SearchList = ({ query, cat }) => {
+const SearchList = ({ query, category, rating, hour, onSearch }) => {
   const classes = useStyles();
   const { push } = useHistory();
-  const [filters, setFilters] = useState({
-    type: null,
-    rating: null,
-    category: null,
-    hour: null,
-    price: null,
-  });
 
   const [searchPlaces, { loading, data: places }] = useLazyQuery(
     SEARCH_PLACES_QUERY,
@@ -41,7 +34,9 @@ const SearchList = ({ query, cat }) => {
         searchPlaces({
           variables: {
             q: query,
-            cat,
+            cat: category,
+            rating,
+            hour,
           },
         });
       } catch (e) {
@@ -50,15 +45,17 @@ const SearchList = ({ query, cat }) => {
     };
 
     getData();
-  }, [query, filters]);
+  }, [query, category, rating, hour]);
 
   return (
     <div className={classes.container}>
       <SearchFilter
-        filters={filters}
-        onUpdateFilters={newFilters =>
-          setFilters({ ...filters, ...newFilters })
-        }
+        filters={{
+          category,
+          rating,
+          hour,
+        }}
+        onUpdateFilters={newFilters => onSearch(newFilters)}
       />
       {loading && (
         <div className={classes.loader}>

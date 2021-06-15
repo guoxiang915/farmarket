@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { Avatar, Box, Fab, Grid, Snackbar } from '@material-ui/core';
-import { Add, MyLocation, Remove, Room } from '@material-ui/icons';
+import { Add, MyLocation, Remove } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
 import Sidebar from '../../components/sidebar/Sidebar';
@@ -19,6 +19,9 @@ import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker';
 import RegisterDialog from '../../components/auth/RegisterDialog';
 import AddPlaceDialog from '../../components/place/AddPlaceDialog';
 import { GET_ME_INFO_QUERY, SEARCH_PLACES_QUERY } from '../../graphql/query';
+
+import normalMarker from '../../assets/normal-marker.png';
+import selectedMarker from '../../assets/selected-marker.jpg';
 
 mapboxgl.workerClass = MapboxWorker;
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
@@ -41,6 +44,12 @@ const useStyles = makeStyles(() =>
 
     marker: {
       cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: 'bold',
+
+      '& img': {
+        height: 32,
+      },
     },
 
     markerPopup: {
@@ -161,9 +170,13 @@ const MainLayout = () => {
             onClick={() => push('/place/' + place.place_id)}
             anchor="bottom"
           >
-            <Room
-              color={place.place_id === selectedPlaceId ? 'primary' : 'error'}
-              fontSize="large"
+            <img
+              src={
+                place.place_id === selectedPlaceId
+                  ? selectedMarker
+                  : normalMarker
+              }
+              alt=""
             />
             <Box mt={0.5}>{place.name}</Box>
           </Marker>
@@ -171,7 +184,13 @@ const MainLayout = () => {
       </Map>
 
       <div className={classes.advanced}>
-        {data?.meInfo ? <Avatar>{data?.meInfo?.first_name}</Avatar> : <div />}
+        {data?.meInfo ? (
+          <Avatar className={classes.avatar}>
+            {data?.meInfo?.first_name?.charAt?.(0) || ''}
+          </Avatar>
+        ) : (
+          <div />
+        )}
         <Grid container spacing={2} className={classes.controls}>
           <Grid item xs={12}>
             <Fab

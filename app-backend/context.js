@@ -8,7 +8,6 @@ export const getUser = token => {
 
 export const createContext = ({ event, context }) => {
   let { headers } = event;
-  console.log(event, headers);
   if (!event.headers) {
     headers = {};
   }

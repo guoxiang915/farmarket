@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import { Button, makeStyles, Menu, MenuItem } from '@material-ui/core';
+import { Button, Grid, makeStyles, Menu, MenuItem } from '@material-ui/core';
+import { Rating } from '@material-ui/lab';
 import { ArrowDropDown } from '@material-ui/icons';
 import {
   // typeOptions,
   // priceOptions,
   categoryOptions,
-  hourOptions,
+  hourStatusOptions,
   ratingOptions,
 } from '../../../utils/options';
 
@@ -24,13 +25,20 @@ const useStyles = makeStyles(theme => ({
 
   filter: {
     marginRight: 12,
-    marginBottom: 8,
+    marginTop: 8,
     borderRadius: 99,
     textTransform: 'capitalize',
   },
 }));
 
-const SelectButton = ({ title, value, options, onSelect, classes }) => {
+const SelectButton = ({
+  title,
+  value,
+  options,
+  onSelect,
+  classes,
+  renderItem,
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = event => {
@@ -61,7 +69,7 @@ const SelectButton = ({ title, value, options, onSelect, classes }) => {
             }}
             key={option.value}
           >
-            {option.label}
+            {renderItem ? renderItem(option) : option.label}
           </MenuItem>
         ))}
       </Menu>
@@ -99,6 +107,19 @@ const SearchFilter = ({ filters, onUpdateFilters }) => {
           onSelect={rating => onUpdateFilters({ rating })}
           options={ratingOptions}
           classes={classes}
+          renderItem={option => (
+            <Grid container spacing={1}>
+              <Grid item>{Number(option.value).toFixed(1)}</Grid>
+              <Grid item>
+                <Rating
+                  value={option.value}
+                  readOnly
+                  precision={0.5}
+                  size="small"
+                />
+              </Grid>
+            </Grid>
+          )}
         />
       </div>
       <div className={classes.filterItem}>
@@ -115,7 +136,7 @@ const SearchFilter = ({ filters, onUpdateFilters }) => {
           title="Hours"
           value={filters.hour}
           onSelect={hour => onUpdateFilters({ hour })}
-          options={hourOptions}
+          options={hourStatusOptions}
           classes={classes}
         />
       </div>

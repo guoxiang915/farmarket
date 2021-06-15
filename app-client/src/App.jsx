@@ -38,9 +38,6 @@ const client = new ApolloClient({
 
 const store = configureStore();
 
-/* fetch data from graphQL server and print on console */
-// client.query({ query: gql`{ hello }` }).then(console.log);
-
 const App = () => (
   <ApolloProvider client={client}>
     <Provider store={store}>

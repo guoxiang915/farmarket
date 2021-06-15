@@ -44,10 +44,10 @@ const useStyles = makeStyles(theme => ({
   },
 
   header: {
-    padding: '16px 20px',
+    padding: '10px',
     background: 'white',
     width: '100%',
-    boxShadow: '0px 4px 12px 4px #00000040',
+    boxShadow: '0px 2px 2px 1px #00000040',
     zIndex: 1,
 
     '&.hidden': {
@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
     padding: '8px 20px',
     background: 'white',
     zIndex: 1,
-    boxShadow: '0px -4px 12px 4px #00000040',
+    boxShadow: '0px -2px 2px 1px #00000040',
 
     '&.hidden': {
       boxShadow: 'none',
@@ -108,6 +108,8 @@ const Sidebar = () => {
   const searchParams = new URLSearchParams(search);
   const query = searchParams.get('q') || '';
   const category = searchParams.get('cat') || '';
+  const rating = searchParams.get('rating') || '';
+  const hour = searchParams.get('hour') || '';
   // const location = {
   //   latitude: searchParams.get('lat') || 0,
   //   longitude: searchParams.get('lng') || 0,
@@ -117,13 +119,24 @@ const Sidebar = () => {
     if (params?.id) {
       history.go(-1);
     } else if (params) {
-      const { q = query, cat = category } = params;
+      const {
+        q = query,
+        category: cat = category,
+        rating: newRating = rating,
+        hour: newHour = hour,
+      } = params;
       const newSearchParams = new URLSearchParams();
       if (q) {
         newSearchParams.set('q', q);
       }
       if (cat) {
         newSearchParams.set('cat', cat);
+      }
+      if (newRating) {
+        newSearchParams.set('rating', newRating);
+      }
+      if (newHour) {
+        newSearchParams.set('hour', newHour);
       }
 
       if (newSearchParams.toString()) {
@@ -166,7 +179,15 @@ const Sidebar = () => {
         <Switch>
           <Route
             path="/search"
-            render={() => <SearchList query={query} cat={category} />}
+            render={() => (
+              <SearchList
+                query={query}
+                category={category}
+                rating={rating}
+                hour={hour}
+                onSearch={handleSearch}
+              />
+            )}
           />
           <Route
             path="/place/:id"

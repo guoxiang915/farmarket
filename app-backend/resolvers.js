@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
+import { isOpenFull, isOpenNow } from './utils/functions';
 
 const connection = require('./knexfile');
 
@@ -54,26 +55,44 @@ export const resolvers = [
           });
       },
       searchPlaces: async (parent, args) => {
-        const { q, cat } = args;
+        const { q, cat, rating, hour } = args;
         let places = knex('Place');
         if (q) {
-          places = places
-            .where('name', 'like', `%${q}%`)
-            .orWhere('bio', 'like', `%${q}%`);
+          places = places.where(function() {
+            this.where('name', 'like', `%${q}%`).orWhere(
+              'bio',
+              'like',
+              `%${q}%`
+            );
+          });
         }
         if (cat) {
           places = places.where('category', cat);
         }
+        if (rating) {
+          places = places
+            .where('rating', '>=', Number(rating))
+            .where('rating', '<', Number(rating));
+        }
         return places.then(result =>
-          result.map(place => {
-            if (typeof place.location === 'string') {
-              place.location = JSON.parse(place.location);
-            }
-            if (place.hours && typeof place.hours === 'string') {
-              place.hours = JSON.parse(place.hours);
-            }
-            return place;
-          })
+          result
+            .map(place => {
+              if (typeof place.location === 'string') {
+                place.location = JSON.parse(place.location);
+              }
+              if (place.hours && typeof place.hours === 'string') {
+                place.hours = JSON.parse(place.hours);
+              }
+              return place;
+            })
+            .filter(place => {
+              if (hour === 'now') {
+                return isOpenNow(place.hours) || isOpenFull(place.hours);
+              } else if (hour === 'full') {
+                return isOpenFull(place.hours);
+              }
+              return !!place;
+            })
         );
       },
       placeDetail: async (parent, args) => {

@@ -8,7 +8,7 @@ export const priceOptions = [
   { value: 'high', label: '$$$' },
   { value: 'max', label: '$$$$' },
 ];
-export const hourOptions = [
+export const hourStatusOptions = [
   { value: 'any', label: 'Any time' },
   { value: 'now', label: 'Open now' },
   { value: 'full', label: 'Open 24 hours' },

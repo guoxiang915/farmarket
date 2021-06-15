@@ -46,14 +46,17 @@ export default function Farm({ data, onChange, classes }) {
               fullWidth
               placeholder="Volunteer Hours here"
               onOpen={() => setShowHourDialog(true)}
-              value={data.hours
-                .filter(item => item.start && item.end)
-                .map(
-                  item =>
-                    `${item.weekday[0].toUpperCase() +
-                      item.weekday.substring(1)}: ${item.start}-${item.end}`
-                )
-                .join(',')}
+              value={
+                data.hours.status ||
+                data.hours.hours
+                  .filter(item => item.start && item.end)
+                  .map(
+                    item =>
+                      `${item.weekday[0].toUpperCase() +
+                        item.weekday.substring(1)}: ${item.start}-${item.end}`
+                  )
+                  .join(',')
+              }
               name="farm.hours"
             />
             {hourDialog && (

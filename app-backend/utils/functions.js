@@ -1,4 +1,10 @@
-export const isOpenNow = hours => {
+export const isOpenNow = data => {
+  const { hours } = data;
+
+  if (!Array.isArray(hours)) {
+    return false;
+  }
+
   const weekdays = [
     'sunday',
     'monday',
@@ -31,21 +37,8 @@ export const isOpenNow = hours => {
   return false;
 };
 
-export const getOpenedState = data => {
-  const { status, hours } = data;
-  if (status === 'full') {
-    return 'Open 24 hours';
-  }
-  if (status === 'close') {
-    return 'Closed';
-  }
-  if (hours && hours.length > 0) {
-    const openedHours = isOpenNow(hours || []);
-    return openedHours
-      ? `Open now: ${openedHours.start} - ${openedHours.end}`
-      : 'Closed now';
-  }
-  return 'Opened';
+export const isOpenFull = hours => {
+  return hours.status === 'full';
 };
 
 export const getAddressFromCoordinates = ({ latitude, longitude }) => {

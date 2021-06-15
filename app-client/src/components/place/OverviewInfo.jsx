@@ -143,14 +143,17 @@ export default function OverviewInfo({
               fullWidth
               placeholder="Your Business Hours here"
               onOpen={() => setShowHourDialog(true)}
-              value={data.hours
-                .filter(item => item.start && item.end)
-                .map(
-                  item =>
-                    `${item.weekday[0].toUpperCase() +
-                      item.weekday.substring(1)}: ${item.start}-${item.end}`
-                )
-                .join(',')}
+              value={
+                data.hours.status ||
+                data.hours.hours
+                  .filter(item => item.start && item.end)
+                  .map(
+                    item =>
+                      `${item.weekday[0].toUpperCase() +
+                        item.weekday.substring(1)}: ${item.start}-${item.end}`
+                  )
+                  .join(',')
+              }
               name="overview.hours"
               onBlur={onBlur}
             />

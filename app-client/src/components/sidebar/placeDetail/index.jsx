@@ -20,7 +20,10 @@ import {
 } from '@material-ui/icons';
 import Carousel from '@brainhubeu/react-carousel';
 import { useLazyQuery } from '@apollo/client';
-import { getAddressFromCoordinates, isOpenNow } from '../../../utils/functions';
+import {
+  getAddressFromCoordinates,
+  getOpenedState,
+} from '../../../utils/functions';
 import { PLACE_DETAIL_QUERY } from '../../../graphql/query';
 import { selectPlace } from '../../../store/actions/appActions';
 
@@ -184,8 +187,6 @@ const PlaceDetail = ({ id }) => {
 
   const groceryFarms = ['Veggie', 'Meat Lover', 'Other Box'];
 
-  const openedHours = isOpenNow(data?.hours || []);
-
   useEffect(() => {
     if (place?.placeDetail?.location) {
       getAddressFromCoordinates(place?.placeDetail?.location).then(response => {
@@ -314,12 +315,7 @@ const PlaceDetail = ({ id }) => {
                 <div className={classes.addressItem}>
                   <Room />
                   <div className={classes.addressLabel}>
-                    {data.hours &&
-                      data.hours.length > 0 &&
-                      (openedHours
-                        ? `Open now: ${openedHours.start} - ${openedHours.end}`
-                        : 'Closed')}
-                    {(!data.hours || !data.hours.length) && 'Opened'}
+                    {getOpenedState(data?.hours)}
                   </div>
                 </div>
                 <div className={classes.addressItem}>

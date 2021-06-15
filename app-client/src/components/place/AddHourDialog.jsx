@@ -96,6 +96,11 @@ const useStyles = makeStyles(theme => ({
     fontSize: '14px',
     lineHeight: '22px',
     color: '#000',
+
+    '&.disabled': {
+      pointerEvents: 'none',
+      opacity: 0.5,
+    },
   },
 
   weekdayTitle: {
@@ -127,6 +132,7 @@ const useStyles = makeStyles(theme => ({
 
 const AddHourDialog = ({ open, onSubmit, onClose, business, hours }) => {
   const classes = useStyles();
+  const [markFull, setMarkFull] = useState(false);
   const [markClosed, setMarkClosed] = useState(false);
   const [weekdays, setWeekdays] = useState({
     sunday: {
@@ -219,16 +225,33 @@ const AddHourDialog = ({ open, onSubmit, onClose, business, hours }) => {
 
       <DialogContent className={classes.content}>
         <Button
+          className={classnames(classes.markButton, markFull && 'selected')}
+          onClick={() => setMarkFull(!markFull)}
+          variant={markFull ? 'contained' : 'outlined'}
+          color={markFull ? 'primary' : undefined}
+          disabled={markClosed}
+        >
+          <div>Mark as fully opened</div>
+          <KeyboardArrowRightOutlined />
+        </Button>
+        <Button
           className={classnames(classes.markButton, markClosed && 'selected')}
           onClick={() => setMarkClosed(!markClosed)}
           variant={markClosed ? 'contained' : 'outlined'}
-          color={markClosed ? 'primary' : undefined}
+          color={markClosed ? 'secondary' : undefined}
+          disabled={markFull}
         >
           <div>Mark as temporarily or permantently closed</div>
           <KeyboardArrowRightOutlined />
         </Button>
         {Object.entries(weekdays).map(([name, weekday]) => (
-          <div className={classes.weekday} key={name}>
+          <div
+            className={classnames(
+              classes.weekday,
+              (markFull || markClosed) && 'disabled'
+            )}
+            key={name}
+          >
             <div className={classes.weekdayTitle}>{name}</div>
             <div className={classes.weekdayContent}>
               {weekday.isEdit && (
@@ -288,24 +311,31 @@ const AddHourDialog = ({ open, onSubmit, onClose, business, hours }) => {
           Cancel
         </Button>
         <Button
-          onClick={() =>
-            onSubmit &&
-            onSubmit(
-              Object.entries(weekdays)
-                .filter(
-                  ([, weekday]) =>
-                    weekday.start &&
-                    weekday.end &&
-                    !weekday.isClosed &&
-                    !weekday.isEdit
-                )
-                .map(([label, weekday]) => ({
-                  start: weekday.start,
-                  end: weekday.end,
-                  weekday: label,
-                }))
-            )
-          }
+          onClick={() => {
+            if (onSubmit) {
+              if (markFull) {
+                onSubmit('full');
+              } else if (markClosed) {
+                onSubmit('close');
+              } else {
+                onSubmit(
+                  Object.entries(weekdays)
+                    .filter(
+                      ([, weekday]) =>
+                        weekday.start &&
+                        weekday.end &&
+                        !weekday.isClosed &&
+                        !weekday.isEdit
+                    )
+                    .map(([label, weekday]) => ({
+                      start: weekday.start,
+                      end: weekday.end,
+                      weekday: label,
+                    }))
+                );
+              }
+            }
+          }}
           color="primary"
           variant="contained"
         >
