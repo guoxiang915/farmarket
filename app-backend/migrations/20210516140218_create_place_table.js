@@ -6,7 +6,8 @@ exports.up = function(knex) {
       table
         .uuid('place_id')
         .defaultTo(uuid())
-        .notNullable();
+        .notNullable()
+        .primary();
       table.string('name').notNullable();
       table.string('bio');
       table.string('category').notNull();
