@@ -1,10 +1,12 @@
+const { v4: uuid } = require('uuid');
+
 exports.up = function(knex) {
   return Promise.all([
     knex.schema.createTable('Place', table => {
       table
-        .increments('id')
-        .notNullable()
-        .primary();
+        .uuid('place_id')
+        .defaultTo(uuid())
+        .notNullable();
       table.string('name').notNullable();
       table.string('bio');
       table.string('category').notNull();
@@ -21,11 +23,8 @@ exports.up = function(knex) {
         .increments('id')
         .notNullable()
         .primary();
-      table
-        .integer('place_id')
-        .unsigned()
-        .notNullable();
-      table.foreign('place_id').references('Place.id');
+      table.uuid('place_id').notNullable();
+      table.foreign('place_id').references('Place.place_id');
       table.string('type').notNullable();
       table.json('contents');
       table.string('pay_period');
@@ -37,11 +36,8 @@ exports.up = function(knex) {
         .increments('id')
         .notNullable()
         .primary();
-      table
-        .integer('place_id')
-        .unsigned()
-        .notNullable();
-      table.foreign('place_id').references('Place.id');
+      table.uuid('place_id').notNullable();
+      table.foreign('place_id').references('Place.place_id');
       table.json('pickup_location');
       table.json('volunteer_hours');
       table.string('url');
@@ -53,11 +49,8 @@ exports.up = function(knex) {
         .increments('id')
         .notNullable()
         .primary();
-      table
-        .integer('place_id')
-        .unsigned()
-        .notNullable();
-      table.foreign('place_id').references('Place.id');
+      table.uuid('place_id').notNullable();
+      table.foreign('place_id').references('Place.place_id');
       table.string('structure');
       table.float('cost');
       table.string('size');
@@ -67,33 +60,24 @@ exports.up = function(knex) {
         .increments('id')
         .notNullable()
         .primary();
-      table
-        .integer('place_id')
-        .unsigned()
-        .notNullable();
-      table.foreign('place_id').references('Place.id');
+      table.uuid('place_id').notNullable();
+      table.foreign('place_id').references('Place.place_id');
     }),
     knex.schema.createTable('FarmStand', table => {
       table
         .increments('id')
         .notNullable()
         .primary();
-      table
-        .integer('place_id')
-        .unsigned()
-        .notNullable();
-      table.foreign('place_id').references('Place.id');
+      table.uuid('place_id').notNullable();
+      table.foreign('place_id').references('Place.place_id');
     }),
     knex.schema.createTable('FarmerMarket', table => {
       table
         .increments('id')
         .notNullable()
         .primary();
-      table
-        .integer('place_id')
-        .unsigned()
-        .notNullable();
-      table.foreign('place_id').references('Place.id');
+      table.uuid('place_id').notNullable();
+      table.foreign('place_id').references('Place.place_id');
       table.string('market_type');
       table.string('structure');
     }),
