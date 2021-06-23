@@ -52,7 +52,7 @@
     "test": "craco test --env=jsdom",
     "eject": "craco eject",
     "deploy-s3": "yarn build && serverless client deploy",
-    "deploy-netlify": "netlify deploy --prod",
+    "deploy-netlify": "yarn build && netlify deploy --prod",
     "lint": "eslint src/**/*.jsx"
   },
   "devDependencies": {
