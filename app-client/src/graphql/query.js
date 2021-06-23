@@ -90,7 +90,7 @@ export const PLACE_DETAIL_QUERY = gql`
       }
       facebook_url
       order_url
-      user_id
+      creator_id
       owner_id
       farm {
         id
