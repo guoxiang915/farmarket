@@ -132,8 +132,8 @@ const useStyles = makeStyles(theme => ({
 
 const AddHourDialog = ({ open, onSubmit, onClose, business, hours }) => {
   const classes = useStyles();
-  const [markFull, setMarkFull] = useState(false);
-  const [markClosed, setMarkClosed] = useState(false);
+  const [markFull, setMarkFull] = useState(hours?.status === 'full');
+  const [markClosed, setMarkClosed] = useState(hours?.status === 'close');
   const [weekdays, setWeekdays] = useState({
     sunday: {
       isClosed: true,
@@ -180,7 +180,7 @@ const AddHourDialog = ({ open, onSubmit, onClose, business, hours }) => {
   });
 
   useEffect(() => {
-    hours.forEach(item => {
+    hours?.hours?.forEach(item => {
       const label = item.weekday;
       weekdays[label].start = item.start;
       weekdays[label].end = item.end;
@@ -314,12 +314,12 @@ const AddHourDialog = ({ open, onSubmit, onClose, business, hours }) => {
           onClick={() => {
             if (onSubmit) {
               if (markFull) {
-                onSubmit('full');
+                onSubmit({ status: 'full', hours: [] });
               } else if (markClosed) {
-                onSubmit('close');
+                onSubmit({ status: 'close', hours: [] });
               } else {
-                onSubmit(
-                  Object.entries(weekdays)
+                onSubmit({
+                  hours: Object.entries(weekdays)
                     .filter(
                       ([, weekday]) =>
                         weekday.start &&
@@ -331,8 +331,8 @@ const AddHourDialog = ({ open, onSubmit, onClose, business, hours }) => {
                       start: weekday.start,
                       end: weekday.end,
                       weekday: label,
-                    }))
-                );
+                    })),
+                });
               }
             }
           }}

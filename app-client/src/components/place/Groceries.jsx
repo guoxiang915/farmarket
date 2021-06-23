@@ -1,9 +1,10 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, TextField } from '@material-ui/core';
 import { RoomOutlined } from '@material-ui/icons';
-import Autocomplete from '../forms/Autocomplete';
+import { Autocomplete } from '@material-ui/lab';
 
 export default function Groceries({
+  data,
   onChange,
   farms,
   classes,
@@ -20,18 +21,27 @@ export default function Groceries({
           <Grid item xs={11}>
             <div className={classes.label}>Associated farms</div>
             <Autocomplete
-              InputProps={{
-                fullWidth: true,
-                placeholder: 'Search for a farm',
-                name: 'groceries.farm',
-                errors: errors.farm && touched.farm,
-                helperText: errors.farm && touched.farm ? errors.farm : null,
-              }}
+              multiple
+              id="groceries.farm"
               options={farms}
-              onChange={farm => {
+              getOptionLabel={option => option.title}
+              defaultValue={data.farm || []}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  placeholder="Search for a farm"
+                  name="groceries.farm"
+                  errors={errors.farm && touched.farm}
+                  helperText={errors.farm && touched.farm ? errors.farm : null}
+                />
+              )}
+              onChange={(event, value) => {
+                console.log(event, value);
+                const result = !Array.isArray(value) ? [value] : value;
                 onChange({
                   target: {
-                    value: farm.map(item => item.id),
+                    value: result.map(item => item.id),
                     name: 'groceries.farm',
                   },
                 });

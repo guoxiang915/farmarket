@@ -218,6 +218,7 @@ const AddPlaceDialog = ({
   open,
   onClose,
   category: initialCategory = 'groceries',
+  places,
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -263,33 +264,6 @@ const AddPlaceDialog = ({
     { value: 'farmerMarket', label: "Farmer's Market" },
   ];
 
-  const farms = [
-    {
-      id: '1',
-      title: 'AAA',
-    },
-    {
-      id: '2',
-      title: 'iiocsxdddw',
-    },
-    {
-      id: '3',
-      title: '23llkkkx',
-    },
-    {
-      id: '4',
-      title: 'copx',
-    },
-    {
-      id: '5',
-      title: 'ssdfwe',
-    },
-    {
-      id: '6',
-      title: 'Audddsd',
-    },
-  ];
-
   const [submitAddPlace, { loading, error, data: resultPlace }] = useMutation(
     ADD_PLACE_MUTATION,
     {
@@ -304,7 +278,6 @@ const AddPlaceDialog = ({
 
   const onSubmit = async values => {
     if (checkLogin()) {
-      console.log(values);
       if (values.overview.location) {
         values.overview.location = {
           latitude: values.overview.location.latitude,
@@ -357,7 +330,8 @@ const AddPlaceDialog = ({
     }
   }, [loading, resultPlace?.addPlace]);
 
-  console.log(loading, resultPlace);
+  const farms =
+    places?.map(item => ({ id: item.place_id, title: item.name })) || [];
 
   return (
     <Dialog open={open} onClose={onClose} classes={{ paper: classes.paper }}>

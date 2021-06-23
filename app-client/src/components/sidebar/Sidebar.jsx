@@ -99,7 +99,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Sidebar = () => {
+const Sidebar = ({ location }) => {
   const classes = useStyles();
   const history = useHistory();
   const [expanded, setExpanded] = useState(true);
@@ -195,7 +195,7 @@ const Sidebar = () => {
           />
           <Route
             render={() => (
-              <MainDrawer location="Lakewood" onSearch={handleSearch} />
+              <MainDrawer location={location} onSearch={handleSearch} />
             )}
           />
         </Switch>

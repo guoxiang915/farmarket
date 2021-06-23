@@ -11,6 +11,7 @@ import ChipInput from 'material-ui-chip-input';
 import ReadonlyText from '../forms/ReadonlyText';
 import FarmSharesDialog from './FarmSharesDialog';
 import AddHourDialog from './AddHourDialog';
+import { getOpenedState } from '../../utils/functions';
 
 export default function Farm({ data, onChange, classes }) {
   const [hourDialog, setShowHourDialog] = useState(false);
@@ -47,15 +48,18 @@ export default function Farm({ data, onChange, classes }) {
               placeholder="Volunteer Hours here"
               onOpen={() => setShowHourDialog(true)}
               value={
-                data.hours.status ||
-                (data.hours.hours || [])
-                  .filter(item => item.start && item.end)
-                  .map(
-                    item =>
-                      `${item.weekday[0].toUpperCase() +
-                        item.weekday.substring(1)}: ${item.start}-${item.end}`
-                  )
-                  .join(',')
+                data.hours.status
+                  ? getOpenedState(data.hours)
+                  : (data.hours.hours || [])
+                      .filter(item => item.start && item.end)
+                      .map(
+                        item =>
+                          `${item.weekday[0].toUpperCase() +
+                            item.weekday.substring(1)}: ${item.start}-${
+                            item.end
+                          }`
+                      )
+                      .join(',')
               }
               name="farm.hours"
             />
@@ -73,7 +77,6 @@ export default function Farm({ data, onChange, classes }) {
                 }}
               />
             )}
-            <ReadonlyText placeholder="Enter hour" />
           </Grid>
         </Grid>
       </Grid>

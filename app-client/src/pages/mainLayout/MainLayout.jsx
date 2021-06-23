@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactMapboxGl, { Marker } from 'react-mapbox-gl';
-import { useQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
@@ -22,6 +22,7 @@ import { GET_ME_INFO_QUERY, SEARCH_PLACES_QUERY } from '../../graphql/query';
 
 import normalMarker from '../../assets/normal-marker.png';
 import selectedMarker from '../../assets/selected-marker.jpg';
+import { getAddressFromCoordinates } from '../../utils/functions';
 
 mapboxgl.workerClass = MapboxWorker;
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
@@ -73,6 +74,7 @@ const useStyles = makeStyles(() =>
   })
 );
 
+/** TODO: Clusterize markers */
 // const ClusterMarker = classes => coordinates => (
 //   <Marker coordinates={coordinates} className={classes.clusterMarker}>
 //     <Room color="primary" fontSize="large" />
@@ -89,6 +91,7 @@ const MainLayout = () => {
   );
   const [center, setCenter] = useState([0, 0]);
   const [zoom, setZoom] = useState(14);
+  const [location, setLocation] = useState('');
 
   const gotoUserLocation = () => {
     navigator.geolocation.getCurrentPosition(
@@ -116,7 +119,7 @@ const MainLayout = () => {
       token: localStorage.getItem('token') || '',
     },
   });
-  const { data: places } = useQuery(SEARCH_PLACES_QUERY);
+  const [getPlaces, { data: places }] = useLazyQuery(SEARCH_PLACES_QUERY);
 
   if (!error && data && data.meInfo) {
     dispatch(setUser({ user: data.meInfo?.email, isLoggedIn: true }));
@@ -126,20 +129,24 @@ const MainLayout = () => {
     dispatch(showSnackbar({ open: false }));
   };
 
-  const selectedPlace =
-    selectedPlaceId === null
-      ? null
-      : places?.searchPlaces?.find(item => item.place_id === selectedPlaceId);
+  useEffect(() => getPlaces(), []);
 
   useEffect(() => {
-    if (selectedPlace) {
-      setCenter([
-        selectedPlace.location.longitude || 0,
-        selectedPlace.location.latitude || 0,
-      ]);
-      setZoom(14);
+    if (selectedPlaceId && places?.searchPlaces?.length) {
+      const selectedPlace = places?.searchPlaces?.find(
+        item => item.place_id === selectedPlaceId
+      );
+      if (selectedPlace) {
+        setCenter([
+          selectedPlace.location.longitude || 0,
+          selectedPlace.location.latitude || 0,
+        ]);
+        setZoom(14);
+      } else {
+        getPlaces();
+      }
     }
-  }, [selectedPlace]);
+  }, [selectedPlaceId, places?.searchPlaces]);
 
   return (
     <div className={classes.root}>
@@ -156,6 +163,33 @@ const MainLayout = () => {
         animationOptions={{
           animate: true,
           duration: 2000,
+        }}
+        onMoveEnd={map => {
+          getAddressFromCoordinates({
+            // eslint-disable-next-line
+            latitude: map.transform._center.lat,
+            // eslint-disable-next-line
+            longitude: map.transform._center.lng,
+          }).then(response => {
+            response.json().then(newLocation => {
+              if (newLocation.features?.length) {
+                const text =
+                  newLocation.features.find(
+                    item => item.place_type[0] === 'place'
+                  )?.text || newLocation.features[0].text;
+                if (text !== location) {
+                  setLocation(text);
+                }
+              }
+            });
+          });
+        }}
+        onZoomEnd={map => {
+          // eslint-disable-next-line
+          if (zoom !== map.transform._zoom) {
+            // eslint-disable-next-line
+            setZoom(map.transform._zoom);
+          }
         }}
       >
         {places?.searchPlaces?.map(place => (
@@ -225,7 +259,7 @@ const MainLayout = () => {
         </Grid>
       </div>
 
-      <Sidebar />
+      <Sidebar location={location} />
 
       <Navigation />
 
@@ -266,6 +300,7 @@ const MainLayout = () => {
               open
               onClose={() => dispatch(closeModal('add-place-modal'))}
               category={modalInfo?.category || ''}
+              places={places?.searchPlaces}
             />
           )}
         </>

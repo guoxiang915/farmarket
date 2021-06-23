@@ -191,7 +191,8 @@ type PlaceDetail {
     hours: [BusinessHours!]
     facebook_url: String
     order_url: String
-    ownership: Boolean
+    creator_id: String
+    owner_id: String
     farm: PlaceFarm
     foodCoOp: PlaceFoodCoOp
     groceries: PlaceGroceries

@@ -21,6 +21,7 @@ import {
 import Geocoder from '../mapbox/Geocoder';
 import ReadonlyText from '../forms/ReadonlyText';
 import AddHourDialog from './AddHourDialog';
+import { getOpenedState } from '../../utils/functions';
 
 export default function OverviewInfo({
   data,
@@ -144,15 +145,18 @@ export default function OverviewInfo({
               placeholder="Your Business Hours here"
               onOpen={() => setShowHourDialog(true)}
               value={
-                data.hours.status ||
-                (data.hours.hours || [])
-                  .filter(item => item.start && item.end)
-                  .map(
-                    item =>
-                      `${item.weekday[0].toUpperCase() +
-                        item.weekday.substring(1)}: ${item.start}-${item.end}`
-                  )
-                  .join(',')
+                data.hours.status
+                  ? getOpenedState(data.hours)
+                  : (data.hours.hours || [])
+                      .filter(item => item.start && item.end)
+                      .map(
+                        item =>
+                          `${item.weekday[0].toUpperCase() +
+                            item.weekday.substring(1)}: ${item.start}-${
+                            item.end
+                          }`
+                      )
+                      .join(',')
               }
               name="overview.hours"
               onBlur={onBlur}

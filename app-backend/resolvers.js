@@ -30,7 +30,9 @@ export const resolvers = [
           throw new Error('Invalid user data');
         }
 
-        const places = await knex('Place').where('user_id', user.id);
+        const places = await knex('Place').where(function() {
+          this.where('creator_id', user.id).orWhere('owner_id', user.id);
+        });
         places.map(place => {
           if (typeof place.location === 'string') {
             place.location = JSON.parse(place.location);
@@ -317,7 +319,7 @@ export const resolvers = [
         await knex('Place')
           .insert({
             place_id: placeId,
-            user_id: userData.id,
+            creator_id: userData.id,
             name: overview.name,
             bio: overview.bio,
             category: overview.category,
@@ -327,7 +329,7 @@ export const resolvers = [
             hours: JSON.stringify(overview.hours),
             facebook_url: overview.facebookUrl,
             order_url: overview.orderUrl,
-            ownership: overview.ownership,
+            owner_id: overview.ownership ? userData.id : null,
           })
           .returning('place_id');
 

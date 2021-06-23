@@ -6,7 +6,7 @@ import {
   RoomOutlined,
   SupervisorAccountOutlined,
 } from '@material-ui/icons';
-import Autocomplete from '../forms/Autocomplete';
+import { Autocomplete } from '@material-ui/lab';
 
 export default function FoodCoOp({
   data,
@@ -48,26 +48,31 @@ export default function FoodCoOp({
           </Grid>
           <Grid item xs={11}>
             <div className={classes.label}>Associated farms</div>
-            {/* <TextField
-              fullWidth
-              placeholder="Search for a farm"
-              name="foodCoOp.farm"
-              value={data.farm}
-              onChange={onChange}
-              errors={errors.farm && touched.farm}
-              helperText={errors.farm && touched.farm ? errors.farm : null}
-            /> */}
             <Autocomplete
-              InputProps={{
-                fullWidth: true,
-                placeholder: 'Search for a farm',
-                name: 'foodCoOp.farm',
-                onChange: onChange,
-                errors: errors.farm && touched.farm,
-                helperText: errors.farm && touched.farm ? errors.farm : null,
-              }}
-              value={data.farm}
+              multiple
+              id="foodCoOp.farm"
               options={farms}
+              getOptionLabel={option => option.title}
+              defaultValue={data.farm || []}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  placeholder="Search for a farm"
+                  name="foodCoOp.farm"
+                  errors={errors.farm && touched.farm}
+                  helperText={errors.farm && touched.farm ? errors.farm : null}
+                />
+              )}
+              onChange={(event, value) => {
+                const result = !Array.isArray(value) ? [value] : value;
+                onChange({
+                  target: {
+                    value: result.map(item => item.id),
+                    name: 'foodCoOp.farm',
+                  },
+                });
+              }}
             />
           </Grid>
         </Grid>
