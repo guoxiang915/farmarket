@@ -1,0 +1,51 @@
+001-alcohol.png
+002-baby products.png
+003-sweets.png
+004-barcode.png
+005-basket.png
+006-bill.png
+007-bread.png
+008-Butter.png
+009-canned food.png
+010-swipe card.png
+011-cart.png
+012-cash register.png
+013-cash register.png
+014-cashier.png
+015-cereal.png
+016-cheeses.png
+017-cleaning products.png
+018-fashion.png
+019-coffee.png
+020-cosmetics.png
+021-coupon.png
+022-softdrinks.png
+023-egg.png
+024-flour.png
+025-forklift.png
+026-frozen goods.png
+027-fruits.png
+028-shopping online.png
+029-shopping.png
+030-grocery cart.png
+031-shopping.png
+032-scale.png
+033-sauces.png
+034-kitchen tools.png
+035-meat.png
+036-milk.png
+037-oil.png
+038-pasta.png
+039-scanner.png
+040-pet food.png
+041-pizza.png
+042-sausages.png
+043-seafood.png
+044-store.png
+045-supplementary food.png
+046-snacks.png
+047-toiletries.png
+048-toys.png
+049-vegetables.png
+050-water.png
+filenames.txt

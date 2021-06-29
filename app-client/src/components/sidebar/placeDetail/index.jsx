@@ -26,6 +26,7 @@ import {
 } from '../../../utils/functions';
 import { PLACE_DETAIL_QUERY } from '../../../graphql/query';
 import { selectPlace } from '../../../store/actions/appActions';
+import PlaceDetailDialog from '../../place/PlaceDetailDialog';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -136,6 +137,30 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CarouselItem = ({ data, item, classes }) => {
+  const [opened, setOpened] = useState(false);
+  const groceryData = {
+    name: item,
+    imgs: [
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+    ],
+    properties: [
+      { type: 'egg', value: 24 },
+      { type: 'vegetables', value: 15 },
+      { type: 'fruits', value: 13 },
+    ],
+    checks: [
+      { checked: true, value: 'Vegetarian' },
+      { checked: false, value: 'Delivery' },
+      { checked: true, value: 'Enrolling untill June 1st' },
+      { checked: true, value: 'Weekly pickup' },
+      { checked: true, value: 'Organic' },
+    ],
+  };
+
   return (
     <Paper
       className={classes.carouselItem}
@@ -144,7 +169,19 @@ const CarouselItem = ({ data, item, classes }) => {
         backgroundSize: 'cover',
       }}
     >
-      <div className={classes.carouselName}>{item}</div>
+      {/* eslint-disable-next-line */}
+      <div className={classes.carouselName} onClick={() => setOpened(true)}>
+        {item}
+      </div>
+      {opened && (
+        <PlaceDetailDialog
+          open
+          onClose={() => setOpened(false)}
+          onOrder={() => {}}
+          groceryBox={groceryData}
+          place={data}
+        />
+      )}
     </Paper>
   );
 };
