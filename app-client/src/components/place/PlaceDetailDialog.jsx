@@ -21,7 +21,8 @@ import * as propertyIcons from '../icons/PropertyIcons';
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    width: 500,
+    width: 800,
+    maxWidth: 'unset',
     [theme.breakpoints.down('xs')]: {
       width: '100%',
     },
@@ -29,21 +30,23 @@ const useStyles = makeStyles(theme => ({
 
   wrapper: {
     width: '100%',
-    display: 'flex',
-    alignItems: 'flex-start',
+    display: 'grid',
+    alignContent: 'start',
+    gridTemplateColumns: '40% auto',
     [theme.breakpoints.down('xs')]: {
-      flexDirection: 'column',
+      // flexDirection: 'column',
+      gridTemplateColumns: '100%',
     },
   },
 
   imgBox: {
-    width: '40%',
+    width: '100%',
+    height: '100%',
     padding: '24px 16px',
     display: 'flex',
     flexDirection: 'column',
     borderRight: '1px solid #eee',
     [theme.breakpoints.down('xs')]: {
-      width: '100%',
       border: 'none',
       borderBottom: '1px solid #eee',
     },
@@ -64,12 +67,7 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
   },
 
-  infoBox: {
-    width: '60%',
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',
-    },
-  },
+  infoBox: {},
 
   header: {
     padding: '24px 16px',
@@ -84,6 +82,12 @@ const useStyles = makeStyles(theme => ({
   controls: {
     padding: '24px 16px',
     borderBottom: '1px solid #eee',
+
+    '& .MuiGrid-item': {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
   },
 
   title: {
@@ -99,11 +103,21 @@ const useStyles = makeStyles(theme => ({
     fontSize: '12px',
     textAlign: 'start',
     textTransform: 'capitalize',
+    marginBottom: 16,
   },
 
   properties: {
     display: 'flex',
     flexWrap: 'wrap',
+  },
+
+  propertyIcon: {
+    width: 24,
+    height: 24,
+  },
+
+  propertyName: {
+    color: 'black',
   },
 
   buttonLabel: {
@@ -124,8 +138,8 @@ const useStyles = makeStyles(theme => ({
   actionButton: {
     width: '100%',
     borderRadius: 999,
-    color: '#27AE60',
-    borderColor: '#27AE60',
+    // color: '#27AE60',
+    // borderColor: '#27AE60',
     marginLeft: 'auto',
     marginRight: 'auto',
   },
@@ -139,17 +153,18 @@ const PlaceDetailDialog = ({ groceryBox, place, onOrder, open, onClose }) => {
     <Dialog open={open} onClose={onClose} classes={{ paper: classes.paper }}>
       <div className={classes.wrapper}>
         <div className={classes.imgBox}>
-          <div
+          <img
             className={classes.primaryImg}
-            style={{ backgroundImage: groceryBox.imgs?.[pos] || '' }}
+            src={groceryBox.imgs?.[pos]}
+            alt={groceryBox.nameP}
           />
           <Grid container spacing={2}>
             {groceryBox.imgs?.map((item, index) => (
-              <Grid item key={index}>
+              <Grid item key={index} xs={4} sm={3}>
                 {/* eslint-disable-next-line */}
-                <div
+                <img
                   className={classes.imgItem}
-                  style={{ backgroundImage: item }}
+                  src={item}
                   onClick={() => setPos(index)}
                 />
               </Grid>
@@ -166,8 +181,7 @@ const PlaceDetailDialog = ({ groceryBox, place, onOrder, open, onClose }) => {
               {groceryBox.name} from {place.name}
             </Typography>
             <Typography
-              type="subtitle"
-              component="span"
+              variant="subtitle1"
               classes={{ root: classes.subtitle }}
             >
               Now enrolling
@@ -176,10 +190,23 @@ const PlaceDetailDialog = ({ groceryBox, place, onOrder, open, onClose }) => {
               {groceryBox.properties.map((property, index) => (
                 <Box key={index} pb={1} pr={1}>
                   <Chip
-                    icon={propertyIcons[property.type]}
+                    icon={
+                      <img
+                        src={propertyIcons[property.type]}
+                        alt={property.type}
+                        className={classes.propertyIcon}
+                      />
+                    }
                     label={
-                      <span>
-                        <b>{property.value}</b> {property.type}
+                      <span className={classes.propertyName}>
+                        <Typography
+                          variant="subtitle2"
+                          component="span"
+                          style={{ fontWeight: 'bold' }}
+                        >
+                          {property.value}
+                        </Typography>{' '}
+                        {property.type}
                       </span>
                     }
                   />
@@ -188,10 +215,10 @@ const PlaceDetailDialog = ({ groceryBox, place, onOrder, open, onClose }) => {
             </div>
           </div>
           <div className={classes.checks}>
-            <Typography type="subtitle" component="span">
-              Our food is naturally processed and the strictest precautions are
-              taken place to make sure you get the freshest foods
+            <Typography variant="subtitle1" component="span">
+              {groceryBox.description}
             </Typography>
+            <Box pt={2} />
             <Grid container spacing={2}>
               {groceryBox.checks.map((check, index) => (
                 <Grid item xs={6} key={index}>
@@ -209,7 +236,7 @@ const PlaceDetailDialog = ({ groceryBox, place, onOrder, open, onClose }) => {
           </div>
           <div className={classes.controls}>
             <Grid container spacing={2}>
-              <Grid item xs={3} alignItems="center">
+              <Grid item xs={3}>
                 <IconButton>
                   <Directions color="primary" />
                 </IconButton>

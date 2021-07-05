@@ -8,7 +8,6 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
   },
   itemContainer: {
-    width: 'fit-content',
     borderBottom: `1px solid ${theme.colors.primary.lightGrey}`,
     padding: '16px 20px',
     color: theme.colors.primary.mediumGrey,

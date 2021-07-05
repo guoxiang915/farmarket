@@ -238,7 +238,6 @@ type Mutation {
 
 type Query {
     meInfo: GetUserInfo
-    searchFarms: User
     searchPlaces(q: String, cat: String, rating: String, hour: String, location: PlaceLocationInput): [Place]
     placeDetail(id: ID!): PlaceDetail
 }

@@ -136,31 +136,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CarouselItem = ({ data, item, classes }) => {
-  const [opened, setOpened] = useState(false);
-  const groceryData = {
-    name: item,
-    imgs: [
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-    ],
-    properties: [
-      { type: 'egg', value: 24 },
-      { type: 'vegetables', value: 15 },
-      { type: 'fruits', value: 13 },
-    ],
-    checks: [
-      { checked: true, value: 'Vegetarian' },
-      { checked: false, value: 'Delivery' },
-      { checked: true, value: 'Enrolling untill June 1st' },
-      { checked: true, value: 'Weekly pickup' },
-      { checked: true, value: 'Organic' },
-    ],
-  };
-
+const CarouselItem = ({ data, item, classes, onOpen }) => {
   return (
     <Paper
       className={classes.carouselItem}
@@ -168,20 +144,9 @@ const CarouselItem = ({ data, item, classes }) => {
         backgroundImage: `url(${data.img})`,
         backgroundSize: 'cover',
       }}
+      onClick={onOpen}
     >
-      {/* eslint-disable-next-line */}
-      <div className={classes.carouselName} onClick={() => setOpened(true)}>
-        {item}
-      </div>
-      {opened && (
-        <PlaceDetailDialog
-          open
-          onClose={() => setOpened(false)}
-          onOrder={() => {}}
-          groceryBox={groceryData}
-          place={data}
-        />
-      )}
+      <div className={classes.carouselName}>{item}</div>
     </Paper>
   );
 };
@@ -232,6 +197,32 @@ const PlaceDetail = ({ id }) => {
     }
   }, [place?.placeDetail?.location]);
 
+  const [opened, setOpened] = useState('');
+  const groceryData = {
+    name: opened,
+    description:
+      'Our food is naturally processed and the strictest precautions are taken place to make sure you get the freshest foods',
+    imgs: [
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
+    ],
+    properties: [
+      { type: 'egg', value: 24 },
+      { type: 'vegetables', value: 15 },
+      { type: 'fruits', value: 13 },
+    ],
+    checks: [
+      { checked: true, value: 'Vegetarian' },
+      { checked: false, value: 'Delivery' },
+      { checked: true, value: 'Enrolling untill June 1st' },
+      { checked: true, value: 'Weekly pickup' },
+      { checked: true, value: 'Organic' },
+    ],
+  };
+
   return (
     <div className={classes.container}>
       {loading || !data ? (
@@ -253,7 +244,7 @@ const PlaceDetail = ({ id }) => {
           </div>
           <div className={classes.blockContainer}>
             <Grid container spacing={2}>
-              <Grid item xs={3} alignItems="center">
+              <Grid item xs={3}>
                 <IconButton>
                   <Directions color="primary" />
                 </IconButton>
@@ -331,6 +322,7 @@ const PlaceDetail = ({ id }) => {
                         item={item}
                         data={data}
                         classes={classes}
+                        onOpen={() => setOpened(item)}
                       />
                     ))}
                   </Carousel>
@@ -385,6 +377,16 @@ const PlaceDetail = ({ id }) => {
             </Grid>
           </div>
         </>
+      )}
+
+      {opened && (
+        <PlaceDetailDialog
+          open
+          onClose={() => setOpened('')}
+          onOrder={() => {}}
+          groceryBox={groceryData}
+          place={data}
+        />
       )}
     </div>
   );

@@ -27,6 +27,7 @@ import { showSnackbar } from '../../store/actions/appActions';
 import { ADD_PLACE_MUTATION } from '../../graphql/mutation';
 import { SEARCH_PLACES_QUERY } from '../../graphql/query';
 import useLogin from '../../utils/hooks/useLogin';
+import AddPhotos from './AddPhotos';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -388,6 +389,23 @@ const AddPlaceDialog = ({
                       onBlur={handleBlur}
                       classes={classes}
                     />
+                  </AccordionDetails>
+                </Accordion>
+
+                {/* Add photos fields */}
+                <Accordion
+                  expanded={expanded === 'photos'}
+                  onChange={() => setExpanded('photos')}
+                  className={classes.section}
+                >
+                  <AccordionSummary
+                    className={classes.sectionHeader}
+                    expandIcon={<ExpandMore />}
+                  >
+                    <div className={classes.sectionTitle}>Upload photos</div>
+                  </AccordionSummary>
+                  <AccordionDetails className={classes.sectionContent}>
+                    <AddPhotos />
                   </AccordionDetails>
                 </Accordion>
 
