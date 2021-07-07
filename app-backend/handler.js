@@ -17,14 +17,17 @@ import { createContext } from './context';
 //   loaders: [new GraphQLFileLoader()],
 // });
 
+// Graphql handler
 const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
   logger: console,
   tracing: true,
   context: createContext,
+  uploads: false,
 });
-exports.graphqlHandler = server.createHandler({
+
+export const graphqlHandler = server.createHandler({
   cors: {
     origin: '*',
   },
@@ -48,3 +51,5 @@ exports.graphqlHandler = server.createHandler({
 //       : '/production/graphql',
 //   })(event, context, callback);
 // };
+
+export * from './rest';

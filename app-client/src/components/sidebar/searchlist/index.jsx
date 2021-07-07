@@ -5,7 +5,7 @@ import { useLazyQuery } from '@apollo/client';
 
 import SearchFilter from './SearchFilter';
 import ResultList from './ResultList';
-import { SEARCH_PLACES_QUERY } from '../../../graphql/query';
+import { SEARCH_PLACES_QUERY } from '../../../graphql/queries';
 
 const useStyles = makeStyles(() => ({
   container: {

@@ -77,20 +77,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function AddPhotos() {
+export default function AddPhotos({ files, setFiles }) {
   const classes = useStyles();
-  const [files, setFiles] = useState([]);
   const [selectedPicture, setSelectedPicture] = useState(-1);
   const [loading] = useState(false);
   const dropzoneRef = useRef(null);
 
   const handleRemoveSelectedPicture = () => {
     files.splice(selectedPicture, 1);
-    setFiles([...files]);
     setSelectedPicture(-1);
+    setFiles([...files]);
   };
+  const fileUrls = files?.map(file => URL.createObjectURL(file)) || [];
 
-  console.log(files);
+  console.log(selectedPicture);
 
   return (
     <Box
@@ -102,12 +102,7 @@ export default function AddPhotos() {
       <Dropzone
         multiple
         ref={dropzoneRef}
-        onDrop={newFiles =>
-          setFiles([
-            ...files,
-            ...newFiles.map(file => URL.createObjectURL(file)),
-          ])
-        }
+        onDrop={newFiles => setFiles([...files, ...newFiles])}
         noClick
       >
         {({ getRootProps, getInputProps }) => (
@@ -189,7 +184,7 @@ export default function AddPhotos() {
         flexWrap="wrap"
         className={classes.coverPhotos}
       >
-        {files.map((file, index) => (
+        {fileUrls.map((file, index) => (
           <React.Fragment key={index}>
             <Box
               className={classNames(

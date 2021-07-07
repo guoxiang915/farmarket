@@ -1,4 +1,4 @@
-const connection = require('./connection');
+const connection = require('../knexfile');
 
 const knex = require('knex')(
   process.env.NODE_ENV === 'production'

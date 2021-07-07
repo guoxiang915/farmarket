@@ -7,7 +7,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { useMutation } from '@apollo/client';
-import { REGISTER_MUTATION } from '../../graphql/mutation';
+import { REGISTER_MUTATION } from '../../graphql/mutations';
 
 const useStyles = makeStyles(theme => ({
   form: {

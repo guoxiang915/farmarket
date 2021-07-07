@@ -1,4 +1,4 @@
-import knex from '../knex';
+import knex from '../utils/knex';
 
 // eslint-disable-next-line
 export const meInfo = async (parent, args, context) => {

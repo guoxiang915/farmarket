@@ -18,7 +18,7 @@ import { setUser } from '../../store/actions/authActions';
 import MapboxWorker from 'worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker';
 import RegisterDialog from '../../components/auth/RegisterDialog';
 import AddPlaceDialog from '../../components/place/AddPlaceDialog';
-import { GET_ME_INFO_QUERY, SEARCH_PLACES_QUERY } from '../../graphql/query';
+import { GET_ME_INFO_QUERY, SEARCH_PLACES_QUERY } from '../../graphql/queries';
 
 import normalMarker from '../../assets/normal-marker.png';
 import selectedMarker from '../../assets/selected-marker.jpg';
@@ -114,7 +114,7 @@ const MainLayout = () => {
     }
   }, [navigator.geolocation, center]);
 
-  const { error, data } = useQuery(GET_ME_INFO_QUERY, {
+  const { error, data, loading } = useQuery(GET_ME_INFO_QUERY, {
     variables: {
       token: localStorage.getItem('token') || '',
     },
@@ -129,7 +129,11 @@ const MainLayout = () => {
     dispatch(showSnackbar({ open: false }));
   };
 
-  useEffect(() => getPlaces(), []);
+  useEffect(() => {
+    if (!loading) {
+      getPlaces();
+    }
+  }, [loading]);
 
   useEffect(() => {
     if (selectedPlaceId && places?.searchPlaces?.length) {

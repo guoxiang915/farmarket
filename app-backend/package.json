@@ -23,12 +23,15 @@
     "@graphql-tools/schema": "^7.1.5",
     "apollo-server-lambda": "^2.24.0",
     "apollo-tracing": "^0.14.0",
+    "aws-sdk": "^2.939.0",
     "babel-runtime": "^6.26.0",
+    "busboy": "^0.3.1",
     "core-js": "^3.12.1",
     "crypto": "^1.0.1",
     "graph": "^0.2.0",
     "graphql": "^15.5.0",
     "graphql-playground-middleware-lambda": "^1.7.23",
+    "graphql-upload": "^12.0.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.95.5",
     "mysql": "^2.18.1",
@@ -39,7 +42,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "aws-sdk": "^2.905.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",

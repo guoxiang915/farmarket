@@ -1,34 +1,5 @@
 import { gql } from '@apollo/client';
 
-export const GET_ME_INFO_QUERY = gql`
-  query getMeInfo {
-    meInfo {
-      id
-      email
-      first_name
-      last_name
-      places {
-        place_id
-        name
-        bio
-        category
-        location {
-          latitude
-          longitude
-        }
-        hours {
-          status
-          hours {
-            start
-            end
-            weekday
-          }
-        }
-      }
-    }
-  }
-`;
-
 export const SEARCH_PLACES_QUERY = gql`
   query searchPlacesQuery(
     $q: String
@@ -92,6 +63,7 @@ export const PLACE_DETAIL_QUERY = gql`
       order_url
       creator_id
       owner_id
+      photos
       farm {
         id
         location {

@@ -10,7 +10,7 @@ import {
   LOGIN_BY_GOOGLE_MUTATION,
   REGISTER_BY_FACEBOOK_MUTATION,
   REGISTER_BY_GOOGLE_MUTATION,
-} from '../../graphql/mutation';
+} from '../../graphql/mutations';
 
 const useStyles = makeStyles(theme => ({
   buttonsContainer: {

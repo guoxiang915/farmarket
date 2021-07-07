@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import jwt from 'jsonwebtoken';
-import knex from '../knex';
+import knex from '../utils/knex';
 
 export const registerUser = async (
   parent,

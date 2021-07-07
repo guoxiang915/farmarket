@@ -24,9 +24,13 @@ import {
   getAddressFromCoordinates,
   getOpenedState,
 } from '../../../utils/functions';
-import { PLACE_DETAIL_QUERY } from '../../../graphql/query';
+import { PLACE_DETAIL_QUERY } from '../../../graphql/queries';
 import { selectPlace } from '../../../store/actions/appActions';
 import PlaceDetailDialog from '../../place/PlaceDetailDialog';
+import {
+  defaultGroceryBoxes,
+  defaultPlacePhotos,
+} from '../../../utils/constants';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -136,17 +140,17 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CarouselItem = ({ data, item, classes, onOpen }) => {
+const CarouselItem = ({ name, img, classes, onOpen }) => {
   return (
     <Paper
       className={classes.carouselItem}
       style={{
-        backgroundImage: `url(${data.img})`,
+        backgroundImage: `url(${img})`,
         backgroundSize: 'cover',
       }}
       onClick={onOpen}
     >
-      <div className={classes.carouselName}>{item}</div>
+      <div className={classes.carouselName}>{name}</div>
     </Paper>
   );
 };
@@ -182,12 +186,9 @@ const PlaceDetail = ({ id }) => {
   }, [id]);
 
   const data = place?.placeDetail && { ...place.placeDetail };
-  if (data) {
-    data.img =
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80';
+  if (data && !data.photos?.length) {
+    data.photos = defaultPlacePhotos;
   }
-
-  const groceryFarms = ['Veggie', 'Meat Lover', 'Other Box'];
 
   useEffect(() => {
     if (place?.placeDetail?.location) {
@@ -197,31 +198,8 @@ const PlaceDetail = ({ id }) => {
     }
   }, [place?.placeDetail?.location]);
 
-  const [opened, setOpened] = useState('');
-  const groceryData = {
-    name: opened,
-    description:
-      'Our food is naturally processed and the strictest precautions are taken place to make sure you get the freshest foods',
-    imgs: [
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-      'https://images.unsplash.com/photo-1560493676-04071c5f467b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=968&q=80',
-    ],
-    properties: [
-      { type: 'egg', value: 24 },
-      { type: 'vegetables', value: 15 },
-      { type: 'fruits', value: 13 },
-    ],
-    checks: [
-      { checked: true, value: 'Vegetarian' },
-      { checked: false, value: 'Delivery' },
-      { checked: true, value: 'Enrolling untill June 1st' },
-      { checked: true, value: 'Weekly pickup' },
-      { checked: true, value: 'Organic' },
-    ],
-  };
+  const groceryFarms = defaultGroceryBoxes;
+  const [opened, setOpened] = useState(-1);
 
   return (
     <div className={classes.container}>
@@ -234,7 +212,16 @@ const PlaceDetail = ({ id }) => {
           <div className={classes.blockContainer}>
             <Grid container spacing={2}>
               <Grid item xs={12} alignItems="flex-start">
-                <img src={data.img} className={classes.img} alt={data.name} />
+                <Carousel keepDirectionWhenDragging>
+                  {data.photos.map((item, index) => (
+                    <img
+                      key={index}
+                      src={item}
+                      className={classes.img}
+                      alt={data.name}
+                    />
+                  ))}
+                </Carousel>
               </Grid>
               <Grid item xs={12} alignItems="flex-start">
                 <div className={classes.title}>{data.name}</div>
@@ -319,10 +306,14 @@ const PlaceDetail = ({ id }) => {
                     {groceryFarms.map((item, index) => (
                       <CarouselItem
                         key={index}
-                        item={item}
-                        data={data}
+                        name={item.name}
+                        img={
+                          (item.imgs?.length
+                            ? item.imgs
+                            : defaultPlacePhotos)[0]
+                        }
                         classes={classes}
-                        onOpen={() => setOpened(item)}
+                        onOpen={() => setOpened(index)}
                       />
                     ))}
                   </Carousel>
@@ -379,12 +370,12 @@ const PlaceDetail = ({ id }) => {
         </>
       )}
 
-      {opened && (
+      {opened !== -1 && (
         <PlaceDetailDialog
           open
-          onClose={() => setOpened('')}
+          onClose={() => setOpened(-1)}
           onOrder={() => {}}
-          groceryBox={groceryData}
+          groceryBox={groceryFarms[opened]}
           place={data}
         />
       )}

@@ -1,5 +1,5 @@
 import { isOpenFull, isOpenNow } from '../utils/functions';
-import knex from '../knex';
+import knex from '../utils/knex';
 
 export const searchPlaces = async (parent, args) => {
   const { q, cat, rating, hour } = args;
@@ -91,6 +91,9 @@ export const placeDetail = async (parent, args) => {
   }
   if (place.other_location && typeof place.other_location === 'string') {
     place.other_location = JSON.parse(place.other_location);
+  }
+  if (place.photos && typeof place.photos === 'string') {
+    place.photos = JSON.parse(place.photos);
   }
 
   if (place.farm && place.farm.farm_share) {

@@ -1,4 +1,6 @@
 const schema = `
+scalar Upload
+
 query getUsers {
     user {
         first_name
@@ -81,6 +83,7 @@ input PlaceOverviewInput {
     facebookUrl: String
     orderUrl: String
     ownership: Boolean
+    photos: [String!]
 }
 
 type FarmShareContent {
@@ -204,6 +207,7 @@ type PlaceDetail {
     order_url: String
     creator_id: String
     owner_id: String
+    photos: [String!]
     farm: PlaceFarm
     foodCoOp: PlaceFoodCoOp
     groceries: PlaceGroceries
@@ -211,8 +215,11 @@ type PlaceDetail {
     farmerMarket: PlaceFarmerMarket
 }
 
+input FileInput {
+    name: String!
+}
+
 type Mutation {
-    # Create user info is available in dynamo integration
     registerUser(
         first_name: String,
         last_name: String,
@@ -222,8 +229,7 @@ type Mutation {
         token_id: String,
         facebook_id: String,
     ): RegisterResult!
-
-    # Create user info is available in dynamo integration
+    
     login(
         email: String!,
         password: String,
@@ -232,7 +238,6 @@ type Mutation {
         facebook_id: String,
     ): String!
 
-    # Add place
     addPlace(place: AddPlaceInput!): AddPlaceResult!
 }
 
@@ -240,6 +245,8 @@ type Query {
     meInfo: GetUserInfo
     searchPlaces(q: String, cat: String, rating: String, hour: String, location: PlaceLocationInput): [Place]
     placeDetail(id: ID!): PlaceDetail
+    getUploadFileUrl(file: FileInput!): String!
+    getUploadFilesUrl(files: [FileInput!]): [String!]
 }
 
 type Subscription {

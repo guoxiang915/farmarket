@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import knex from '../knex';
+import knex from '../utils/knex';
 
 // eslint-disable-next-line
 export const addPlace = async (parent, { place }, context) => {
@@ -42,6 +42,7 @@ export const addPlace = async (parent, { place }, context) => {
       facebook_url: overview.facebookUrl,
       order_url: overview.orderUrl,
       owner_id: overview.ownership ? userData.id : null,
+      photos: overview.photos ? JSON.stringify(overview.photos) : null,
     })
     .returning('place_id');
 

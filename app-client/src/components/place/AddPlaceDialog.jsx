@@ -17,15 +17,18 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { Close as CloseIcon, ExpandMore } from '@material-ui/icons';
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import OverviewInfo from './OverviewInfo';
 import Groceries from './Groceries';
 import Farm from './Farm';
 import FoodCoOp from './FoodCoOp';
 import FarmerMarket from './FarmerMarket';
 import { showSnackbar } from '../../store/actions/appActions';
-import { ADD_PLACE_MUTATION } from '../../graphql/mutation';
-import { SEARCH_PLACES_QUERY } from '../../graphql/query';
+import { ADD_PLACE_MUTATION } from '../../graphql/mutations';
+import {
+  GET_UPLOAD_FILES_URL_QUERY,
+  // SEARCH_PLACES_QUERY,
+} from '../../graphql/queries';
 import useLogin from '../../utils/hooks/useLogin';
 import AddPhotos from './AddPhotos';
 
@@ -226,6 +229,8 @@ const AddPlaceDialog = ({
   const { push } = useHistory();
   const { checkLogin } = useLogin();
 
+  const [photos, setPhotos] = useState([]);
+
   const [expanded, setExpanded] = useState('overview');
   const initialValues = {
     overview: {
@@ -238,6 +243,7 @@ const AddPlaceDialog = ({
       orderUrl: '',
       ownership: false,
       hours: {},
+      photos: [],
     },
     farm: {
       location: null,
@@ -256,6 +262,7 @@ const AddPlaceDialog = ({
       structure: 'For-profit',
     },
   };
+  const [submitValues, setSubmitValues] = useState(null);
 
   const categories = [
     { value: 'farm', label: 'Farm' },
@@ -265,71 +272,143 @@ const AddPlaceDialog = ({
     { value: 'farmerMarket', label: "Farmer's Market" },
   ];
 
-  const [submitAddPlace, { loading, error, data: resultPlace }] = useMutation(
-    ADD_PLACE_MUTATION,
-    {
-      errorPolicy: 'none',
-      refetchQueries: [
-        {
-          query: SEARCH_PLACES_QUERY,
-        },
-      ],
-    }
-  );
+  const [submitAddPlace, { loading }] = useMutation(ADD_PLACE_MUTATION, {
+    errorPolicy: 'none',
+    // refetchQueries: [
+    //   {
+    //     query: SEARCH_PLACES_QUERY,
+    //   },
+    // ],
+  });
+
+  const [
+    getUploadFilesUrl,
+    { data: photosUrl, loading: uploading, error: uploadingError },
+  ] = useLazyQuery(GET_UPLOAD_FILES_URL_QUERY);
+  // const [uploadPhoto, { loading: uploading }] = useMutation(
+  //   UPLOAD_FILE_MUTATION
+  // );
 
   const onSubmit = async values => {
     if (checkLogin()) {
-      if (values.overview.location) {
-        values.overview.location = {
-          latitude: values.overview.location.latitude,
-          longitude: values.overview.location.longitude,
-        };
+      if (photos) {
+        // const formData = new FormData();
+        // formData.append('file', photos[0], photos[0].name);
+        // photos.forEach(photo => {
+        //   formData.append('files[]', photo, photo.name);
+        // });
+        // console.log(formData.getAll('files[]'), photos);
+
+        await getUploadFilesUrl({
+          variables: {
+            files: photos.map(photo => ({ name: photo.name })),
+          },
+        });
+
+        setSubmitValues(values);
+      } else {
+        dispatch(
+          showSnackbar({
+            open: true,
+            severity: 'error',
+            message: 'You should upload at least one photo',
+          })
+        );
       }
-      if (values.overview.otherLocation) {
-        values.overview.otherLocation = {
-          latitude: values.overview.otherLocation.latitude,
-          longitude: values.overview.otherLocation.longitude,
-        };
-      }
-      if (values.farm.location) {
-        values.farm.location = {
-          latitude: values.farm.location.latitude,
-          longitude: values.farm.location.longitude,
-        };
-      }
-      await submitAddPlace({
-        variables: {
-          place: values,
-        },
-      });
     }
   };
 
   useEffect(() => {
-    if (error?.message) {
+    if (!uploading && uploadingError) {
       dispatch(
         showSnackbar({
           open: true,
           severity: 'error',
-          message: error.message,
+          message: uploadingError.message,
         })
       );
     }
-  }, [error?.message]);
+  }, [uploading, uploadingError]);
 
   useEffect(() => {
-    if (!loading && resultPlace?.addPlace?.place_id) {
-      onClose();
-      dispatch(
-        showSnackbar({
-          open: true,
-          severity: 'success',
-          message: `${resultPlace.addPlace.name} has been successfully created`,
-        })
-      );
-      push(`/place/${resultPlace?.addPlace?.place_id}`);
+    const addPlace = async () => {
+      if (photosUrl?.getUploadFilesUrl?.length) {
+        await Promise.all(
+          photosUrl.getUploadFilesUrl.map((url, index) => {
+            return fetch(url, {
+              method: 'PUT',
+              body: photos[index],
+              // mode: 'no-cors',
+              headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': photos[index].type,
+              },
+            });
+          })
+        );
+        submitValues.overview.photos = photosUrl.getUploadFilesUrl.map(
+          url => url.split('?')[0]
+        );
+      }
+
+      if (submitValues.overview.location) {
+        submitValues.overview.location = {
+          latitude: submitValues.overview.location.latitude,
+          longitude: submitValues.overview.location.longitude,
+        };
+      }
+      if (submitValues.overview.otherLocation) {
+        submitValues.overview.otherLocation = {
+          latitude: submitValues.overview.otherLocation.latitude,
+          longitude: submitValues.overview.otherLocation.longitude,
+        };
+      }
+      if (submitValues.farm.location) {
+        submitValues.farm.location = {
+          latitude: submitValues.farm.location.latitude,
+          longitude: submitValues.farm.location.longitude,
+        };
+      }
+
+      const { data: resultPlace, errors } = await submitAddPlace({
+        variables: {
+          place: submitValues,
+        },
+      });
+
+      if (errors?.length) {
+        dispatch(
+          showSnackbar({
+            open: true,
+            severity: 'error',
+            message: errors.map(e => e.message).join('\n'),
+          })
+        );
+        return;
+      }
+
+      if (resultPlace?.addPlace?.place_id) {
+        onClose();
+        dispatch(
+          showSnackbar({
+            open: true,
+            severity: 'success',
+            message: `${resultPlace.addPlace.name} has been successfully created`,
+          })
+        );
+        push(`/place/${resultPlace?.addPlace?.place_id}`);
+      }
+    };
+
+    if (
+      !uploading &&
+      !uploadingError &&
+      submitValues &&
+      photosUrl?.getUploadFilesUrl?.length
+    ) {
+      addPlace();
     }
-  }, [loading, resultPlace?.addPlace]);
+  }, [uploading, uploadingError, submitValues]);
 
   const farms =
     places?.map(item => ({ id: item.place_id, title: item.name })) || [];
@@ -405,7 +484,7 @@ const AddPlaceDialog = ({
                     <div className={classes.sectionTitle}>Upload photos</div>
                   </AccordionSummary>
                   <AccordionDetails className={classes.sectionContent}>
-                    <AddPhotos />
+                    <AddPhotos files={photos} setFiles={setPhotos} />
                   </AccordionDetails>
                 </Accordion>
 
@@ -439,16 +518,25 @@ const AddPlaceDialog = ({
               </DialogContent>
 
               <DialogActions className={classes.actions}>
-                <Button onClick={onClose} color="primary" disabled={loading}>
+                <Button
+                  onClick={onClose}
+                  color="primary"
+                  disabled={loading || uploading}
+                >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   color="primary"
                   variant="contained"
-                  disabled={(errors && !!Object.keys(errors).length) || loading}
+                  disabled={
+                    (errors && !!Object.keys(errors).length) ||
+                    !photos.length ||
+                    loading ||
+                    uploading
+                  }
                 >
-                  {loading && (
+                  {(loading || uploading) && (
                     <CircularProgress size={16} className={classes.progress} />
                   )}{' '}
                   Submit
