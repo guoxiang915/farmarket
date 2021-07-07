@@ -1,5 +1,5 @@
 const udata = require('./Users.json');
-const connection = require('../utils/connection');
+const connection = require('../knexfile');
 
 const knex = require('knex')(connection.production);
 

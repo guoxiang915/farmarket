@@ -14,7 +14,7 @@
     "seed-prod-batch": "cd seed-data && node create_seed_data.js && node batch_insert.js",
     "start": "yarn migrate && yarn seed-local && env-cmd ../config/security.env.local serverless offline start --httpPort 4000",
     "dev": "env-cmd ../config/security.env.local serverless offline start --httpPort 4000",
-    "deploy-prod": "env-cmd ../config/security.env.prod yarn migrate --env production && env-cmd ../config/security.env.prod yarn seed-prod && yarn deploy-sls",
+    "deploy-prod": "env-cmd ../config/security.env.prod yarn migrate --env production && yarn deploy-sls",
     "deploy-sls": "env-cmd ../config/security.env.prod serverless --stage=dev deploy"
   },
   "dependencies": {
