@@ -90,8 +90,6 @@ export default function AddPhotos({ files, setFiles }) {
   };
   const fileUrls = files?.map(file => URL.createObjectURL(file)) || [];
 
-  console.log(selectedPicture);
-
   return (
     <Box
       width="100%"

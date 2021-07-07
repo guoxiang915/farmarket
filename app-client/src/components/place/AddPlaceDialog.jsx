@@ -292,13 +292,6 @@ const AddPlaceDialog = ({
   const onSubmit = async values => {
     if (checkLogin()) {
       if (photos) {
-        // const formData = new FormData();
-        // formData.append('file', photos[0], photos[0].name);
-        // photos.forEach(photo => {
-        //   formData.append('files[]', photo, photo.name);
-        // });
-        // console.log(formData.getAll('files[]'), photos);
-
         await getUploadFilesUrl({
           variables: {
             files: photos.map(photo => ({ name: photo.name })),
@@ -338,7 +331,6 @@ const AddPlaceDialog = ({
             return fetch(url, {
               method: 'PUT',
               body: photos[index],
-              // mode: 'no-cors',
               headers: {
                 'Access-Control-Allow-Origin': '*',
                 'Content-Type': photos[index].type,
@@ -432,7 +424,6 @@ const AddPlaceDialog = ({
           const category = categories.find(
             item => item.value === selectedCategory
           );
-          console.log(values);
           return (
             <form onSubmit={handleSubmit}>
               <div className={classes.header}>
