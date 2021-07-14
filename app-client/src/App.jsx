@@ -6,7 +6,6 @@ import {
   InMemoryCache,
   createHttpLink,
 } from '@apollo/client';
-// import { createUploadLink } from 'apollo-upload-client';
 import { setContext } from '@apollo/client/link/context';
 import { MuiThemeProvider } from '@material-ui/core';
 import { Provider } from 'react-redux';
@@ -29,15 +28,6 @@ const authLink = setContext((_, { headers }) => {
 const httpLink = createHttpLink({
   uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
 });
-
-// const uploadLink = createUploadLink({
-//   uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
-//   header: {
-//     'keep-alive': 'true',
-//   },
-// });
-
-console.log(authLink);
 
 const client = new ApolloClient({
   link: authLink.concat(httpLink),

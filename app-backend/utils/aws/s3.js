@@ -9,7 +9,4 @@ const s3 = new S3({
   },
 });
 
-console.log(process.env.AWS_ACCESS_KEY_ID);
-
-console.log(process.env.S3_AWS_ACCESS_KEY_ID);
 export default s3;

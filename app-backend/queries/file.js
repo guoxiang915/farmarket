@@ -45,8 +45,6 @@ export const getUploadFileUrl = async (
     )
   );
 
-  console.log(result);
-
   return result;
 };
 
