@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles, Grid } from '@material-ui/core';
-import { Check, Close } from '@material-ui/icons';
 import { getOpenedState } from '../../../utils/functions';
+import CheckItem from './../../utils/CheckItem';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -43,13 +43,6 @@ const useStyles = makeStyles(theme => ({
 
 const ResultList = ({ items, onSelect }) => {
   const classes = useStyles();
-  const checks = [
-    'pickUp',
-    'appointments',
-    'enrollmentOpen',
-    'organic',
-    'delivery',
-  ];
 
   return (
     <div className={classes.container}>
@@ -78,22 +71,19 @@ const ResultList = ({ items, onSelect }) => {
               </Grid>
               <Grid item xs={12} alignItems="flex-start">
                 <Grid container wrap spacing={2}>
-                  {checks.map(check => (
-                    <>
-                      {item[check] === undefined ? null : (
-                        <Grid item key={check}>
-                          <div className={classes.checkItem}>
-                            {item[check] ? (
-                              <Check color="primary" />
-                            ) : (
-                              <Close color="error" />
-                            )}{' '}
-                            <span style={{ marginLeft: 8 }}>{check}</span>
-                          </div>
-                        </Grid>
-                      )}
-                    </>
-                  ))}
+                  {item.services && Object.keys(item.services)?.length ? (
+                    <Grid item xs={12} alignItems="flex-start">
+                      <Grid container wrap spacing={2}>
+                        {Object.keys(item.services)
+                          .slice(0, 3)
+                          .map(check => (
+                            <Grid item key={check}>
+                              <CheckItem values={item.services} check={check} />
+                            </Grid>
+                          ))}
+                      </Grid>
+                    </Grid>
+                  ) : null}
                 </Grid>
               </Grid>
             </Grid>
