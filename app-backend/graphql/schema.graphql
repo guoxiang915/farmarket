@@ -70,6 +70,7 @@ input PlaceOverviewInput {
     facebookUrl: String
     orderUrl: String
     ownership: Boolean
+    services: [String!]
 }
 
 type FarmShareContent {
@@ -193,6 +194,8 @@ type PlaceDetail {
     order_url: String
     creator_id: String
     owner_id: String
+    photos: [String!]
+    services: String
     farm: PlaceFarm
     foodCoOp: PlaceFoodCoOp
     groceries: PlaceGroceries

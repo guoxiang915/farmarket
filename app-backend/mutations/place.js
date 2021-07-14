@@ -43,6 +43,11 @@ export const addPlace = async (parent, { place }, context) => {
       order_url: overview.orderUrl,
       owner_id: overview.ownership ? userData.id : null,
       photos: overview.photos ? JSON.stringify(overview.photos) : null,
+      services: JSON.stringify(
+        Object.fromEntries(
+          (overview.services || []).map(service => [service, true])
+        )
+      ),
     })
     .returning('place_id');
 
@@ -69,7 +74,7 @@ export const addPlace = async (parent, { place }, context) => {
           url: farm.url,
           specialities: JSON.stringify(farm.specialities),
           tags: JSON.stringify(farm.tags),
-          farmShare: JSON.stringify(farmShare),
+          farm_share: JSON.stringify(farmShare),
         });
       }
       break;

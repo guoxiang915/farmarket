@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import { useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import {
@@ -8,17 +9,16 @@ import {
   Grid,
   Button,
   Paper,
+  Box,
 } from '@material-ui/core';
 import {
-  Check,
-  Close,
   Directions,
   Favorite,
+  KeyboardArrowRight,
   Room,
   Send,
   Share,
 } from '@material-ui/icons';
-import Carousel from '@brainhubeu/react-carousel';
 import { useLazyQuery } from '@apollo/client';
 import {
   getAddressFromCoordinates,
@@ -31,6 +31,9 @@ import {
   defaultGroceryBoxes,
   defaultPlacePhotos,
 } from '../../../utils/constants';
+import CarouselWrapper from '../../utils/CarouselWrapper';
+import CheckItem from '../../utils/CheckItem';
+import ServiceDetails from './ServiceDetails';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -88,14 +91,6 @@ const useStyles = makeStyles(theme => ({
     borderColor: '#27AE60',
     marginLeft: 'auto',
     marginRight: 'auto',
-  },
-
-  checkItem: {
-    textTransform: 'capitalize',
-    display: 'flex',
-    alignItems: 'center',
-    color: theme.colors.primary.mediumGrey,
-    fontSize: '14px',
   },
 
   carouselWrapper: {
@@ -156,15 +151,9 @@ const CarouselItem = ({ name, img, classes, onOpen }) => {
 };
 
 const PlaceDetail = ({ id }) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const classes = useStyles();
-  const checks = [
-    'pickUp',
-    'appointments',
-    'enrollmentOpen',
-    'organic',
-    'delivery',
-  ];
   const [address, setAddress] = useState(null);
 
   const [placeDetail, { loading, data: place }] = useLazyQuery(
@@ -189,6 +178,9 @@ const PlaceDetail = ({ id }) => {
   if (data && !data.photos?.length) {
     data.photos = defaultPlacePhotos;
   }
+  if (data && data.services) {
+    data.services = JSON.parse(data.services);
+  }
 
   useEffect(() => {
     if (place?.placeDetail?.location) {
@@ -201,8 +193,17 @@ const PlaceDetail = ({ id }) => {
   const groceryFarms = defaultGroceryBoxes;
   const [opened, setOpened] = useState(-1);
 
+  const [openServices, setOpenServices] = useState(false);
+
   return (
     <div className={classes.container}>
+      {openServices && (
+        <ServiceDetails
+          place={data}
+          onClose={() => history.push('/')}
+          onBack={() => setOpenServices(false)}
+        />
+      )}
       {loading || !data ? (
         <div className={classes.loader}>
           <CircularProgress color="primary" />
@@ -212,7 +213,7 @@ const PlaceDetail = ({ id }) => {
           <div className={classes.blockContainer}>
             <Grid container spacing={2}>
               <Grid item xs={12} alignItems="flex-start">
-                <Carousel keepDirectionWhenDragging>
+                <CarouselWrapper>
                   {data.photos.map((item, index) => (
                     <img
                       key={index}
@@ -221,7 +222,7 @@ const PlaceDetail = ({ id }) => {
                       alt={data.name}
                     />
                   ))}
-                </Carousel>
+                </CarouselWrapper>
               </Grid>
               <Grid item xs={12} alignItems="flex-start">
                 <div className={classes.title}>{data.name}</div>
@@ -267,42 +268,39 @@ const PlaceDetail = ({ id }) => {
             </Grid>
           </div>
           <div className={classes.blockContainer}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} alignItems="flex-start">
-                <div className={classes.bio}>{data.bio}</div>
-              </Grid>
-              <Grid item xs={12} alignItems="flex-start">
-                <Grid container wrap spacing={2}>
-                  {checks.map(check => (
-                    <>
-                      {data[check] === undefined ? null : (
-                        <Grid item key={check}>
-                          <div className={classes.checkItem}>
-                            {data[check] ? (
-                              <Check color="primary" />
-                            ) : (
-                              <Close color="error" />
-                            )}{' '}
-                            <span style={{ marginLeft: 8 }}>{check}</span>
-                          </div>
-                        </Grid>
-                      )}
-                    </>
-                  ))}
+            <Box
+              display="flex"
+              alignItems="center"
+              style={{ cursor: 'pointer' }}
+              onClick={() => setOpenServices(true)}
+            >
+              <Grid container spacing={2} style={{ flex: 1, marginRight: 8 }}>
+                <Grid item xs={12} alignItems="flex-start">
+                  <div className={classes.bio}>{data.bio}</div>
                 </Grid>
+                {data.services && Object.keys(data.services)?.length ? (
+                  <Grid item xs={12} alignItems="flex-start">
+                    <Grid container wrap spacing={2}>
+                      {Object.keys(data.services)
+                        .slice(0, 3)
+                        .map(check => (
+                          <Grid item key={check}>
+                            <CheckItem values={data.services} check={check} />
+                          </Grid>
+                        ))}
+                    </Grid>
+                  </Grid>
+                ) : null}
               </Grid>
-            </Grid>
+              <KeyboardArrowRight />
+            </Box>
           </div>
           <div className={classes.blockContainer}>
             <Grid container>
               <Grid item xs={12}>
                 <div className={classes.title}>Grocery Boxes</div>
                 <div className={classes.carouselWrapper}>
-                  <Carousel
-                    itemWidth={130}
-                    offset={16}
-                    keepDirectionWhenDragging
-                  >
+                  <CarouselWrapper itemWidth={130} offset={16}>
                     {groceryFarms.map((item, index) => (
                       <CarouselItem
                         key={index}
@@ -316,7 +314,7 @@ const PlaceDetail = ({ id }) => {
                         onOpen={() => setOpened(index)}
                       />
                     ))}
-                  </Carousel>
+                  </CarouselWrapper>
                 </div>
               </Grid>
             </Grid>

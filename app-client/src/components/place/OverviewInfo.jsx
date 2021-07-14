@@ -11,6 +11,7 @@ import {
 import {
   AccessTimeOutlined,
   AccountCircleOutlined,
+  AddToPhotosOutlined,
   AnnouncementOutlined,
   ClassOutlined,
   DescriptionOutlined,
@@ -22,6 +23,7 @@ import Geocoder from '../mapbox/Geocoder';
 import ReadonlyText from '../forms/ReadonlyText';
 import AddHourDialog from './AddHourDialog';
 import { getOpenedState } from '../../utils/functions';
+import ChipInput from './../forms/ChipInput';
 
 export default function OverviewInfo({
   data,
@@ -33,6 +35,8 @@ export default function OverviewInfo({
   touched = {},
 }) {
   const [hourDialog, setShowHourDialog] = useState(false);
+
+  console.log(data);
 
   return (
     <Grid container spacing={4}>
@@ -220,6 +224,21 @@ export default function OverviewInfo({
               helperText={
                 errors.orderUrl && touched.orderUrl ? errors.orderUrl : null
               }
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container spacing={1} alignItems="flex-start">
+          <Grid item xs={1}>
+            <AddToPhotosOutlined />
+          </Grid>
+          <Grid item xs={11}>
+            <div className={classes.label}>Services</div>
+            <ChipInput
+              value={data.services}
+              name="overview.services"
+              onChange={onChange}
             />
           </Grid>
         </Grid>

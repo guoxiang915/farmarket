@@ -7,11 +7,11 @@ import {
   MoreOutlined,
   StorefrontOutlined,
 } from '@material-ui/icons';
-import ChipInput from 'material-ui-chip-input';
 import ReadonlyText from '../forms/ReadonlyText';
 import FarmSharesDialog from './FarmSharesDialog';
 import AddHourDialog from './AddHourDialog';
 import { getOpenedState } from '../../utils/functions';
+import ChipInput from './../forms/ChipInput';
 
 export default function Farm({ data, onChange, classes }) {
   const [hourDialog, setShowHourDialog] = useState(false);

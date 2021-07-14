@@ -64,6 +64,7 @@ export const PLACE_DETAIL_QUERY = gql`
       creator_id
       owner_id
       photos
+      services
       farm {
         id
         location {

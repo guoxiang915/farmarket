@@ -84,6 +84,7 @@ input PlaceOverviewInput {
     orderUrl: String
     ownership: Boolean
     photos: [String!]
+    services: [String!]
 }
 
 type FarmShareContent {
@@ -208,6 +209,7 @@ type PlaceDetail {
     creator_id: String
     owner_id: String
     photos: [String!]
+    services: String
     farm: PlaceFarm
     foodCoOp: PlaceFoodCoOp
     groceries: PlaceGroceries

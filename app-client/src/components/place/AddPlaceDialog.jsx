@@ -145,6 +145,7 @@ const PlaceSchema = Yup.object().shape({
     facebookUrl: Yup.string().url('Should match URL format'),
     orderUrl: Yup.string().url('Should match URL format'),
     ownership: Yup.boolean(),
+    services: Yup.array().of(Yup.string()),
   }),
   farm: Yup.object().shape({
     location: Yup.object()
@@ -242,6 +243,7 @@ const AddPlaceDialog = ({
       facebookUrl: '',
       orderUrl: '',
       ownership: false,
+      services: ['Pick-up', 'Appointments', 'Delivery'],
       hours: {},
       photos: [],
     },
