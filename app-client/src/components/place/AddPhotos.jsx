@@ -88,7 +88,10 @@ export default function AddPhotos({ files, setFiles }) {
     setSelectedPicture(-1);
     setFiles([...files]);
   };
-  const fileUrls = files?.map(file => URL.createObjectURL(file)) || [];
+  const fileUrls =
+    files?.map(file => {
+      return file?.includes?.('https://') ? file : URL.createObjectURL(file);
+    }) || [];
 
   return (
     <Box

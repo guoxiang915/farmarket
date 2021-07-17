@@ -33,10 +33,9 @@ export default function OverviewInfo({
   classes,
   errors = {},
   touched = {},
+  isEdit,
 }) {
   const [hourDialog, setShowHourDialog] = useState(false);
-
-  console.log(data);
 
   return (
     <Grid container spacing={4}>
@@ -94,6 +93,7 @@ export default function OverviewInfo({
               name="overview.category"
               onChange={onChange}
               onBlur={onBlur}
+              readOnly={isEdit}
               error={errors.category && touched.category}
               // Show error message
               // helperText={
@@ -124,6 +124,7 @@ export default function OverviewInfo({
               helperText={
                 errors.location && touched.location ? errors.location : null
               }
+              readOnly={isEdit}
             />
             <FormControlLabel
               control={<Checkbox color="primary" />}

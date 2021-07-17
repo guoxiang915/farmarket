@@ -44,6 +44,7 @@ export default function Geocoder({
   onBlur,
   errors,
   helperText,
+  readOnly,
 }) {
   const classes = useStyles();
 
@@ -71,6 +72,9 @@ export default function Geocoder({
             onBlur={onBlur}
             errors={errors}
             helperText={helperText}
+            InputProps={{
+              readOnly,
+            }}
             {...inputProps}
           />
         )}

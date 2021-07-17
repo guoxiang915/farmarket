@@ -17,20 +17,24 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import { Close as CloseIcon, ExpandMore } from '@material-ui/icons';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import OverviewInfo from './OverviewInfo';
 import Groceries from './Groceries';
 import Farm from './Farm';
 import FoodCoOp from './FoodCoOp';
 import FarmerMarket from './FarmerMarket';
 import { showSnackbar } from '../../store/actions/appActions';
-import { ADD_PLACE_MUTATION } from '../../graphql/mutations';
+import {
+  ADD_PLACE_MUTATION,
+  UPDATE_PLACE_MUTATION,
+} from '../../graphql/mutations';
 import {
   GET_UPLOAD_FILES_URL_QUERY,
   // SEARCH_PLACES_QUERY,
 } from '../../graphql/queries';
 import useLogin from '../../utils/hooks/useLogin';
 import AddPhotos from './AddPhotos';
+import { SEARCH_PLACES_QUERY } from './../../graphql/queries/place';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -223,45 +227,71 @@ const AddPlaceDialog = ({
   open,
   onClose,
   category: initialCategory = 'groceries',
-  places,
+  place: defaultPlace,
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { push } = useHistory();
   const { checkLogin } = useLogin();
 
-  const [photos, setPhotos] = useState([]);
+  const [photos, setPhotos] = useState(defaultPlace?.photos || []);
 
   const [expanded, setExpanded] = useState('overview');
   const initialValues = {
+    id: defaultPlace?.place_id,
     overview: {
-      name: '',
-      bio: '',
-      category: initialCategory,
-      location: null,
-      containing: false,
-      facebookUrl: '',
-      orderUrl: '',
-      ownership: false,
-      services: ['Pick-up', 'Appointments', 'Delivery'],
-      hours: {},
-      photos: [],
+      name: defaultPlace?.name || '',
+      bio: defaultPlace?.bio || '',
+      category: defaultPlace?.category || initialCategory,
+      location: defaultPlace?.location || null,
+      containing: defaultPlace?.containing || false,
+      facebookUrl: defaultPlace?.facebook_url || '',
+      orderUrl: defaultPlace?.order_url || '',
+      ownership: defaultPlace?.ownership || false,
+      services: defaultPlace?.services
+        ? Object.keys(defaultPlace?.services)
+        : ['Pick-up', 'Appointments', 'Delivery'],
+      hours: defaultPlace?.hours?.status ? defaultPlace?.hours : {},
+      photos: defaultPlace?.photos || [],
     },
     farm: {
-      location: null,
-      hours: {},
-      url: '',
-      specialities: ['Eggs', 'Lamb', 'Wool', 'Compost'],
-      tags: ['USDA Organic', 'Biodynamic', 'Regenerative'],
-      farmShare: [],
+      id: defaultPlace?.farm?.id || undefined,
+      location: defaultPlace?.farm?.location || null,
+      hours: defaultPlace?.farm?.hours?.status ? defaultPlace?.farm?.hours : {},
+      url: defaultPlace?.farm?.url || '',
+      specialities: defaultPlace?.farm?.specialities || [
+        'Eggs',
+        'Lamb',
+        'Wool',
+        'Compost',
+      ],
+      tags: defaultPlace?.farm?.tags || [
+        'USDA Organic',
+        'Biodynamic',
+        'Regenerative',
+      ],
+      farmShare: defaultPlace?.farm?.farm_share || [],
     },
-    foodCoOp: { structure: '', farm: [], cost: 0, size: '100-200' },
-    groceries: { farm: [] },
-    farmStand: { farm: [] },
+    foodCoOp: {
+      id: defaultPlace?.foodCoOp?.id || undefined,
+      structure: defaultPlace?.foodCoOp?.structure || '',
+      farm: defaultPlace?.foodCoOp?.farm || [],
+      cost: defaultPlace?.foodCoOp?.cost || 0,
+      size: defaultPlace?.foodCoOp?.size || '100-200',
+    },
+    groceries: {
+      id: defaultPlace?.groceries?.id || undefined,
+      farm: defaultPlace?.groceries?.farm || [],
+    },
+    farmStand: {
+      id: defaultPlace?.farmStand?.id || undefined,
+      farm: defaultPlace?.farmStand?.farm || [],
+    },
     farmerMarket: {
-      marketType: 'Open-air',
-      farm: [],
-      structure: 'For-profit',
+      id: defaultPlace?.farmerMarket?.id || undefined,
+      marketType: defaultPlace?.farmerMarket?.marketType || 'Open-air',
+      farm: defaultPlace?.farmerMarket?.farm || [],
+      structure: defaultPlace?.farmerMarket?.structure || 'For-profit',
     },
   };
   const [submitValues, setSubmitValues] = useState(null);
@@ -274,14 +304,27 @@ const AddPlaceDialog = ({
     { value: 'farmerMarket', label: "Farmer's Market" },
   ];
 
+  const { data: places } = useQuery(SEARCH_PLACES_QUERY, {
+    variables: {
+      cat: 'farm',
+    },
+  });
+
   const [submitAddPlace, { loading }] = useMutation(ADD_PLACE_MUTATION, {
-    errorPolicy: 'none',
+    errorPolicy: 'all',
     // refetchQueries: [
     //   {
     //     query: SEARCH_PLACES_QUERY,
     //   },
     // ],
   });
+
+  const [submitUpdatePlace, { loading: updating }] = useMutation(
+    UPDATE_PLACE_MUTATION,
+    {
+      errorPolicy: 'all',
+    }
+  );
 
   const [
     getUploadFilesUrl,
@@ -296,7 +339,9 @@ const AddPlaceDialog = ({
       if (photos) {
         await getUploadFilesUrl({
           variables: {
-            files: photos.map(photo => ({ name: photo.name })),
+            files: photos
+              .filter(photo => !photo?.includes?.('https://'))
+              .map(photo => ({ name: photo.name })),
           },
         });
 
@@ -326,7 +371,7 @@ const AddPlaceDialog = ({
   }, [uploading, uploadingError]);
 
   useEffect(() => {
-    const addPlace = async () => {
+    const submitPlace = async () => {
       if (photosUrl?.getUploadFilesUrl?.length) {
         await Promise.all(
           photosUrl.getUploadFilesUrl.map((url, index) => {
@@ -340,12 +385,15 @@ const AddPlaceDialog = ({
             });
           })
         );
-        submitValues.overview.photos = photosUrl.getUploadFilesUrl.map(
-          url => url.split('?')[0]
-        );
       }
+      submitValues.overview.photos = [
+        ...submitValues.overview.photos.filter(photo =>
+          photo?.includes?.('https://')
+        ),
+        ...photosUrl.getUploadFilesUrl.map(url => url.split('?')[0]),
+      ];
 
-      if (submitValues.overview.location) {
+      if (!defaultPlace && submitValues.overview.location) {
         submitValues.overview.location = {
           latitude: submitValues.overview.location.latitude,
           longitude: submitValues.overview.location.longitude,
@@ -364,33 +412,76 @@ const AddPlaceDialog = ({
         };
       }
 
-      const { data: resultPlace, errors } = await submitAddPlace({
-        variables: {
-          place: submitValues,
-        },
-      });
+      if (!defaultPlace) {
+        // add place
+        const { data: resultPlace, errors } = await submitAddPlace({
+          variables: {
+            place: submitValues,
+          },
+        });
 
-      if (errors?.length) {
-        dispatch(
-          showSnackbar({
-            open: true,
-            severity: 'error',
-            message: errors.map(e => e.message).join('\n'),
-          })
-        );
-        return;
-      }
+        if (errors?.length) {
+          dispatch(
+            showSnackbar({
+              open: true,
+              severity: 'error',
+              message: errors.map(e => e.message).join('\n'),
+            })
+          );
+          return;
+        }
 
-      if (resultPlace?.addPlace?.place_id) {
-        onClose();
-        dispatch(
-          showSnackbar({
-            open: true,
-            severity: 'success',
-            message: `${resultPlace.addPlace.name} has been successfully created`,
-          })
-        );
-        push(`/place/${resultPlace?.addPlace?.place_id}`);
+        if (resultPlace?.addPlace?.place_id) {
+          onClose();
+          dispatch(
+            showSnackbar({
+              open: true,
+              severity: 'success',
+              message: `${resultPlace.addPlace.name} has been successfully created`,
+            })
+          );
+          push(`/place/${resultPlace?.addPlace?.place_id}`);
+        }
+      } else {
+        if (submitUpdatePlace) {
+          console.log(submitValues);
+        }
+        console.log(submitValues);
+
+        // update place
+        const { data: resultPlace, errors } = await submitUpdatePlace({
+          variables: {
+            place: {
+              place_id: defaultPlace.place_id,
+              overview: submitValues.overview,
+              [submitValues.overview.category]:
+                submitValues[submitValues.overview.category],
+            },
+          },
+        });
+
+        if (errors?.length) {
+          dispatch(
+            showSnackbar({
+              open: true,
+              severity: 'error',
+              message: errors.map(e => e.message).join('\n'),
+            })
+          );
+          return;
+        }
+
+        if (resultPlace?.updatePlace?.place_id) {
+          onClose();
+          dispatch(
+            showSnackbar({
+              open: true,
+              severity: 'success',
+              message: `${resultPlace.updatePlace.name} has been successfully updated`,
+            })
+          );
+          push(`/place/${resultPlace?.updatePlace?.place_id}`);
+        }
       }
     };
 
@@ -398,14 +489,16 @@ const AddPlaceDialog = ({
       !uploading &&
       !uploadingError &&
       submitValues &&
-      photosUrl?.getUploadFilesUrl?.length
+      (!!defaultPlace || photosUrl?.getUploadFilesUrl?.length)
     ) {
-      addPlace();
+      submitPlace();
     }
-  }, [uploading, uploadingError, submitValues]);
+  }, [uploading, uploadingError, submitValues, defaultPlace]);
 
   const farms =
-    places?.map(item => ({ id: item.place_id, title: item.name })) || [];
+    places?.searchPlaces
+      ?.filter?.(item => item.category === 'farm')
+      .map(item => ({ id: item.place_id, title: item.name })) || [];
 
   return (
     <Dialog open={open} onClose={onClose} classes={{ paper: classes.paper }}>
@@ -430,7 +523,7 @@ const AddPlaceDialog = ({
             <form onSubmit={handleSubmit}>
               <div className={classes.header}>
                 <DialogTitle className={classes.title}>
-                  <div>Add a Place</div>
+                  <div>{defaultPlace ? 'Edit' : 'Add'} a Place</div>
                   <div className={classes.subtitle}>Co-op</div>
                 </DialogTitle>
                 <IconButton className={classes.close} onClick={onClose}>
@@ -460,6 +553,7 @@ const AddPlaceDialog = ({
                       onChange={handleChange}
                       onBlur={handleBlur}
                       classes={classes}
+                      isEdit={!!defaultPlace}
                     />
                   </AccordionDetails>
                 </Accordion>
@@ -477,7 +571,11 @@ const AddPlaceDialog = ({
                     <div className={classes.sectionTitle}>Upload photos</div>
                   </AccordionSummary>
                   <AccordionDetails className={classes.sectionContent}>
-                    <AddPhotos files={photos} setFiles={setPhotos} />
+                    <AddPhotos
+                      files={photos}
+                      setFiles={setPhotos}
+                      isEdit={!!defaultPlace}
+                    />
                   </AccordionDetails>
                 </Accordion>
 
@@ -505,6 +603,7 @@ const AddPlaceDialog = ({
                       onBlur={handleBlur}
                       classes={classes}
                       farms={farms}
+                      isEdit={!!defaultPlace}
                     />
                   </AccordionDetails>
                 </Accordion>
@@ -514,7 +613,7 @@ const AddPlaceDialog = ({
                 <Button
                   onClick={onClose}
                   color="primary"
-                  disabled={loading || uploading}
+                  disabled={loading || updating || uploading}
                 >
                   Cancel
                 </Button>
@@ -526,10 +625,11 @@ const AddPlaceDialog = ({
                     (errors && !!Object.keys(errors).length) ||
                     !photos.length ||
                     loading ||
+                    updating ||
                     uploading
                   }
                 >
-                  {(loading || uploading) && (
+                  {(loading || updating || uploading) && (
                     <CircularProgress size={16} className={classes.progress} />
                   )}{' '}
                   Submit

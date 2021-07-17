@@ -1,5 +1,40 @@
+import categoryTables from '../utils/db/mapTable';
 import { isOpenFull, isOpenNow } from '../utils/functions';
 import knex from '../utils/knex';
+import { parsePlaceData } from '../utils/mergePlace';
+
+const getPlaceDetailData = async id => {
+  const place = await knex('Place')
+    .where('place_id', id)
+    .then(places => {
+      const user = places[0];
+      if (!user) {
+        throw new Error('Place not found');
+      }
+      return user;
+    });
+
+  // Get place info based on category
+  const { detailTable } =
+    categoryTables.find(item => item.category === place.category) || {};
+  if (!detailTable) {
+    throw new Error('Category not found');
+  }
+
+  place[place.category] = await knex(detailTable)
+    .where('place_id', id)
+    .then(data => {
+      if (!data || !data[0]) {
+        throw new Error('Detail Information not found');
+      }
+      return data[0];
+    });
+
+  // Convert some details for place
+  parsePlaceData(place);
+
+  return place;
+};
 
 export const searchPlaces = async (parent, args) => {
   const { q, cat, rating, hour } = args;
@@ -40,103 +75,33 @@ export const searchPlaces = async (parent, args) => {
 };
 
 export const placeDetail = async (parent, args) => {
-  const place = await knex('Place')
-    .where('place_id', args.id)
-    .then(places => {
-      const user = places[0];
-      if (!user) {
-        throw new Error('Place not found');
+  const place = await getPlaceDetailData(args.id);
+
+  // Get place info based on category
+  const { associateId: idName } =
+    categoryTables.find(item => item.category === place.category) || {};
+
+  // Get associated place information
+  if (idName) {
+    const populate = [];
+    const associates = await knex('FarmAssociates').where(idName, args.id);
+
+    if (associates && associates.length) {
+      // eslint-disable-next-line
+      for (const item of associates) {
+        // eslint-disable-next-line
+        for (const assInfo of categoryTables) {
+          const { associateId } = assInfo;
+          if (associateId !== idName && !!item[associateId]) {
+            const assData = await getPlaceDetailData(item[associateId]);
+            populate.push(assData);
+          }
+        }
       }
-      return user;
-    });
-
-  let detailTable = '';
-  switch (place.category) {
-    case 'farm':
-      detailTable = 'Farm';
-      break;
-    case 'foodCoOp':
-      detailTable = 'FoodCoOp';
-      break;
-    case 'groceries':
-      detailTable = 'Grocery';
-      break;
-    case 'farmStand':
-      detailTable = 'FarmStand';
-      break;
-    case 'farmerMarket':
-      detailTable = 'FarmerMarket';
-      break;
-    default:
-      break;
-  }
-  if (!detailTable) {
-    throw new Error('Category not found');
-  }
-
-  place[place.category] = await knex(detailTable)
-    .where('place_id', args.id)
-    .then(data => {
-      if (!data || !data[0]) {
-        throw new Error('Detail Information not found');
-      }
-      return data[0];
-    });
-
-  if (typeof place.location === 'string') {
-    place.location = JSON.parse(place.location);
-  }
-  if (place.hours && typeof place.hours === 'string') {
-    place.hours = JSON.parse(place.hours);
-  }
-  if (place.other_location && typeof place.other_location === 'string') {
-    place.other_location = JSON.parse(place.other_location);
-  }
-  if (place.photos && typeof place.photos === 'string') {
-    place.photos = JSON.parse(place.photos);
-  }
-
-  if (place.farm && place.farm.farm_share) {
-    if (typeof place.farm.farm_share === 'string') {
-      place.farm.farm_share = JSON.parse(place.farm.farm_share);
     }
-    place.farm.farmShare = await knex('FarmShare').whereIn(
-      'id',
-      place.farm.farm_share
-    );
 
-    place.farm.farmShare.forEach(item => {
-      if (item && item.contents && typeof item.contents === 'string') {
-        item.contents = JSON.parse(item.contents);
-      }
-    });
+    place.associates = JSON.stringify(populate);
   }
-  if (
-    place.farm &&
-    place.farm.pickup_location &&
-    typeof place.farm.pickup_location === 'string'
-  ) {
-    place.farm.pickup_location = JSON.parse(place.farm.pickup_location);
-  }
-  if (
-    place.farm &&
-    place.farm.volunteer_hours &&
-    typeof place.farm.volunteer_hours === 'string'
-  ) {
-    place.farm.volunteer_hours = JSON.parse(place.farm.volunteer_hours);
-  }
-  if (
-    place.farm &&
-    place.farm.specialities &&
-    typeof place.farm.specialities === 'string'
-  ) {
-    place.farm.specialities = JSON.parse(place.farm.specialities);
-  }
-  if (place.farm && place.farm.tags && typeof place.farm.tags === 'string') {
-    place.farm.tags = JSON.parse(place.farm.tags);
-  }
-
-  console.log(place);
 
   return place;
 };

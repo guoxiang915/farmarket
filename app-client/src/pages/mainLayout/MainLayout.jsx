@@ -122,7 +122,17 @@ const MainLayout = () => {
   const [getPlaces, { data: places }] = useLazyQuery(SEARCH_PLACES_QUERY);
 
   if (!error && data && data.meInfo) {
-    dispatch(setUser({ user: data.meInfo?.email, isLoggedIn: true }));
+    dispatch(
+      setUser({
+        user: {
+          id: data.meInfo.id,
+          email: data.meInfo.email,
+          first_name: data.meInfo.first_name,
+          last_name: data.meInfo.last_name,
+        },
+        isLoggedIn: true,
+      })
+    );
   }
 
   const handleCloseSnackbar = () => {
@@ -304,7 +314,8 @@ const MainLayout = () => {
               open
               onClose={() => dispatch(closeModal('add-place-modal'))}
               category={modalInfo?.category || ''}
-              places={places?.searchPlaces}
+              // places={places?.searchPlaces}
+              place={modalInfo?.place || null}
             />
           )}
         </>

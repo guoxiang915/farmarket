@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 import {
   CircularProgress,
@@ -25,7 +25,6 @@ import {
   getOpenedState,
 } from '../../../utils/functions';
 import { PLACE_DETAIL_QUERY } from '../../../graphql/queries';
-import { selectPlace } from '../../../store/actions/appActions';
 import PlaceDetailDialog from '../../place/PlaceDetailDialog';
 import {
   defaultGroceryBoxes,
@@ -34,6 +33,12 @@ import {
 import CarouselWrapper from '../../utils/CarouselWrapper';
 import CheckItem from '../../utils/CheckItem';
 import ServiceDetails from './ServiceDetails';
+import useLogin from './../../../utils/hooks/useLogin';
+import {
+  openModal,
+  selectPlace,
+  showSnackbar,
+} from '../../../store/actions/appActions';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -104,16 +109,24 @@ const useStyles = makeStyles(theme => ({
     height: 150,
     borderRadius: 10,
     position: 'relative',
+    overflow: 'hidden',
   },
 
   carouselName: {
+    background:
+      'linear-gradient(rgba(0,0,0,0) 0%,rgba(0,0,0,0) 20%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.4) 60%,rgba(0,0,0,0.6) 80%,rgba(0,0,0,0.7) 100%)',
     position: 'absolute',
-    bottom: 20,
-    left: 16,
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    padding: '0 16px 20px',
+    overflow: 'hidden',
     fontSize: '16px',
     fontWeight: 100,
     color: 'white',
-    mixBlendMode: 'difference',
+    display: 'flex',
+    alignItems: 'flex-end',
   },
 
   addressItem: {
@@ -156,6 +169,9 @@ const PlaceDetail = ({ id }) => {
   const classes = useStyles();
   const [address, setAddress] = useState(null);
 
+  const { checkLogin } = useLogin();
+  const { user } = useSelector(state => state.authState);
+
   const [placeDetail, { loading, data: place }] = useLazyQuery(
     PLACE_DETAIL_QUERY
   );
@@ -194,6 +210,34 @@ const PlaceDetail = ({ id }) => {
   const [opened, setOpened] = useState(-1);
 
   const [openServices, setOpenServices] = useState(false);
+
+  const handleEdit = () => {
+    if (checkLogin()) {
+      if (data) {
+        console.log(data, user);
+        if (data.owner_id && data.owner_id !== user.id) {
+          dispatch(
+            showSnackbar({
+              open: true,
+              severity: 'error',
+              message:
+                'This place is already owned by other user. You cannot edit this place!',
+            })
+          );
+        } else {
+          dispatch(
+            openModal('add-place-modal', {
+              category: 'groceries',
+              place: {
+                ...data,
+                ownership: data.owner_id && data.owner_id === user.id,
+              },
+            })
+          );
+        }
+      }
+    }
+  };
 
   return (
     <div className={classes.container}>
@@ -359,6 +403,7 @@ const PlaceDetail = ({ id }) => {
                     classes.actionButton,
                     classes.suggestButton
                   )}
+                  onClick={handleEdit}
                 >
                   Suggest an edit
                 </Button>

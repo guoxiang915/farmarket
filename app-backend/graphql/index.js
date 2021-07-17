@@ -100,6 +100,7 @@ input FarmShareContentInput {
 }
 
 input FarmShareType {
+    id: ID
     type: String
     contents: [FarmShareContentInput!]
     payPeriod: String
@@ -117,6 +118,7 @@ type PlaceFarmShare {
 }
 
 input PlaceFarmInput {
+    id: ID
     location: PlaceLocationInput
     hours: BusinessHoursInput
     url: String
@@ -136,6 +138,7 @@ type PlaceFarm {
 }
 
 input PlaceFoodCoOpInput {
+    id: ID
     structure: String
     farm: [ID!]
     cost: Float
@@ -151,6 +154,7 @@ type PlaceFoodCoOp {
 }
 
 input PlaceGroceriesInput {
+    id: ID
     farm: [ID!]
 }
 
@@ -160,6 +164,7 @@ type PlaceGroceries {
 }
 
 input PlaceFarmStandInput {
+    id: ID
     farm: [ID!]
 }
 
@@ -169,6 +174,7 @@ type PlaceFarmStand {
 }
 
 input PlaceFarmerMarketInput {
+    id: ID
     marketType: String
     farm: [ID!]
     structure: String
@@ -182,6 +188,7 @@ type PlaceFarmerMarket {
 }
 
 input AddPlaceInput {
+    place_id: ID
     overview: PlaceOverviewInput!
     farm: PlaceFarmInput
     foodCoOp: PlaceFoodCoOpInput
@@ -215,6 +222,7 @@ type PlaceDetail {
     groceries: PlaceGroceries
     farmStand: PlaceFarmStand
     farmerMarket: PlaceFarmerMarket
+    associates: String
 }
 
 input FileInput {
@@ -241,6 +249,8 @@ type Mutation {
     ): String!
 
     addPlace(place: AddPlaceInput!): AddPlaceResult!
+
+    updatePlace(place: AddPlaceInput!): AddPlaceResult!
 }
 
 type Query {
