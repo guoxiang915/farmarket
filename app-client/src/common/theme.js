@@ -98,8 +98,7 @@ const theme = {
   },
   typography: {
     useNextVariants: true,
-
-    mainFont: 'Roboto',
+    fontFamily: 'Roboto, Arial, sans-serif',
     headline: {
       fontWeight: 500,
       fontSize: '24px',

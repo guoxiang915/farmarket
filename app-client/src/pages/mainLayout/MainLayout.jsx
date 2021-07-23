@@ -4,7 +4,7 @@ import { useLazyQuery, useQuery } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { Avatar, Box, Fab, Grid, Snackbar } from '@material-ui/core';
+import { Avatar, Box, Fab, Grid, Snackbar, Paper } from '@material-ui/core';
 import { Add, MyLocation, Remove } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl-csp';
@@ -22,6 +22,8 @@ import { GET_ME_INFO_QUERY, SEARCH_PLACES_QUERY } from '../../graphql/queries';
 
 import normalMarker from '../../assets/normal-marker.png';
 import selectedMarker from '../../assets/selected-marker.jpg';
+import satelliteImg from '../../assets/satellite-view.png';
+import streetsImg from '../../assets/streets-view.png';
 import { getAddressFromCoordinates } from '../../utils/functions';
 
 mapboxgl.workerClass = MapboxWorker;
@@ -57,19 +59,52 @@ const useStyles = makeStyles(() =>
       paddingBottom: 50,
     },
 
-    advanced: {
+    avatar: {
       position: 'fixed',
       top: 30,
       right: 30,
-      bottom: 30,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-end',
-      justifyContent: 'space-between',
     },
 
     controls: {
+      position: 'fixed',
+      right: 30,
+      bottom: 30,
       width: 50,
+    },
+
+    viewMode: {
+      position: 'fixed',
+      right: 100,
+      bottom: 30,
+      width: 80,
+      height: 80,
+      border: '2px solid white',
+      borderRadius: 5,
+      overflow: 'hidden',
+      cursor: 'pointer',
+
+      '& img': {
+        width: '100%',
+        height: '100%',
+      },
+
+      '& .text': {
+        background:
+          'linear-gradient(rgba(0,0,0,0) 0%,rgba(0,0,0,0) 20%,rgba(0,0,0,0.15) 40%,rgba(0,0,0,0.4) 60%,rgba(0,0,0,0.6) 80%,rgba(0,0,0,0.7) 100%)',
+        color: 'white',
+        textTransform: 'capitalize',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        padding: '0 8px 10px',
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        textAlign: 'center',
+        fontSize: '14px',
+      },
     },
   })
 );
@@ -92,6 +127,7 @@ const MainLayout = () => {
   const [center, setCenter] = useState([0, 0]);
   const [zoom, setZoom] = useState(14);
   const [location, setLocation] = useState('');
+  const [viewMode, setViewMode] = useState('streets');
 
   const gotoUserLocation = () => {
     navigator.geolocation.getCurrentPosition(
@@ -166,7 +202,7 @@ const MainLayout = () => {
     <div className={classes.root}>
       <Map
         // eslint-disable-next-line
-        style="mapbox://styles/mapbox/streets-v9"
+        style={`mapbox://styles/mapbox/${viewMode}-v9`}
         containerStyle={{
           height: 'calc(100vh + 1px)',
           width: 'calc(100vw + 1px)',
@@ -226,52 +262,75 @@ const MainLayout = () => {
               }
               alt=""
             />
-            <Box mt={0.5}>{place.name}</Box>
+            <Box
+              mt={0.5}
+              style={{
+                color: 'white',
+                textShadow:
+                  '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black',
+              }}
+            >
+              {place.name}
+            </Box>
           </Marker>
         ))}
       </Map>
 
-      <div className={classes.advanced}>
-        {data?.meInfo ? (
-          <Avatar className={classes.avatar}>
-            {data?.meInfo?.first_name?.charAt?.(0) || ''}
-          </Avatar>
-        ) : (
-          <div />
-        )}
-        <Grid container spacing={2} className={classes.controls}>
-          <Grid item xs={12}>
-            <Fab
-              onClick={() => {
-                setZoom(zoom + 1);
-              }}
-              size="small"
-            >
-              <Add fontSize="small" />
-            </Fab>
-          </Grid>
-          <Grid item xs={12}>
-            <Fab
-              onClick={() => {
-                setZoom(zoom - 1);
-              }}
-              size="small"
-            >
-              <Remove fontSize="small" />
-            </Fab>
-          </Grid>
-          <Grid item xs={12}>
-            <Fab
-              onClick={() => {
-                gotoUserLocation();
-              }}
-              size="small"
-            >
-              <MyLocation fontSize="small" />
-            </Fab>
-          </Grid>
+      {data?.meInfo ? (
+        <Avatar className={classes.avatar}>
+          {data?.meInfo?.first_name?.charAt?.(0) || ''}
+        </Avatar>
+      ) : (
+        <div />
+      )}
+
+      <Grid container spacing={2} className={classes.controls}>
+        <Grid item xs={12}>
+          <Fab
+            onClick={() => {
+              setZoom(zoom + 1);
+            }}
+            size="small"
+          >
+            <Add fontSize="small" />
+          </Fab>
         </Grid>
-      </div>
+        <Grid item xs={12}>
+          <Fab
+            onClick={() => {
+              setZoom(zoom - 1);
+            }}
+            size="small"
+          >
+            <Remove fontSize="small" />
+          </Fab>
+        </Grid>
+        <Grid item xs={12}>
+          <Fab
+            onClick={() => {
+              gotoUserLocation();
+            }}
+            size="small"
+          >
+            <MyLocation fontSize="small" />
+          </Fab>
+        </Grid>
+      </Grid>
+
+      <Paper
+        className={classes.viewMode}
+        onClick={() =>
+          setViewMode(viewMode === 'satellite' ? 'streets' : 'satellite')
+        }
+      >
+        <img
+          alt=""
+          src={viewMode === 'satellite' ? streetsImg : satelliteImg}
+        />
+        <div className="text">
+          {viewMode === 'satellite' ? 'Map' : 'Satellite'}
+        </div>
+      </Paper>
 
       <Sidebar location={location} />
 
